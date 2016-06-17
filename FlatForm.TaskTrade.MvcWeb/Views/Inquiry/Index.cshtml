@@ -1,0 +1,219 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}@*<ul class="m-crm">
+    <li><a href="@Url.Action("Welcome", "Home")"><i class="fa fa-home"></i>&nbsp;&nbsp;首页</a> <span class="divider">&gt;</span></li>
+    <li>询价</li>
+</ul>*@
+<div class="report-tab" style="padding-bottom: 0;">
+    <form id="searchinfo" >
+        <table border="0" cellspacing="0" cellpadding="0" class="report">
+            <tr>
+                <td>小区名称：</td>
+                <td><input type="text" class="business-input" name="ResidentialAreaName" id="ResidentialAreaName" /></td>
+                <td>项目地址：</td>
+                <td><input type="text" class="business-input" name="Address" id="Address" /></td>
+                @*<td>询价机构：</td>
+                <td><input type="text" class="business-input" name="Bank" id="Bank" /></td>*@
+                <td>询价人(客户名称)：</td>
+                <td><input type="text" class="business-input" name="CustomerName" id="CustomerName" /></td>
+                <td><button type="button" class="business-btn-1" onclick="search()">查询</button></td>
+                <td><button type="button" tag="@Url.Action("AddInquiry", "Inquiry")" class="project-btn-3" id="addquiry">添加询价</button></td>
+            </tr>
+        </table>
+    </form>
+    
+        <table id="table"></table>
+    
+</div>
+<script type="text/javascript">
+    var index, confirm, dialog;
+
+    $(function () {
+        tableint();
+
+        $("#searchinfo").validate({
+            rules: {
+                //小区名称
+                ResidentialAreaName: {
+                    maxlength: 50
+                },
+                //项目地址
+                Address: {
+                    maxlength: 100
+                },
+                ////询价机构
+                //Bank: {
+                //    stringCheck: true,
+                //    maxlength: 50
+                //},
+                //询价人
+                CustomerName: {
+                    stringCheck: true,
+                    maxlength: 30
+                }
+            },
+            messages: {
+                ResidentialAreaName: {
+                    maxlength: jQuery.validator.format("亲,字符不用超过50个")
+                },
+                Address: {
+                    maxlength: jQuery.validator.format("亲,字符不用超过100个")
+                },
+                //Bank: {
+                //    stringCheck: "不能含特殊字符",
+                //    maxlength: jQuery.validator.format("亲,字符不用超过50个")
+                //},
+                CustomerName: {
+                    stringCheck: "不能含特殊字符",
+                    maxlength: jQuery.validator.format("亲,字符不用超过50个")
+                }
+            },
+            success: function (label) {
+                layer.close(dialog);
+                $("#" + label[0].htmlFor).removeClass("error-border");
+            },
+            errorPlacement: function (error, element) {
+                $("#" + element[0].id).addClass("error-border");
+                dialog = layer.tips(error[0].innerHTML, "#" + element[0].id, {
+                    tips: [2, '#F99228']
+                });
+            },
+            submitHandler: function () {
+                search();
+            }
+        });
+        $("#addquiry").click(function () {
+            changeIframe("AddInquiry_Inquiry","添加询价","@Url.Action("AddInquiry", "Inquiry")");
+            //parent.$("#url").attr("src", $(this).attr("tag"));
+        });
+        $(window).resize(function () {
+            $('#table').bootstrapTable('resetWidth', '100%');
+        });
+    });
+
+    function search() {
+        if ($("#searchinfo").valid()) {
+            $('#table').bootstrapTable('destroy');
+            tableint();
+        }
+    }
+
+    function tableint() {
+        $('#table').bootstrapTable({
+            url: '/Inquiry/GetInquiryList', //请求后台的URL（*）
+            method: 'post', //请求方式（*）
+            striped: true, //是否显示行间隔色
+            cache: false, //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true, //是否显示分页（*）
+            queryParams: function (params) {
+                return {
+                    //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+                    condition: { ResidentialAreaName: $('#ResidentialAreaName').val(), Address: $('#Address').val(), Bank: $('#Bank').val(), CustomerName: $('#CustomerName').val() },
+                    index: params.offset / params.limit + 1, //页码
+                    rows: params.limit, //页面大小
+                };
+            }, //传递参数（*）
+            sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1, //初始化加载第一页，默认第一页
+            pageSize: 10, //每页的记录行数（*）
+            pageList: [10, 25, 50, 100], //可供选择的每页的行数（*）
+            strictSearch: true,
+            height: 'auto', //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            columns: [
+                {
+                    title: '小区名称',
+                    field: 'ResidentialAreaName',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '10%'
+                },
+                {
+                    title: '项目地址',
+                    field: 'Address',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '20%'
+                },
+                {
+                    title: '建筑面积',
+                    field: 'BuildingArea',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '8%'
+                },
+                {
+                    title: '单价',
+                    field: 'InquiryPrice',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '8%'
+                },
+                {
+                    title: '总价(万)',
+                    field: 'InquiryResult',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '8%'
+                },
+                
+                //{
+                //    title: '询价机构',
+                //    field: 'Bank',
+                //    align: 'left',
+                //    valign: 'middle',
+                //    width: '8%'
+                //},
+                {
+                    title: '询价客户',
+                    field: 'CustomerName',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '7%'
+                },
+                {
+                    title: '询价时间',
+                    field: 'CreateTime',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '8%'
+                },
+                {
+                    title: '询价添加人',
+                    field: 'CreatorName',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '8%'
+                },
+                {
+                    title: '立项',
+                    field: 'IsToProject',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '5%'
+                },
+                {
+                    title: '操作',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '10%',
+                    formatter: function (value, row, index) {
+                        var e = '';
+                        if (row.IsToProject == "否") {
+                            e = '<a onclick=changeIframe("AddInquiry_Inquiry","添加询价","@Url.Action("AddInquiry", "Inquiry")?action=update&id=' + row.Id + '") href="javascript:void(0);">修改</a> ';
+                            e += '<a onclick=changeIframe("AddingProject_Acceptance","添加立项","@Url.Action("AddingProject", "Acceptance")?InquiryId=' + row.Id + '") href="javascript:void(0);">转立项</a> ';
+                        } else {
+                            e = '<a onclick=changeIframe("AddInquiry_Inquiry","添加询价","@Url.Action("AddInquiry", "Inquiry")?action=view&id=' + row.Id + '") href="javascript:void(0);">查看</a> ';
+                        }
+                        return e;
+                    }
+                }
+            ]
+        });
+
+    }
+
+    function changeIframe(id, name, url) {
+        parent.changeIframe(id, name, url)
+    }
+
+</script>

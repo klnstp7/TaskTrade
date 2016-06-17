@@ -1,0 +1,1137 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+<link href="~/Content/plug-in/autocomplete/jquery.autocomplete.css" rel="stylesheet" />
+<script src="~/Content/plug-in/jquery/jquery.form.js"></script>
+<script src="~/Content/plug-in/autocomplete/jquery.autocomplete.js"></script>
+<script type="text/javascript">
+    //看房联系人
+    var arrShowings = new Array();
+    var index;
+    var IsAdd = true;
+    var ProjectId = "@Request.QueryString["ProjectId"]";
+    var readonly = "@Request.QueryString["readonly"]";
+    var InquiryId = "@Request.QueryString["InquiryId"]";
+    var ReportWebUrl = '@ViewBag.ReportCreaUrl';
+    var ReportLogInUrl = '@ViewBag.ReportLogInUrl';
+    $(function () {
+        if (InquiryId != "" && InquiryId != undefined && parseInt(InquiryId) == InquiryId) {
+            LoadProjectFromInquiry();
+        } else if (ProjectId != "" && ProjectId != undefined) {
+            if (readonly == "true") {
+                //设置只读页面
+                $("input").attr("disabled", "disabled");
+                $("button").attr("disabled", "disabled");
+                $("select").attr("disabled", "disabled");
+                $("textarea").attr("disabled", "disabled");
+                $("button").remove();
+                $("#btn_add").hide();
+                $("#extraction").hide();
+                $("#btn_update").hide();
+            }
+            if ("@Request.QueryString["from"]" == "ProjectReview") {
+                $(".m-crm").html('');
+                $(".m-crm").append('<li><a href="@Url.Action("Welcome", "Home")"><i class="fa fa-home"></i>&nbsp;&nbsp;首页</a> <span class="divider">&gt;</span></li>');
+                $(".m-crm").append('<li><a href="@Url.Action("Index", "ProjectReview")">&nbsp;&nbsp;项目审核</a> <span class="divider">&gt;</span></li>');
+            }
+            //修改
+            IsAdd = false;
+            //获取项目信息
+            GetProjectInfo(ProjectId, "editor");
+            //绑定看房联系人
+            BindEditeShowings(ProjectId,null);
+
+            $("#btn_add").hide();
+            $("#extraction").hide();
+        }
+        else {
+            //新增
+            $("#btn_update").hide();
+            //获取行政区
+            RegionChange();
+        }
+
+        //设置勘察人员选项是否
+        $('input:radio[name="IsProspecting"]').change(function () {
+            radioSelect();
+        });
+
+        //弹出新增看房联系人
+        $("#addcontacts").click(function () {
+            $("#contactsnames").val("");
+            $("#contactsTel").val("");
+            index = layer.open({
+                type: 1,
+                shade: [0.5, "#070707"],
+                closeBtn: 0,
+                area: ['420px', '220px'],
+                offset: '150px',
+                title: false, //不显示标题
+                content: $('#addform'), //捕获的元素
+            });
+        });
+
+
+        if ($("#onlineid").val() != "") {  //通过受理线上业务而来
+            LoadOnlineBusiness($("#onlineid").val());
+        }
+
+        //小区名称匹配
+        ResidentialAreaNameMatching();
+
+        $("#District").change(function () { ProjectAddressJoin() });
+        $("#ResidentialAreaName").change(function () { ProjectAddressJoin() });
+        $("#ResidentialAddress").change(function () { ProjectAddressJoin() });
+    });
+
+    //项目添加
+    function Save(toreport) {
+        var flag = $("#frm1").valid();
+        if (flag) {
+            var ListStr = JSON.stringify(arrShowings);
+            ListStr = escape(ListStr);
+            $("#ExplorationContactsStr").val(ListStr);
+            $('#ReportType').removeAttr("disabled");
+            $("#OutSurveyTableName").find("option:selected").text();
+            var project = $('#frm1').serialize();
+            $("#frm1").ajaxSubmit({
+                type: "POST",//提交类型
+                dataType: "json",//返回结果格式
+                url: "/Acceptance/AddProject",
+                data: project,
+                beforeSubmit: showLoadingTips,
+                success: function (result) {
+                    hideLoadingTips();
+                    if (result.success) {
+                        layer.msg('提交成功!', { icon: 1, time: 1000, shade: [0.3, '#000'] }, function () {                            
+                            if (toreport) {
+                                var id = result.data;
+                                toReport(id);
+                            }
+                            else {
+                                if ($("#onlineid").val() != "") {
+                                    parent.changeIframe("Index_OnLineBusiness", "线上业务", "/OnLineBusiness/Index");
+                                    //parent.$("#url").attr("src", "/OnLineBusiness/Index");
+                                }
+                                else {
+                                    parent.changeIframe("Index_Acceptance", "立项列表", "/Acceptance/Index");
+                                    //parent.$("#url").attr("src", "/Acceptance/Index");
+                                }
+                            }
+                            layer.closeAll();
+                        });
+                    }
+                    else {
+                        layer.alert(result.message, { icon: 2 });
+                    }
+                },
+                error: function (data) { layer.msg("服务器繁忙，请稍候再试.", { icon: 5, time: 1500, shade: [0.3, '#000'] }); hideLoadingTips(); },//请求失败的函数
+                async: true
+            });
+        }
+    }
+
+    //获取项目信息
+    function toReport(id) {
+        showLoadingTips();
+        $.ajax({
+            type: "get",
+            url: "/Acceptance/GetProjiectById?ProjectId=" + id,
+            dataType: "json",
+            success: function (data) {
+                hideLoadingTips();
+                if (data != null && data != undefined) {
+                    var ReportUrl = ReportWebUrl;
+                    ReportUrl += "?ProjectNo=" + data.ProjectNo;
+                    ReportUrl += "&ReportNo=" + data.ReportNo;
+                    ReportUrl += "&BusinessType=" + encodeURI(data.BusinessType);//估价目的
+                    ReportUrl += "&ProjectType=" + encodeURI(data.PropertyType);//物业类型
+                    ReportUrl += "&ReportCategory=" + encodeURI(data.ReportType);//报告类型
+                    ReportUrl += "&CityName=" + encodeURI(data.City);
+                    ReportUrl += "&rand=" + MathRand();
+
+                    ReportUrl = ReportLogInUrl + "?data=" + escape(ReportUrl);
+                    window.open(ReportUrl);
+                    parent.changeIframe("Index_Acceptance", "立项列表", "/Acceptance/Index");
+                    //parent.$("#url").attr("src", "/Acceptance/Index");
+                }
+            }
+        });
+    }
+
+    //获取项目信息
+    function GetProjectInfo(pid, operationtype) {
+        $.ajax({
+            type: "get",
+            url: "/Acceptance/GetProjiectById?ProjectId=" + pid,
+            dataType: "json",
+            success: function (data) {
+                if (data != null && data != undefined) {
+
+                    //文本框设置
+                    var inputElements = $("#frm1 input");
+                    for (var i = 0; i < inputElements.length; i++) {
+                        var q = inputElements[i];
+                        var elname = q.name;
+                        if (data.hasOwnProperty(elname) && (elname in data)) {
+                            $("#" + elname + "").val(data[elname]);
+                        }
+                    }
+
+                    //下拉框设置
+                    var selectElements = $("#frm1 select");
+                    for (var n = 0; n < selectElements.length; n++) {
+                        var q = selectElements[n];
+                        var elname = q.name;
+                        if (data.hasOwnProperty(elname) && (elname in data)) {
+                            $("#" + elname + "").val(data[elname]);
+                        }
+                    }
+
+                    if (operationtype == "editor") {
+                        $("#ProjectId").val(ProjectId);
+                        $("#CustomerId").val(data.CustomerId);
+                    } else {
+                        $("#ProjectId").val(0);
+                        $("#CustomerId").val(0);
+                    }
+
+
+
+                    $("#Remark").val(data.Remark);
+                    $("input[type=radio][name=IsProspecting][value=" + data.IsProspecting + "]").attr("checked", 'checked');
+                    radioSelect();
+                    //获取行政区
+                    RegionChange(data.District);
+                }
+            }
+        });
+    }
+
+    //编辑的时候绑定看房联系人
+    function BindEditeShowings(pid, businessid) {
+        var url = "/Acceptance/GetExplorationContactsList?ProjectId=" + pid;
+        if (businessid != null)
+            url = "/Acceptance/GetExplorationContactsListByBusiness?BusinessId=" + businessid;
+        $.ajax({
+            type: "get",
+            url: url,
+            dataType: "json",
+            success: function (data) {
+                if (data != null && data != undefined) {
+                    for (var i = 0; i < data.length; i++) {
+                        var o = data[i];
+                        var obj = {};
+                        obj.Contacts = o.Contacts;
+                        obj.Phone = o.Phone;
+                        obj.IsDefault = o.IsDefault;
+                        obj.IsDelete = false;
+                        arrShowings.push(obj);
+                    }
+                    BindShowings(arrShowings);
+                }
+            }
+        });
+    }
+
+    //看房联系人添加
+    function ShowingsAdd() {
+
+        var flag = $("#Contacts").valid();
+        if (flag) {
+            var obj = {};
+            obj.Contacts = $("#contactsnames").val();
+            obj.Phone = $("#contactsTel").val();
+            if (arrShowings.length <= 0) {
+                obj.IsDefault = true;
+            }
+            else {
+                obj.IsDefault = false;
+            }
+            obj.IsDelete = false;
+            arrShowings.push(obj);
+
+            BindShowings(arrShowings);
+
+            cancel();
+        }
+    }
+
+    //绑定看房联系人数据
+    function BindShowings(list) {
+        $("#ExplorationContactsTb  tr:not(:first)").empty();
+        for (var i = 0; i < list.length; i++) {
+            var obj = list[i];
+            if (obj.IsDelete == false) {
+                var disabled = readonly == "true" ? 'disabled="disabled"' : '';
+                var IsDefaultStr = ' <input type="radio" name="IsContactsDefault" value="' + i + '"  onchange="SetShowingsDefault(' + i + ')"' + disabled + ' />';
+                if (obj.IsDefault) {
+                    IsDefaultStr = ' <input type="radio" name="IsContactsDefault" checked="checked"  value="' + i + '"  SetShowingsDefault="aaa(' + i + ')"' + disabled + ' />';
+                }
+                if (readonly == "true") {
+                    $("#ExplorationContactsTb").append("<tr><td>" + IsDefaultStr + "</td><td>" + obj.Contacts + "</td><td>" + obj.Phone + "</td><td></td></tr>");
+                } else {
+                    $("#ExplorationContactsTb").append("<tr><td>" + IsDefaultStr + "</td><td>" + obj.Contacts + "</td><td>" + obj.Phone + "</td><td><button type='button' class='matter-btn-2' onclick='DeleteShowings(" + i + ")' >删除</button></td></tr>");
+                }
+            }
+        }
+    }
+
+    //删除联系人
+    function DeleteShowings(index) {
+        arrShowings[index].IsDelete = true;
+        BindShowings(arrShowings);
+    }
+
+    //设置默认联系人
+    function SetShowingsDefault(index) {
+
+        for (var i = 0; i < arrShowings.length; i++) {
+            arrShowings[i].IsDefault = false;
+        }
+        arrShowings[index].IsDefault = true;
+    }
+
+    //关闭看房联系人窗口
+    function cancel() {
+        layer.close(index);
+    }
+
+    //加载线上业务
+    function LoadOnlineBusiness(onlineid) {
+        $.ajax({
+            type: "POST",
+            url: "/Acceptance/LoadProjectByOnline?onlineid=" + onlineid,
+            dataType: "json",
+            success: function (data) {
+                if (data.DelegateType == '人工询价') {
+                    layer.alert("该线上业务为询价单，不可立项", { icon: 0 });
+                    return;
+                }
+                if (data.IsStop) {
+                    layer.alert("线上业务已终止", { icon: 0 });
+                }
+                else if (data.IsAccept) {
+                    layer.alert("线上业务已立项", { icon: 0 });
+                } else {
+                    $("#PropertyType").find("option[text='" + data.PropertyType + "']").attr("selected", true);
+                    $("#City").val(data.City);
+                    RegionChange(data.Region);
+                    $("#ResidentialAreaName").val(data.Community);
+                    $("#ResidentialAddress").val(data.HouseAddress);
+                    $("#BuildedYear").val(data.BuildedYear);
+                    $("#BuildingArea").val(data.Area);
+                    $("#Principal").val(data.EvaluationCompany);
+                    $("#CreditBank").val(data.BankName);
+                    $("#CreditSubbranch").val(data.BankBranch);
+                    $('#ReportType').val('正式报告');
+                    if (data.DelegateType == '预评估') {
+                        $('#ReportType').val('预估报告');
+                        $('#ReportType').attr("disabled", "disabled");
+                    } else if (data.DelegateType == '正式委托') {
+                        $('#ReportType').val('正式报告');
+                        $('#ReportType').attr("disabled", "disabled");
+                    }
+                    ProjectAddressJoin();
+                    BindEditeShowings(null, $("#onlineid").val());
+                }
+            }
+        });
+    }
+
+    //城市选择
+    function RegionChange(value) {
+        $.ajax({
+            type: "post",
+            url: "/Inquiry/GetRegion",
+            data: { cityName: $("#City").val() },
+            success: function (data) {
+                $("#District").html("");
+                for (var i = 0; i < data.length; i++) {
+                    $('#District').append("<option value=" + data[i] + ">" + data[i] + "</option>");
+                }
+                if (value != null && value != undefined) {
+                    $('#District').val(value);
+                }
+                ProjectAddressJoin();
+            },
+            error: function (e) {
+                $("#District").html("");
+            }
+        });
+
+    }
+
+    //小区名称匹配
+    function ResidentialAreaNameMatching() {
+
+        $('#ResidentialAreaName').autocomplete("/Inquiry/GetXiaoquList", {
+            dataType: "json",
+            width: 340,
+            scroll: true,
+            matchCase: false,
+            scrollHeight: 300,
+            autoFill: false,
+            extraParams: {
+                data: function () { return $("#ResidentialAreaName").val(); },
+                cityname: function () { return $("#City").val(); }
+            },
+            parse: function (data) {
+                return $.map(data, function (row) {
+                    if (row === null) {
+                        return false;
+                    }
+                    return {
+                        data: row,
+                        value: row.ResidentialAreaName
+                    };
+                });
+            },
+            formatItem: function (row, i, max) {
+                return "小区名：" + row.ResidentialAreaName + " | 小区地址: " + row.Address;
+            },
+            formatResult: function (row) {
+                return "小区名：" + row.ResidentialAreaName + " | 小区地址: " + row.Address;
+            },
+            formatMatch: function (row, i, max) {
+                return "小区名：" + row.ResidentialAreaName + " | 小区地址: " + row.Address;
+            }
+        }).result(function (event, data, formatted) {
+            $("#ResidentialAreaName").val(data.ResidentialAreaName);
+            $("#ResidentialAddress").val(data.Address);
+            //$("#District").val(data.xingzhengqu);
+            var $xingzhengqu = data.xingzhengqu;
+            var $slice = $xingzhengqu.slice(0, $xingzhengqu.length - 1);
+            //alert($("option[value='" + $slice + '市' + "']", '#District').length);
+            //alert($("option[value='" + $slice + '区' + "']", '#District').length);
+            if ($("option[value='" + $slice + '市' + "']", '#District').length == 1) {
+                $("#District").val($slice + '市');
+            }
+            if ($("option[value='" + $slice + '区' + "']", '#District').length == 1) {
+                $("#District").val($slice + '区');
+            }
+            ProjectAddressJoinTow(data.xingzhengqu);
+        });
+    }
+
+    //项目地址拼接方法二(选择小区名称使用)
+    function ProjectAddressJoinTow(value) {
+        var address = $("#City").val() + value + $("#ResidentialAreaName").val() + $("#ResidentialAddress").val();
+        $("#ProjectAddress").val(address);
+    }
+
+    //项目地址拼接
+    function ProjectAddressJoin() {
+        var address = $("#City").val() + ($("#District").val() == null ? "" : $("#District").val()) + $("#ResidentialAreaName").val() + $("#ResidentialAddress").val();
+        $("#ProjectAddress").val(address);
+    }
+
+    //是否启用勘察选择事件
+    function radioSelect() {
+        if ($('input[name="IsProspecting"]:checked ').val() == "true") {
+            $("#Investigator").removeAttr("disabled");
+            $("#OutSurveyTableId").removeAttr("disabled");
+        }
+        else {
+            $("#Investigator").attr("disabled", "disabled");
+            $("#OutSurveyTableId").attr("disabled");
+        }
+    }
+
+    //选择项目
+    function SelectProject(value) {
+        //绑定项目信息
+        GetProjectInfo(value, "info");
+        arrShowings = new Array();
+        //绑定看房联系人信息
+        BindEditeShowings(value,null);
+    }
+
+</script>
+@*<ul class="m-crm">
+    <li><a href="@Url.Action("Welcome", "Home")"><i class="fa fa-home"></i>&nbsp;&nbsp;首页</a> <span class="divider">&gt;</span></li>
+    <li><a href="@Url.Action("Index", "Acceptance")">&nbsp;&nbsp;业务受理</a> <span class="divider">&gt;</span></li>
+    <li>立项添加</li>
+</ul>*@
+<div class="report-tab">
+    <form id="frm1">
+        <input type="hidden" id="onlineid" name="onlineid" value="@Request.QueryString["onlineid"]" />
+        <input type="hidden" id="InquiryId" name="InquiryId" value="@Request.QueryString["InquiryId"]" />
+        <input type="hidden" id="ProjectId" name="ProjectId" />
+        <input type="hidden" id="ExplorationContactsStr" name="ExplorationContactsStr" />
+        <input type="hidden" id="CustomerId" name="CustomerId" />
+        <input type="hidden" id="OutSurveyTableName" name="OutSurveyTableName" />
+        <div class="detail">
+            <h3>客户信息</h3>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td width="8%">客户手机</td>
+                    <td width="16%"><input id="CustomerTel" name="CustomerTel" type="text" class="detail-input" /></td>
+                    <td width="8%">固定电话</td>
+                    <td width="16%"><input id="CustomerPhone" name="CustomerPhone" type="text" class="detail-input" /></td>
+                    <td width="8%">客户姓名</td>
+                    <td width="16%"><input id="CustomerName" name="CustomerName" type="text" class="detail-input" /></td>
+                    <td width="8%">&nbsp;</td>
+                    <td width="16%">&nbsp;</td>
+                    <td width="4%">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td width="8%">所属机构</td>
+                    <td width="16%"><input id="CustomerBank" name="CustomerBank" type="text" class="detail-input" /></td>
+                    <td width="8%">分支机构</td>
+                    <td width="16%"><input id="CustomerSubbranch" name="CustomerSubbranch" type="text" class="detail-input" /></td>
+                    <td width="8%">客户QQ</td>
+                    <td width="16%"><input id="CustomerQQ" name="CustomerQQ" type="text" class="detail-input" /></td>
+                    <td width="8%">&nbsp;</td>
+                    <td width="16%">&nbsp;</td>
+                    <td width="4%">&nbsp;</td>
+                </tr>
+            </table>
+        </div>
+        <div class="detail mar_t_20">
+            <h3>项目信息</h3>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td width="7%">报告编号</td>
+                    <td width="17%"><input id="ReportNo" name="ReportNo" type="text" class="detail-input" /></td>
+                    <td width="4%">&nbsp;</td>
+                    <td width="7%">项目来源</td>
+                    <td width="15%">
+                        <select id="ProjectSource" name="ProjectSource" class="detail-input">
+                            @foreach (var item in ViewBag.ProjectSourceList)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </td>
+                    <td width="5%">&nbsp;</td>
+                    <td width="7%">报告类型</td>
+                    <td width="15%">
+                        <select class="detail-input" id="ReportType" name="ReportType">
+                            @foreach (var item in ViewBag.ReportTypeList)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </td>
+
+                    <td width="4%">&nbsp;</td>
+                    <td width="7%"></td>
+                    <td width="12%"></td>
+                    <td width="2%">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>估价目的</td>
+                    <td>
+                        <select id="BusinessType" name="BusinessType" class="detail-input">
+                            @foreach (var item in ViewBag.BusinessTypeList)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </td>
+                    <td>&nbsp;</td>
+                    <td>物业类型</td>
+                    <td>
+                        <select id="PropertyType" name="PropertyType" class="detail-input">
+                            @foreach (var item in ViewBag.PropertyTypeList)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </td>
+                    <td>&nbsp;</td>
+                    <td>城市</td>
+                    <td>
+                        <select maxlength="20" class="detail-input" name="City" id="City" onchange="RegionChange()">
+                            @{
+                                foreach (var item in ViewBag.Citys)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            }
+                        </select>
+
+                    </td>
+                    <td>&nbsp;</td>
+                    <td>行政区</td>
+                    <td>
+                        <select class="detail-input" name="District" id="District"></select>
+                    </td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>小区名称</td>
+                    <td><input id="ResidentialAreaName" name="ResidentialAreaName" type="text" class="detail-input" /></td>
+                    <td><span class="text-color-red">*</span></td>
+                    <td>小区地址</td>
+                    <td><input type="text" id="ResidentialAddress" name="ResidentialAddress" class="detail-input" /></td>
+                    <td>&nbsp;</td>
+                    <td>项目地址</td>
+                    <td colspan="4"><input id="ProjectAddress" name="ProjectAddress" type="text" class="detail-input" /></td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>建筑面积</td>
+                    <td><input id="BuildingArea" name="BuildingArea" type="text" class="detail-input" /></td>
+                    <td>(㎡)</td>
+                    <td>询值单价</td>
+                    <td><input id="InquiryPrice" name="InquiryPrice" type="text" class="detail-input" /></td>
+                    <td>(元/㎡)</td>
+                    <td>询值总价</td>
+                    <td><input id="InquiryResult" name="InquiryResult" type="text" class="detail-input" /></td>
+                    <td>(万元)</td>
+                    <td>建成年代</td>
+                    <td><input id="BuildedYear" name="BuildedYear" type="text" class="detail-input" /></td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>紧急程度</td>
+                    <td>
+                        <select id="EmergencyLevel" name="EmergencyLevel" class="detail-input">
+                            <option value="普通">普通</option>
+                            <option value="紧急">紧急</option>
+                            <option value="加急">加急</option>
+                        </select>
+                    </td>
+                    <td>&nbsp;</td>
+                    <td>贷款机构</td>
+                    <td><input id="CreditBank" name="CreditBank" type="text" class="detail-input" /></td>
+                    <td>&nbsp;</td>
+                    <td>贷款支行</td>
+                    <td><input id="CreditSubbranch" name="CreditSubbranch" type="text" class="detail-input" /></td>
+                    <td>&nbsp;</td>
+                    <td>贷款信息</td>
+                    <td><input id="CreditInfo" name="CreditInfo" type="text" class="detail-input" /></td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>估价委托方</td>
+                    <td><input id="Principal" name="Principal" type="text" class="detail-input" /></td>
+                    <td colspan="10">&nbsp;</td>
+
+                </tr>
+            </table>
+        </div>
+
+        <div class="detail mar_t_20">
+            <h3>勘察事项</h3>
+            <div class="matter">
+                <table width="22%" class="f-fl mar-tb-3">
+                    <tr>
+                        <td style="width: 65px;">是否勘察</td>
+                        <td>
+                            <input type="radio" name="IsProspecting" value="true" />是
+                            <input type="radio" name="IsProspecting" value="false" checked="checked" />否
+                        </td>
+                        @*<td><input type="checkbox" /></td>
+                            <td></td>
+                            <td><label>是</label></td>
+                            <td><input type="checkbox" /></td>*@
+                    </tr>
+                </table>
+                <table width="45%" class="f-fl">
+                    <tr>
+                        <td width="10%" style="text-align:right">外业人员</td>
+                        <td width="17%">
+                            <select id="Investigator" name="Investigator" class="detail-input" disabled="disabled">
+                                @foreach (var item in ViewBag.OutTaskUserList)
+                                {
+                                    <option value="@item.Value">@item.Value</option>
+                                }
+                            </select>
+                        </td>
+                        <td width="8%" style="text-align:right">勘察表</td>
+                        <td width="25%">
+                            <select id="OutSurveyTableId" name="OutSurveyTableId" class="detail-input" disabled="disabled">
+                                @foreach (var item in ViewBag.DataDefinesList)
+                                {
+                                    <option value="@item.Key">@item.Value</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="matter">
+                <div class="f-fl mar-r-3" style="width: 75%;">
+                    <table id="ExplorationContactsTb" width="100%" cellpadding="0" cellspacing="0" class="matter-tab">
+                        <thead>
+                            <tr>
+                                <td width="20%">默认联系人</td>
+                                <td width="30%">看房联系人</td>
+                                <td width="30%">联系人电话</td>
+                                <td width="20%">操作</td>
+                            </tr>
+                        </thead>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="f-fl" style="width: 20%;">
+                    <button type="button" class="matter-btn-1" id="addcontacts">添加联系人</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="matter-bz mar_t_20">
+            <table width="98%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                    <td width="6%" style="font-size:12px; text-align: center; background:#ccc">立项备注</td>
+                    <td width="94%">
+                        <textarea id="Remark" name="Remark" class="matter-sr"></textarea>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+    <div class="matter-btn"><button type="button" class="matter-btn-2" id="btn_add" onclick="Save(false)">立项</button><button type="button" class="matter-btn-2" id="btn_add" onclick="Save(true)">立项转报告</button><button type="button" class="matter-btn-2" id="extraction">提取信息</button><button type="button" class="matter-btn-2" id="btn_update" onclick="Save()">保存</button></div>
+
+</div>
+<div class="layer_notice" style="display: none;" id="addform">
+    <h2><i class="fa fa-close pull-right" style="" onclick="cancel()"></i><span style="">看房联系人</span></h2>
+    <form id="Contacts">
+        <table>
+            <tr><td align="right">联系人:</td><td><input type="text" name="contactsnames" id="contactsnames" style="width: 200px" /><span class="text-color-red">*</span></td></tr>
+            <tr><td colspan="2">&nbsp;</td></tr>
+            <tr><td align="right">联系电话:</td><td><input type="text" name="contactsTel" id="contactsTel" style="width: 200px" /><span class="text-color-red">*</span></td></tr>
+            <tr><td colspan="2" align="center"><button type="button" class="btn-blue" style="margin-top:20px;" onclick="ShowingsAdd()">保存</button></td></tr>
+        </table>
+    </form>
+</div>
+@*<div class="layer_notice" style="display: none;" id="extractiondialog">
+        <h2><i class="fa fa-close pull-right" style="" onclick="cancelextractiondialog()"></i><span style="">选择项目</span></h2>
+        <form id="selected">
+            <table class="sm"><tr><td class="left">流水号</td><td><input type="text" value="" id="Search_ProjectNo" name="Search_ProjectNo" /></td><td class="left">报告号</td><td><input type="text" value="" id="Search_ReportNo" name="Search_ReportNo" /></td><td class="left">小区名称</td><td><input type="text" value="" id="Search_ResidentialAreaName" name="Search_ResidentialAreaName" /></td><td class="left">项目地址</td><td><input type="text" value="" id="Search_ProjectAddress" name="Search_ProjectAddress" /></td><td style="width:auto"><button type="button" class="btn btn-sm btn-search" id="search"><span class="search-icon btn-icon" onclick="SearchProject()"></span>查询</button><button type="button" class="project-btn-4" id="">确认选择</button></td></tr></table>
+        </form>
+        <table id="tablist"></table>
+    </div>*@
+<script type="text/javascript">
+    var index, extraction, dialog;
+    $(function () {
+
+        $("#frm1").validate({
+            onkeyup:false,
+            rules: {
+                //客户手机
+                CustomerTel: {
+                    isMobile: true,
+                },
+                //固定电话
+                CustomerPhone: {
+                    isTel: true,
+                },
+                //客户姓名
+                Customername: {
+                    stringCheck: true,
+                    maxlength: 50,
+                    required: true
+                },
+                //客户qq
+                CustomerQQ: {
+                    isDigits: true,
+                    maxlength: 15,
+                    minlength: 5
+                },
+                //报告编号
+                ReportNo: {
+                    maxlength: 20,
+                },
+                //项目来源
+                ProjectSource: {
+                    required: true
+                },
+                //项目分类
+                ProjectClassificat: {
+                    required: true
+                },
+                //报告类型
+                ReportType: {
+                    required: true
+                },
+                //估价目的
+                BusinessType: {
+                    required: true
+                },
+                //物业类型
+                PropertyType: {
+                    required: true
+                },
+                //城市
+                City: {
+                    maxlength: 20,
+                },
+                //行政区
+                District: {
+                    maxlength: 20,
+                },
+                //小区名称
+                ResidentialAreaName: {
+                    required: true,
+                    maxlength: 50
+                },
+                //小区地址
+                ResidentialAddress: {
+                    maxlength: 50
+                },
+                //项目地址
+                ProjectAddress: {
+                    maxlength: 100
+                },
+                //建筑面积
+                BuildingArea: {
+                    posintdec: true
+                },
+                //询值单价
+                InquiryPrice: {
+                    posintdec: true
+                },
+                //询值总价
+                InquiryResult: {
+                    posintdec: true
+                },
+                //建成年代
+                BuildedYear: {
+                    maxlength: 4,
+                    minlength: 4,
+                    isDigits: true,
+                },
+                //贷款银行
+                CreditBank: {
+                    maxlength: 50
+                },
+                //贷款支行
+                CreditSubbranch: {
+                    maxlength: 50
+                },
+                //贷款信息
+                CreditInfo: {
+                    maxlength: 50
+                },
+                //估价委托方
+                Principal: {
+                    maxlength: 50
+                },
+                //外业人员
+                Investigator: {
+                    ISInvestigatorNULL: true
+                },
+                //勘察表
+                OutSurveyTableId: {
+                    ISInvestigatorNULL: "请选中勘察表"
+                },
+                //项目备注
+                Remark: {
+                    maxlength: 255
+                }
+            },
+            messages: {
+                CustomerTel: {
+                    isMobile: "输入正确格式的手机号"
+                },
+                CustomerPhone: {
+                    isTel: "输入输入正确格式电话号码"
+                },
+                customername: {
+                    required: "请输入客户姓名",
+                    stringCheck: "请输入正确格式的客户姓名",
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                CustomerQQ: {
+                    isDigits: "请输入正确格式qq号码",
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的qq号码"),
+                    minlength: jQuery.validator.format("请输入一个长度最少是 {0} 的qq号码")
+                },
+                ReportNo: {
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的报告编号"),
+                },
+                ProjectSource: {
+                    required: "请选择项目来源"
+                },
+                ProjectClassificat: {
+                    required: "请选择项目分类"
+                },
+                ReportType: {
+                    required: "请选择报告类型"
+                },
+                BusinessType: {
+                    required: "请选择估价目的"
+                },
+                PropertyType: {
+                    required: "请选择物业类型"
+                },
+                City: {
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的城市名称"),
+                },
+                District: {
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的行政区名称"),
+                },
+                ResidentialAreaName: {
+                    required: "请输入小区名称",
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的小区名称"),
+                },
+                ResidentialAddress: {
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的小区地址"),
+                },
+                ProjectAddress: {
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的项目地址地址"),
+                },
+                BuildingArea: {
+                    posintdec: "必须数字(最多输入两位小数)"
+                },
+                InquiryPrice: {
+                    posintdec: "必须数字(最多输入两位小数)"
+                },
+                InquiryResult: {
+                    posintdec: "必须数字(最多输入两位小数)"
+                },
+                BuildedYear: {
+                    isDigits: "请输入正确格式建成年代",
+                    maxlength: jQuery.validator.format("请输入正确格式建成年代"),
+                    minlength: jQuery.validator.format("请输入正确格式建成年代"),
+                },
+                CreditBank: {
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的贷款银行")
+                },
+                CreditSubbranch: {
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的贷款支行")
+                },
+                CreditInfo: {
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的贷款信息")
+                },
+                Principal: {
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的估价委托方")
+                },
+                Investigator: {
+                    ISInvestigatorNULL: "请选择外业人员"
+                },
+                OutSurveyTableId: {
+                    ISInvestigatorNULL: "请选中勘察表"
+                },
+                Remark: {
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的项目备注")
+                }
+            },
+            success: function (label) {
+                layer.close(dialog);
+                $("#" + label[0].htmlFor).removeClass("error-border");
+            },
+            errorPlacement: function (error, element) {
+                $("#" + element[0].id).addClass("error-border");
+                dialog = layer.tips(error[0].innerHTML, "#" + element[0].id, {
+                    tips: [2, '#F99228']
+                });
+            }
+        });
+
+        $("#Contacts").validate({
+            rules: {
+                contactsnames: {
+                    required: true,
+                    maxlength: 20
+                },
+                contactsTel: {
+                    required: true,
+                    isMobile: true
+                }
+            },
+            message: {
+                contactsnames: {
+                    required: "请输入联系人",
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的请看房联系人")
+                },
+                contactsTel: {
+                    required: "请输入联系电话",
+                    isMobile: "请输入联系电话",
+                }
+            },
+            success: function (label) {
+                layer.close(dialog);
+                $("#" + label[0].htmlFor).removeClass("error-border");
+            },
+            errorPlacement: function (error, element) {
+                $("#" + element[0].id).addClass("error-border");
+                dialog = layer.tips(error[0].innerHTML, "#" + element[0].id, {
+                    tips: [2, '#F99228']
+                });
+            }
+        });
+
+        $("#selected").validate({
+            rules: {
+                lsh: {
+                    isDigits: true,
+                    maxlength: 20
+                },
+                bgh: {
+                    isDigits: true,
+                    maxlength: 20
+                },
+                xqmc: {
+                    maxlength: 30
+                },
+                xmdz: {
+                    maxlength: 100
+                }
+            },
+            message: {
+                lsh: {
+                    isDigits: "请输入正确流水号",
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的流水号")
+                },
+                bgh: {
+                    isDigits: "请输入正确报告号",
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的报告号")
+                },
+                xqmc: {
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的小区名称")
+                },
+                xmdz: {
+                    maxlength: jQuery.validator.format("请输入一个长度最多是 {0} 的项目地址")
+                }
+            },
+            success: function (label) {
+                layer.close(dialog);
+                $("#" + label[0].htmlFor).removeClass("error-border");
+            },
+            errorPlacement: function (error, element) {
+                $("#" + element[0].id).addClass("error-border");
+                dialog = layer.tips(error[0].innerHTML, "#" + element[0].id, {
+                    tips: [2, '#F99228']
+                });
+            }
+        });
+
+
+        //提取信息
+        $("#extraction").click(function () {
+
+            //var oTable = new TableInit();
+            //oTable.Init();
+            extraction = layer.open({
+                type: 2,
+                shade: [0.5, "#070707"],
+                closeBtn: 0,
+                area: ['1000px', '520px'],
+                title: false, //不显示标题
+                content: '/Acceptance/ProjectList'
+            });
+        });
+
+    });
+
+    function cancelextractiondialog() {
+        layer.close(extraction);
+    }
+
+    function LoadProjectFromInquiry() {
+        if ("@Request.QueryString["from"]" == "AddInquiry") {
+            $('#CustomerName').val("@Request.QueryString["CustomerName"]");
+            $('#CustomerTel').val("@Request.QueryString["Tel"]");
+            $('#CustomerPhone').val("@Request.QueryString["Phone"]");
+            $('#CustomerBank').val("@Request.QueryString["Bank"]");
+            $('#CustomerSubbranch').val("@Request.QueryString["Subbranch"]");
+            $('#CustomerQQ').val("@Request.QueryString["QQ"]");
+            //$('#PropertyType').val("@Request.QueryString["PropertyType"]");
+            $('#City').val("@Request.QueryString["City"]");
+            $('#District').val("@Request.QueryString["District"]");
+            $('#ResidentialAreaName').val("@Request.QueryString["ResidentialAreaName"]");
+            //$('#ResidentialAddress').val("@Request.QueryString["ResidentialAddress"]");
+            $('#ProjectAddress').val("@Request.QueryString["ResidentialAddress"]");
+            $('#BuildingArea').val("@Request.QueryString["BuildingArea"]");
+            $('#InquiryPrice').val("@Request.QueryString["InquiryPrice"]");
+            $('#InquiryResult').val("@Request.QueryString["InquiryResult"]");
+            $('#BuildedYear').val("@Request.QueryString["BuildedYear"]");
+            //$('#InquirySource').val("@Request.QueryString["InquirySource"]");
+            RegionChange("@Request.QueryString["District"]");
+            //$("#btn_update").hide();
+        } else {
+            showLoadingTips();
+            $.ajax({
+                type: "post",
+                url: "/Inquiry/GetInquiry",
+                data: { inquiryId: InquiryId },
+                success: function (data) {
+                    if (data.Customer != null) {
+                        $('#CustomerName').val(data.Customer.CustomerName);
+                        $('#CustomerTel').val(data.Customer.Tel);
+                        $('#CustomerPhone').val(data.Customer.Phone);
+                        $('#CustomerBank').val(data.Customer.Bank);
+                        $('#CustomerSubbranch').val(data.Customer.Subbranch);
+                        $('#CustomerQQ').val(data.Customer.QQ);
+                    }
+                    //$('#PropertyType').val(data.PropertyType == null ? "" : data.PropertyType);
+                    $('#City').val(data.City);
+                    $('#ResidentialAreaName').val(data.ResidentialAreaName);
+                    $('#ResidentialAddress').val(data.ResidentialAddress);
+                    $('#ProjectAddress').val(data.Address);
+                    $('#BuildingArea').val(data.BuildingArea);
+                    $('#InquiryPrice').val(data.InquiryPrice);
+                    $('#InquiryResult').val(data.InquiryResult);
+                    $('#BuildedYear').val(data.BuildedYear);
+                    RegionChange(data.District == null ? "" : data.District);
+                },
+                complete: function(XmlHttpRequest, textStatus) {
+                    hideLoadingTips();
+                }
+            });
+        }
+    }
+
+    jQuery.validator.addMethod("ISInvestigatorNULL", function (value) {
+
+        if ($("input[name='IsProspecting']:checked").val() === "true") {
+            if (value === "" || value === null) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }, "请选择外业人员");
+
+    //建筑面积
+    $(document).on("keyup", "#BuildingArea", function () {
+        //面积
+        var $BuildingArea = $(this).val();
+        //单价
+        var $InquiryPrice = $("#InquiryPrice").val();
+
+        var reg = new RegExp("^\\d+(\\.\\d+)?$");
+        if ((reg.test($BuildingArea)) && (reg.test($InquiryPrice)) && $BuildingArea != "" && $InquiryPrice != "") {
+            $("#InquiryResult").val((parseFloat($BuildingArea) * parseFloat($InquiryPrice) / 10000).toFixed(2));
+        } else {
+            $("#InquiryResult").val("");
+        }
+    });
+
+    //单价
+    $(document).on("keyup", "#InquiryPrice", function () {
+        //单价
+        var $InquiryPrice = $(this).val();
+        //面积
+        var $BuildingArea = $("#BuildingArea").val();
+
+        var reg = new RegExp("^\\d+(\\.\\d+)?$");
+        if ((reg.test($BuildingArea)) && (reg.test($InquiryPrice)) && $BuildingArea != "" && $InquiryPrice != "") {
+            $("#InquiryResult").val((parseFloat($BuildingArea) * parseFloat($InquiryPrice) / 10000).toFixed(2));
+        } else {
+            $("#InquiryResult").val("");
+        }
+    });
+
+    $("#BuildingArea").blur(function () {
+        var reg = new RegExp("^\\d+(\\.\\d+)?$");
+        if (reg.test(this.value)) {
+            this.value = parseFloat(this.value).toFixed(2);
+        }
+    });
+</script>

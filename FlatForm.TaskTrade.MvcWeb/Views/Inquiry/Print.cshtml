@@ -1,0 +1,135 @@
+﻿@{
+     ViewBag.Title = "询价单打印";
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+
+<table style="" class="allquiry">
+    <tr>
+        <td colspan="5" style="text-align: center; font-size: 30px; border-bottom-width:0px;"><strong>房地产抵押评估询价单</strong></td>
+    </tr>
+    <tr>
+        <td colspan="5" style=" border-top-width:0px;" align="right">询字第<label id="InquiryNo"></label>号 &nbsp;</td>
+    </tr>
+    <tr>
+        <td><b>估价使用方</b></td>
+        <td colspan="4"><label id="AppraiseUse"></label></td>
+    </tr>
+    <tr>
+
+        <td><b>估价委托人</b></td>
+        <td colspan="4"><label id="AppraiseDelegatePerson"></label></td>
+    </tr>
+    <tr>
+        <td><b>估价对象</b></td>
+        <td colspan="4"><label id="Address"></label></td>
+    </tr>
+    <tr>
+        <td ><b>估价目的</b></td>
+        <td colspan="4">
+            <label id="AppraisePurposeDesc"></label> 
+        </td>
+    </tr> 
+    <tr>
+        <td><b>价值时点</b></td>
+        <td colspan="4"> <label id="AppraiseDate"></label> </td>
+    </tr>
+    <tr>
+        <td rowspan="4" width="20%"><b>基础信息</b></td>
+        <td width="20%"><b>小区名称</b></td>
+        <td width="20%"><label id="ResidentialAreaName"></label></td>
+        <td width="20%"><b>建筑面积</b></td>
+        <td width="20%"><label id="BuildingArea"></label></td>
+    </tr>
+    <tr>
+        <td>设定朝向</td>
+        <td><label id="Toword"></label></td>
+        <td>设定房屋结构</td>
+        <td><label id="HouseStruct"></label></td>
+    </tr>
+    <tr>
+        <td>设定用途</td>
+        <td><label id="SetPurpose"></label></td>
+        <td>设定其他</td>
+        <td><label id="SetOther"></label></td>
+    </tr>
+    <tr>
+        <td ><b>是否存在抵押</b></td>  
+        <td colspan="4"><label id="MortgageDesc"></label> </td>
+    </tr>
+    <tr>
+        <td rowspan="6"><b>估价结果</b></td>
+        <td>单价</td>
+        <td colspan="3">¥：<label id="InquiryPrice"></label>元/平方米</td>
+    </tr>
+    <tr>
+        <td>总价</td>
+        <td colspan="3">¥：<label id="InquiryResult"></label>万元</td>
+    </tr>
+    <tr>
+        <td>大写金额</td>
+        <td colspan="3">¥：<label id="UpperAmount"></label>元</td>
+    </tr>
+    <tr>
+        <td>预计处置税费</td>
+        <td colspan="3">¥：<label id="DisposeFee"></label>万元</td>
+    </tr>
+    <tr>
+        <td>应补地价</td>
+        <td colspan="3">¥：<label id="LandPremium"></label>万元</td>
+    </tr>
+    <tr>
+        <td>扣后净值</td>
+        <td colspan="3">¥：<label id="MinusNetWorth"></label>万元</td>
+    </tr>
+    <tr>
+        <td ><b>特殊事项说明</b></td>
+   
+        <td colspan="4">
+            <div style="width:100%;" id="SpecialRemark">
+                <ul></ul>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td><b>询价单有效期</b></td>
+        <td colspan="4">
+            本价格咨询自出具之日起<span id="ValidityDate">三个月</span>内有效，但在此期间市场变化较快或国家经济形式、城市规划、相关税费和银行利率发生变化，估价结果应重新评估。
+        </td>
+    </tr>
+    <tr>
+        <td colspan="5" align="right" style="border-width:0px;">评估机构名称：<label id="AppraiseOrg" style="width: 120px; text-align: left;"></label></td>
+    </tr>
+    <tr>
+        <td colspan="5" align="right" style="border-width:0px;">估价单出具日期：<label id="IssueDate" style="width: 120px;text-align:left;"></label></td>
+    </tr>
+    <tr style="border-width:0px;">
+            <td align="right" colspan="5" style="border-width:0px;"><span style="margin-right:140px">（盖章）</span></td>
+        </tr>
+     
+</table>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (opener && opener.printData) {
+            $(".allquiry").find("label").each(function () {
+                var id = $(this).attr("id");
+                if (opener.printData[id]) {
+                    $(this).html(opener.printData[id]);
+                }
+            });
+
+            SpecialRemarkHtml(opener.printData.SpecialRemark);
+            if (opener.printData["EffectivePeriod"]) {
+                $("#ValidityDate").text(opener.printData["EffectivePeriod"]);
+            }
+        }
+      
+    });
+
+    function SpecialRemarkHtml(arry) {
+        var str = "";
+        for (var i = 0; i < arry.length; i++) {
+            str += "<li>" + arry[i] + "</li>";
+        }
+        $("#SpecialRemark ul").html(str);
+    }
+</script>

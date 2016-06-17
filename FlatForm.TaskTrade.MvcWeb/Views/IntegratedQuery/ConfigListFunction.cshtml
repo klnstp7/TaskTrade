@@ -1,0 +1,198 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+
+@*<ul class="m-crm">
+    <li><a href="@Url.Action("Welcome", "Home")"><i class="fa fa-home"></i>&nbsp;&nbsp;首页</a> <span class="divider">&gt;</span></li>
+    <li><a href="@Url.Action("Index", "IntegratedQuery")">&nbsp;&nbsp;综合查询</a> <span class="divider">&gt;</span></li>
+    <li>方案配置</li>
+</ul>*@
+
+<div class="report-tab">
+    <form id="searchinfo">
+        <input type="hidden" id="FuncCode" name="FuncCode" />
+        <table border="0" cellspacing="0" cellpadding="0" class="business">
+            <tr>
+                <td><button type="button" id="add" class="project-btn-3">新建方案</button>@*方案类型：*@</td>
+                <td>
+                    @*<select class="report-input" name="queryType" id="queryType">
+                        <option value="全部">全部</option>
+                        <option value="列表">列表</option>
+                        <option value="导出">导出</option>
+                    </select>*@
+                    <input type="hidden" name="queryType" id="queryType" value="列表">
+                </td>
+                <td>@*<button type="submit" class="business-btn-1" id="search" name="search">查询</button>*@</td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
+    <table id="table"></table>
+</div>
+
+
+<script type="text/javascript">
+    var set;
+    $(function () {
+        $("#FuncCode").val("@Request.QueryString["FunCode"]");
+        //初始化列表
+        //1.初始化Table
+        tabint();
+        $('#search').click(Search);
+        //添加方案
+        $("#add").click(function() {
+            layer.open({
+                type: 2,
+                title: '添加配置方案',
+                area: ['400px', '280px'],
+                content: '/IntegratedQuery/AddConfigListFunction?FuncCode=' + $("#FuncCode").val()
+            });
+        });
+        $(window).resize(function() {
+            $('#table').bootstrapTable('resetWidth', '100%');
+        });
+
+    });
+
+    function edit(id) {
+        layer.open({
+            type: 2,
+            title: '修改配置方案',
+            area: ['400px', '280px'],
+            content: '/IntegratedQuery/AddConfigListFunction?SolutionId=' + id
+        });
+    }
+
+    function del(id) {
+        layer.confirm('亲！确定要删除当前方案吗？', {
+            btn: ['确定', '取消'] //按钮
+        }, function(index) {
+            $.ajax({
+                url: "/IntegratedQuery/DeleteSolution",
+                data: { SolutionId: id },
+                type: "post",
+                success: function(data) {
+                    //alert(data.message);
+                    layer.msg(data.message, { icon: 1, time: 1000, shade: [0.3, '#000'] });
+                    if (data.success)
+                        Search();
+                    layer.close(index);
+                }
+            });
+        }, function(index) {
+            layer.close(index);
+        });
+    }
+
+    function setdefault(id,SolutionType) {
+        layer.confirm('亲！确定要将当前方案设置为默认方案吗？', {
+            btn: ['确定', '取消'] //按钮
+        }, function(index2) {
+            $.ajax({
+                url: "/IntegratedQuery/SetSolutionIsDefault",
+                data: { SolutionId: id, SolutionType: SolutionType },
+                type: "post",
+                success: function(data) {
+                    layer.msg(data.message, { icon: 1, time: 1000, shade: [0.3, '#000'] });
+                    if (data.success)
+                        Search();
+                    layer.close(index2);
+                }
+            });
+        }, function(index2) {
+            layer.close(index2);
+        });
+    }
+
+    function setmyconfig(id, solutiontype) {
+        set = layer.open({
+            type: 2,
+            title: '设置我的方案',
+            area: ['1000px', '450px'],
+            offset: ['0px'],
+            content: '/IntegratedQuery/SetMyConfigListFunction?SolutionId=' + id + "&FuncCode=" + $("#FuncCode").val() + "&Solutiontype=" + solutiontype
+
+        });
+
+    }
+
+    function Search() {
+        $('#table').bootstrapTable("destroy");
+        tabint();
+    }
+
+
+    function tabint() {
+        $('#table').bootstrapTable({
+            url: '/IntegratedQuery/GetSolutionList', //请求后台的URL（*）
+            method: 'post', //请求方式（*）
+            striped: true, //是否显示行间隔色
+            cache: false, //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true, //是否显示分页（*）
+            queryParams:function(params) {
+                return {
+                    SolutionType: $('#queryType').val(),
+                    FunCode: $("#FuncCode").val(),
+                    pageSize: params.limit, //页面大小
+                    pageNumber: params.offset / params.limit + 1, //页码 
+                };
+            }, //传递参数（*）
+            sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1, //初始化加载第一页，默认第一页
+            pageSize: 10, //每页的记录行数（*）
+            pageList: [10, 25, 50, 100], //可供选择的每页的行数（*）
+            strictSearch: true,
+            clickToSelect: true, //是否启用点击选中行
+            height: 'auto', //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "tid", //每一行的唯一标识，一般为主键列
+            cardView: false, //是否显示详细视图
+            detailView: false, //是否显示父子表
+            columns: [
+                {
+                    title: '方案名称',
+                    field: 'SolutionName',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '10%'
+                },
+                //{
+                //    title: '方案类型',
+                //    field: 'SolutionType',
+                //    align: 'left',
+                //    valign: 'middle',
+                //    width: '25%'
+                //},
+                {
+                    title: '是否默认',
+                    field: 'IsDefault',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '8%'
+                },
+                {
+                    title: '备注',
+                    field: 'Remark',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '8%'
+                },
+                {
+                    title: '操作',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '25%',
+                    formatter: function (value, row, index) {
+                        var a = '<a href="javascript:;" onClick="edit(' + row.tid + ')">编辑</a> ';
+                        a += '<a href="javascript:;" onClick="del(' + row.tid + ')">删除</a> ';
+                        if (row.IsDefault == "否")
+                            a += '<a href="javascript:;" onClick="setdefault(' + row.tid + ',' + row.SolutionTypeEnum + ')">设置默认</a> ';
+                        a += '<a href="javascript:;" onClick="setmyconfig(' + row.tid + ',' + row.SolutionTypeEnum + ')">设置我的方案</a> ';
+                        return a;
+                    }
+                }
+            ]
+        });
+ 
+
+    }
+</script>

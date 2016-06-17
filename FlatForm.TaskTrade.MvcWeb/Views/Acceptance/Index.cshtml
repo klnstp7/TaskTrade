@@ -1,0 +1,365 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+<script src="~/Content/plug-in/jquery/jquery.form.js"></script>
+@*<ul class="m-crm">
+    <li><a href="@Url.Action("Welcome", "Home")"><i class="fa fa-home"></i>&nbsp;&nbsp;首页</a> <span class="divider">&gt;</span></li>
+    <li>业务受理</li>
+</ul>*@
+<div class="report-tab">
+    <form id="frm1">
+        <table border="0" cellspacing="0" cellpadding="0" class="report">
+            <tr>
+                <td>流水号：</td>
+                <td><input id="ProjectNo" name="ProjectNo" type="text" class="business-input" /></td>
+                <td>报告编号：</td>
+                <td><input id="ReportNo" name="ReportNo" type="text" class="business-input" /></td>
+                <td>项目地址：</td>
+                <td><input id="ProjectAddress" name="ProjectAddress" type="text" class="business-input" /></td>
+                <td>小区名称：</td>
+                <td><input id="ResidentialAreaName" name="ResidentialAreaName" type="text" class="business-input" /></td>
+                <td><button type="button" class="business-btn-1" onclick="Search()">查询</button></td>
+                <td><button type="button" class="accepted-btn-2" id="addproject" tag="@Url.Action("AddingProject", "Acceptance")" onclick="changeIframe('AddingProject_Acceptance','添加立项','@Url.Action("AddingProject", "Acceptance")')">立项</button></td>
+            </tr>
+            <tr>
+                <td>估价目的：</td>
+                <td>
+                    <select id="BusinessType" name="BusinessType" class="business-input">
+                        <option></option>
+                        @foreach (var item in ViewBag.BusinessTypeList)
+                        {
+                        <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </td>
+                @*<td>项目类型：</td>
+                <td>
+                    <select id="ProjectType" name="ProjectType" class="business-input">
+                        <option></option>
+                        @foreach (var item in ViewBag.ProjectTypeList)
+                        {
+                        <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </td>*@
+                <td>项目来源：</td>
+                <td>
+                    <select id="ProjectSource" name="ProjectSource" class="business-input">
+                        <option></option>
+                        @foreach (var item in ViewBag.ProjectSourceList)
+                        {
+                        <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+
+                </td>
+                <td>物业类型：</td>
+                <td>
+                    <select id="PropertyType" name="PropertyType" class="business-input">
+                        <option></option>
+                        @foreach (var item in ViewBag.PropertyTypeList)
+                        {
+                        <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </td>
+                <td>估价委托方：</td>
+                <td><input id="Principal" name="Principal" type="text" class="business-input" /></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>受理人：</td>
+                <td><input id="ProjectCreatorName" name="ProjectCreatorName" type="text" class="business-input" /></td>
+                <td>受理时间：</td>
+                <td colspan="3"><input type="text" class="business-input laydate-icon" id="ProjectCreatorTimeStart" readonly="readonly" /> <span class="input_span">至</span><input type="text" class="business-input laydate-icon" id="ProjectCreatorTimeEnd" readonly="readonly" /></td>
+                
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
+    <table id="table"></table>
+</div>
+<script type="text/javascript">
+    var index, dialog;
+    var ReportWebUrl = '@ViewBag.ReportCreaUrl';
+    var ReportLogInUrl = '@ViewBag.ReportLogInUrl';
+
+    $(function () {
+        //初始化列表
+        tableint();
+
+       var  ProjectCreatorTimeStart =     {
+            elem: '#ProjectCreatorTimeStart',
+            format: 'YYYY-MM-DD',
+            min: '1799-06-16',
+            istoday: true,
+            max: laydate.now(),
+            choose: function(datas) {
+                ProjectCreatorTimeEnd.min = datas; //开始日选好后，重置结束日的最小日期
+                ProjectCreatorTimeEnd.start = datas; //将结束日的初始值设定为开始日
+            }
+        };
+        var ProjectCreatorTimeEnd = {
+            elem: '#ProjectCreatorTimeEnd',
+            format: 'YYYY-MM-DD',
+            istoday: true,
+            max: laydate.now(),
+            choose: function(datas) {
+                ProjectCreatorTimeStart.max = datas; //结束日选好后，重置开始日的最大日期
+            }
+        };
+        laydate(ProjectCreatorTimeStart);
+        laydate(ProjectCreatorTimeEnd);
+        $("#frm1").validate({
+            rules: {
+                //流水号
+                ProjectNo: {
+                    maxlength: 50
+                },
+                //报告编号
+                ReportNo: {
+                    maxlength: 50
+                },
+                //项目地址
+                ProjectAddress: {
+                    maxlength: 200
+                },
+                //小区名称
+                ResidentialAreaName: {
+                    maxlength: 100
+                }
+            },
+            messages: {
+                ProjectNo: {
+                    maxlength: jQuery.validator.format("亲,字符不用超过50个")
+                },
+                ReportNo: {
+                    maxlength: jQuery.validator.format("亲,字符不用超过50个")
+                },
+                ProjectAddress: {
+                    maxlength: jQuery.validator.format("亲,字符不用超过200个")
+                },
+                ResidentialAreaName: {
+                    maxlength: jQuery.validator.format("亲,字符不用超过100个")
+                }
+            },
+            success: function(label) {
+                layer.close(dialog);
+                $("#" + label[0].htmlFor).removeClass("error-border");
+            },
+            errorPlacement: function(error, element) {
+                $("#" + element[0].id).addClass("error-border");
+                dialog = layer.tips(error[0].innerHTML, "#" + element[0].id, {
+                    tips: [2, '#F99228']
+                });
+            }
+        });
+
+        $("#addproject").click(function() {
+            parent.$("#url").attr("src", $(this).attr("tag"));
+        });
+    });
+
+
+    function reviewed(row) {
+        index = layer.confirm('请问是否确定提交审核？', {
+            btn: ['是', '否'] //按钮
+        }, function () {
+            layer.closeAll();
+            showLoadingTips();
+            $.ajax({
+                type: "get",
+                url: "/Acceptance/ComitAudit?ProjectId=" + row,
+                dataType: "json",
+                success: function (data) {
+                    if (data != null && data.Success == true) {
+                        layer.msg("提交成功！", { icon: 1, shade: [0.3, '#000'] }, function () {
+                            Search();
+                        });
+
+                    } else {
+                        layer.msg(data.Message, { icon: 2, shade: [0.3, '#000'] });
+                    }                    
+                },
+                complete: function (XmlHttpRequest, textStatus) {
+                    hideLoadingTips();
+                },
+            });
+        }, function() {
+            layer.close(index);
+        });
+    }
+
+    function Search() {
+        if ($("#frm1").valid()) {
+            $('#table').bootstrapTable('destroy');
+            tableint();
+        }
+    }
+
+    function tableint() {
+        $('#table').bootstrapTable({
+            url: '/Acceptance/GetProjectList', //请求后台的URL（*）
+            method: 'post', //请求方式（*）
+            toolbar: '#toolbar', //工具按钮用哪个容器
+            striped: true, //是否显示行间隔色
+            cache: false, //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true, //是否显示分页（*）
+            sortable: false, //是否启用排序
+            sortOrder: "asc", //排序方式
+            queryParams: function (params) {
+                return {
+                    //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+                    condition:
+                    {
+                        ProjectNo: $("#ProjectNo").val(),
+                        ReportNo: $("#ReportNo").val(),
+                        ProjectAddress: $("#ProjectAddress").val(),
+                        ResidentialAreaName: $("#ResidentialAreaName").val(),
+                        BusinessType: $("#BusinessType").val(),
+                        ProjectSource: $("#ProjectSource").val(),
+                        ProjectType: $("#ProjectType").val(),
+                        PropertyType: $("PropertyType").val(),
+                        ProjectCreatorName: $("#ProjectCreatorName").val(),
+                        ProjectCreatorTimeStart: $("#ProjectCreatorTimeStart").val(),
+                        ProjectCreatorTimeEnd: $("#ProjectCreatorTimeEnd").val(),
+                        Principal: $("#Principal").val()
+                    },
+                    pageSize: params.limit, //页面大小
+                    pageIndex: parseInt(params.offset / params.limit) + 1 //页码
+                };
+            }, //传递参数（*）
+            sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1, //初始化加载第一页，默认第一页
+            pageSize: 10, //每页的记录行数（*）
+            pageList: [10, 25, 50, 100], //可供选择的每页的行数（*）
+            strictSearch: true,
+            clickToSelect: true, //是否启用点击选中行
+            height: 'auto', //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "Id", //每一行的唯一标识，一般为主键列
+            cardView: false, //是否显示详细视图
+            detailView: false, //是否显示父子表
+            columns: [
+
+                {
+                    title: '流水号',
+                    field: 'ProjectNo',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '9%'
+                },
+                {
+                    title: '报告号',
+                    field: 'ReportNo',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '9%'
+                },
+                {
+                    title: '项目地址',
+                    field: 'ProjectAddress',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '17%'
+                },
+                {
+                    title: '小区名称',
+                    field: 'ResidentialAreaName',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '8%'
+                },
+                {
+                    title: '物业类型',
+                    field: 'PropertyType',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '8%'
+                },
+                {
+                    title: '估价目的',
+                    field: 'BusinessType',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '9%'
+                },
+                {
+                    title: '报告类型',
+                    field: 'ReportType',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '8%'
+                },
+                {
+                    title: '项目来源',
+                    field: 'ProjectSource',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '8%'
+                },
+                {
+                    title: '客户姓名',
+                    field: 'CustomerName',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '8%'
+                },
+                 {
+                     title: '创建时间',
+                     field: 'CreateTime',
+                     align: 'left',
+                     valign: 'middle',
+                     width: '90px'
+                 },
+                 {
+                     title: '是否提交审核',
+                     field: 'IsSubmitted',
+                     align: 'left',
+                     valign: 'middle',
+                     width: '90px'
+                 },
+                {
+                    title: '操作',
+                    align: 'left',
+                    valign: 'middle',
+                    width: '18%',
+                    formatter: function (value, row, index) {
+
+                        var ReportNo = row.ReportNo;
+                        if (ReportNo == null) {
+                            ReportNo = "";
+                        }
+
+                        var objop = "";
+                        if (row.IsSubmitted == "否") {
+                            objop += '<a href="JavaScript:void(0);" onclick="reviewed(\'' + row.Id + '\')">提交审核</a> ';
+                            objop += '<a href="JavaScript:void(0);" onclick=changeIframe("AddingProject_Acceptance","添加立项","/Acceptance/AddingProject?ProjectId=' + row.Id + '") >编辑</a> ';
+                        }
+                        else {
+                            objop += '<a href="JavaScript:void(0);" onclick=changeIframe("AddingProject_Acceptance","添加立项","/Acceptance/AddingProject?readonly=true&ProjectId=' + row.Id + '")>查看</a> ';
+                        }
+                        if (!row.IsSent) {
+                            var ReportUrl = ReportWebUrl;
+                            ReportUrl += "?ProjectNo=" + row.ProjectNo;
+                            ReportUrl += "&ReportNo=" + ReportNo;
+                            ReportUrl += "&BusinessType=" + encodeURI(row.BusinessType);//估价目的
+                            ReportUrl += "&ProjectType=" + encodeURI(row.PropertyType);//物业类型
+                            ReportUrl += "&ReportCategory=" + encodeURI(row.ReportType);//报告类型
+                            ReportUrl += "&CityName=" + encodeURI(row.City);
+                            ReportUrl += "&rand=" + MathRand();
+
+                            ReportUrl = ReportLogInUrl + "?data=" + escape(ReportUrl);
+                            objop += "<a href='" + ReportUrl + "' target='_blank' >线上报告</a>";
+                        }
+                        return objop;
+                    }
+                }
+            ]
+        });
+    }
+    function changeIframe(id,name,url){
+        parent.changeIframe(id,name,url);
+    }
+</script>

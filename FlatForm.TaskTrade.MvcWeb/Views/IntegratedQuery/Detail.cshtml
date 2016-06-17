@@ -1,0 +1,306 @@
+﻿@model Peacock.PEP.Model.DTO.SummaryDataModel
+@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+@*<ul class="m-crm">
+    <li><a href="@Url.Action("Welcome", "Home")"><i class="fa fa-home"></i>&nbsp;&nbsp;首页</a> <span class="divider">&gt;</span></li>
+    <li><a href="@Url.Action("Index", "IntegratedQuery")">&nbsp;&nbsp;综合查询</a> <span class="divider">&gt;</span></li>
+    <li>查看详情</li>
+</ul>*@
+<div>
+    <div class="detail no-bordered">
+        <table width="99%" border="0" cellspacing="0" cellpadding="0" class="project-info-xx">
+            <tr>
+                <td width="12%"><label>流水号：</label></td>
+                <td width="13%">@Model.Project.ProjectNo</td>
+                <td width="12%"><label>行政区：</label></td>
+                <td width="13%">@Model.Project.District</td>
+                <td width="12%"><label>小区名称：</label></td>
+                <td colspan="3">@Model.Project.ResidentialAreaName</td>
+
+            </tr>
+            <tr>
+                <td width="12%"><label>项目地址：</label></td>
+                <td colspan="3">@Model.Project.ProjectAddress</td>
+                <td width="12%"><label>小区地址：</label></td>
+                <td colspan="3">@Model.Project.ResidentialAddress</td>
+            </tr>
+            <tr>
+                <td width="12%"><label>项目来源：</label></td>
+                <td width="13%">@Model.Project.ProjectSource</td>
+                <td width="12%"><label>项目类型：</label></td>
+                <td width="13%">@Model.Project.ProjectType</td>
+                <td width="12%"><label>物业类型：</label></td>
+                <td width="13%">@Model.Project.PropertyType</td>
+                <td width="12%"><label>报告类型：</label></td>
+                <td width="13%">@Model.Project.ReportType</td>
+
+            </tr>
+            <tr>
+                <td width="12%"><label>紧急程度：</label></td>
+                <td width="13%">@Model.Project.EmergencyLevel</td>
+                <td width="12%"><label>贷款机构：</label></td>
+                <td width="13%">@Model.Project.CreditBank</td>
+                <td width="12%"><label>贷款支行：</label></td>
+                <td width="13%">@Model.Project.CreditSubbranch</td>
+                <td width="12%"><label>期贷信息：</label></td>
+                <td width="13%">@Model.Project.CreditInfo</td>
+
+            </tr>
+
+            <tr>
+
+                <td width="12%"><label>估价委托方：</label></td>
+                <td width="13%">@Model.Project.Principal</td>
+
+                <td width="12%"><label>询值单价：</label></td>
+                <td width="13%">@(Model.Project.InquiryPrice.HasValue ? string.Format("{0:f2}", Model.Project.InquiryPrice.Value) : "")</td>
+                <td width="12%"><label>询值总价：</label></td>
+                <td width="13%">@(Model.Project.InquiryResult.HasValue ? string.Format("{0:f2}", Model.Project.InquiryResult.Value) : "")</td>
+                <td width="12%"><label>所属机构：</label></td>
+                <td width="13%">@(Model.Project.Customer==null?"" :Model.Project.Customer.Bank)</td>
+            </tr>
+            <tr>
+                <td width="12%"><label>分支机构：</label></td>
+                <td width="13%">@(Model.Project.Customer == null ? "" : Model.Project.Customer.Subbranch)</td>
+                <td width="12%"><label>客户姓名：</label></td>
+                <td width="13%">@(Model.Project.Customer == null ? "" : Model.Project.Customer.CustomerName)</td>
+                <td width="12%"><label>客户手机：</label></td>
+                <td width="13%">@(Model.Project.Customer == null ? "" : Model.Project.Customer.Tel)</td>
+                <td width="12%"><label>客户电话：</label></td>
+                <td width="13%">@(Model.Project.Customer == null ? "" : Model.Project.Customer.Phone)</td>
+            </tr>
+            <tr>
+
+                <td width="12%"><label>客户QQ：</label></td>
+                <td width="13%">@(Model.Project.Customer == null ? "" : Model.Project.Customer.QQ)</td>
+                <td width="12%"><label>看房联系人：</label></td>
+                <td width="13%">@string.Join(",", Model.Project.ExplorationContacts.Select(c => c.Contacts).ToList())</td>
+                <td width="12%"><label>看房联系人电话：</label></td>
+                <td width="13%">@string.Join(",", Model.Project.ExplorationContacts.Select(c => c.Phone).ToList())</td>
+                <td width="12%"><label>是否勘察：</label></td>
+                <td width="13%">@(Model.Project.IsProspecting ? "是" : "否")</td>
+            </tr>
+
+            <tr>
+                <td width="12%"><label>立项备注：</label></td>
+                <td colspan="7">@Model.Project.Remark</td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div class="detail no-bordered">
+        <h3>汇总数据</h3>
+        <table width="99%" border="0" cellspacing="0" cellpadding="0" class="project-info-xx">
+            <tr>
+                <td width="12%"><label>所属公司：</label></td>
+                <td width="13%">@Model.Company</td>
+                <td width="12%"><label>所属部门：</label></td>
+                <td width="13%">@Model.Department</td>
+                <td width="12%"><label>报告年度：</label></td>
+                <td width="13%">@Model.ReportYear</td>
+                <td width="12%"><label>报告月度：</label></td>
+                <td width="13%">@Model.ReportMonth</td>
+            </tr>
+            <tr>
+                <td><label>报告编号：</label></td>
+                <td>@Model.ReportNo</td>
+                <td><label>项目名称：</label></td>
+                <td>@Model.ProjectName</td>
+                <td><label>估价目的：</label></td>
+                <td>@Model.EvalGoal</td>
+                <td><label>目的描述：</label></td>
+                <td>@Model.GoalDescription</td>
+            </tr>
+        </table>
+
+
+        <table width="99%" border="0" cellspacing="0" cellpadding="0" class="project-info-xx">
+            <tr>
+                <td width="12%"><label>项目所在省：</label></td>
+                <td width="13%">@Model.ProjectProvince</td>
+                <td width="12%"><label>项目所在市：</label></td>
+                <td width="13%">@Model.ProjectCity</td>
+                <td width="12%"><label>项目区县：</label></td>
+                <td width="13%">@Model.ProjectDistrict</td>
+                <td width="12%"><label>小区地址：</label></td>
+                <td width="13%">@Model.ResidentialAddress</td>
+            </tr>
+            <tr>
+                <td><label>余下地址：</label></td>
+                <td>@Model.OtherAddress</td>
+                <td><label>项目完整地址：</label></td>
+                <td>@Model.ProjectAddress</td>
+                <td><label>项目推广名：</label></td>
+                <td colspan="3">@Model.ProjectPopularizeName</td>
+            </tr>
+            <tr>
+                <td><label>估价委托人：</label></td>
+                <td>@Model.EvalEntrust</td>
+                <td><label>报告使用方：</label></td>
+                <td>@Model.ReportUse</td>
+                <td><label>支行：</label></td>
+                <td>@Model.Subbranch</td>
+                <td><label>报告有效期：</label></td>
+                <td>@Model.ReportValidityTerm</td>
+            </tr>
+            <tr>
+                <td><label>实地勘察期：</label></td>
+                <td>@(Model.SurveyTime.HasValue? string.Format("{0:yyyy-MM-dd}", Model.SurveyTime):"")</td>
+                <td><label>价值日期：</label></td>
+                <td>@(Model.WorthTime.HasValue ? string.Format("{0:yyyy-MM-dd}", Model.WorthTime) : "")</td>
+                <td><label>作业起始时间：</label></td>
+                <td>@(Model.JobStartTime.HasValue ? string.Format("{0:yyyy-MM-dd}", Model.JobStartTime) : "")</td>
+                <td><label>作业终止时间：</label></td>
+                <td>@(Model.JobEndTime.HasValue ? string.Format("{0:yyyy-MM-dd}", Model.JobEndTime) : "")</td>
+            </tr>
+            <tr>
+                <td><label>现场勘察员：</label></td>
+                <td>@Model.SurveyPeople</td>
+                <td><label>报告撰写人员：</label></td>
+                <td colspan="5">@Model.ReportWriting</td>
+            </tr>
+            <tr>
+                <td><label>估价师1：</label></td>
+                <td>@Model.QuantitySurveyor1</td>
+                <td><label>估价师2：</label></td>
+                <td>@Model.QuantitySurveyor2</td>
+                <td><label>估价师合并：</label></td>
+                <td colspan="3">@Model.QuantitySurveyorJoin</td>
+            </tr>
+            <tr>
+                <td><label>估价方法1：</label></td>
+                <td>@Model.EvalMethod1</td>
+                <td><label>估价方法2：</label></td>
+                <td>@Model.EvalMethod2</td>
+                <td><label>方法汇总：</label></td>
+                <td colspan="3">@Model.EvalMethodJoin</td>
+            </tr>
+            <tr>
+                <td><label>评估总价(万元)：</label></td>
+                <td>@Model.EvaluateTotal</td>
+                <td><label>评估单价(元/㎡)：</label></td>
+                <td colspan="5">@Model.EvaluatePrice</td>
+            </tr>
+            <tr>
+                <td><label>成交总价(万元)：</label></td>
+                <td>@Model.DealTotal</td>
+                <td><label>成交单价(元/㎡)：</label></td>
+                <td>@Model.DealPrice</td>
+                <td><label>交易日期：</label></td>
+                <td colspan="3">@string.Format("{0:yyyy-MM-dd}", Model.BusinessTime)</td>
+            </tr>
+            <tr>
+                <td><label>处置扣税额(万元)：</label></td>
+                <td>@Model.HandleTaxQuota</td>
+                <td><label>扣税口净值(万元)：</label></td>
+                <td colspan="5">@Model.TaxAfterNet</td>
+            </tr>
+            <tr>
+                <td><label>环线：</label></td>
+                <td>@Model.LoopLine</td>
+                <td><label>其他影响因素：</label></td>
+                <td colspan="5">@Model.OtherInfluenceFactor</td>
+            </tr>
+            <tr>
+                <td><label>补交出让金/综合地价款（元：</label></td>
+                <td>@Model.PayLeasing</td>
+                <td><label>优先受偿款：</label></td>
+                <td colspan="5">@Model.PriorityRepaymentInfo</td>
+            </tr>
+            <tr>
+                <td><label>物理结构是否变化：</label></td>
+                <td>@Model.PhysicalHasChanged</td>
+                <td><label>使用现状：</label></td>
+                <td colspan="5">@Model.StatusQuo</td>
+            </tr>
+        </table>
+
+        <table width="99%" border="0" cellspacing="0" cellpadding="0" class="project-info-xx">
+            <tr>
+                <td width="12%"><label>登记用途：</label></td>
+                <td width="13%">@Model.RegisterUse</td>
+                <td width="12%"><label>现状用途：</label></td>
+                <td width="13%">@Model.PresentUse</td>
+                <td width="12%"><label>建筑结构：</label></td>
+                <td width="13%">@Model.BuildingStructure</td>
+                <td width="12%"><label>建成年代：</label></td>
+                <td width="13%">@Model.BuiltYear</td>
+            </tr>
+            <tr>
+                <td><label>所在楼层：</label></td>
+                <td>@Model.Floor</td>
+                <td><label>总楼层：</label></td>
+                <td>@Model.MaxFloor</td>
+                <td><label>楼层：</label></td>
+                <td>@Model.FloorJoin</td>
+                <td><label>户型：</label></td>
+                <td>@Model.HouseType</td>
+            </tr>
+            <tr>
+                <td><label>房屋所有权号：</label></td>
+                <td>@Model.HouserOwnerNo</td>
+                <td><label>房屋所有权人：</label></td>
+                <td>@Model.HouserOwner</td>
+                <td><label>建筑面积（㎡）：</label></td>
+                <td colspan="3">@(Model.ArchitectureArea.HasValue ? string.Format("{0:f2}", Model.ArchitectureArea.Value) : "")</td>
+            </tr>
+            <tr>
+                <td><label>产别：</label></td>
+                <td>@Model.Yield</td>
+                <td><label>装修程度：</label></td>
+                <td>@Model.Decoration</td>
+                <td><label>产权性质：</label></td>
+                <td colspan="3">@Model.PropertyNature</td>
+            </tr>
+            <tr>
+                <td><label>最高使用年限：</label></td>
+                <td>@Model.MaxUseYear</td>
+                <td><label>剩余经济寿命（年）：</label></td>
+                <td colspan="5">@Model.SpareEconomicsYear</td>
+            </tr>
+        </table>
+
+        <table width="99%" border="0" cellspacing="0" cellpadding="0" class="project-info-xx">
+            <tr>
+                <td width="12%"><label>土地使用权人：</label></td>
+                <td width="13%">@Model.LandUsePeople</td>
+                <td width="12%"><label>土地用途：</label></td>
+                <td width="13%">@Model.LandUse</td>
+                <td width="12%"><label>土地使用权类型：</label></td>
+                <td width="13%">@Model.LandUseType</td>
+                <td width="12%"><label>土地使用权面积(㎡)：</label></td>
+                <td width="13%">@Model.LandUseArea</td>
+            </tr>
+            <tr>
+                <td><label>图号：</label></td>
+                <td>@Model.DrawingNo</td>
+                <td><label>地号：</label></td>
+                <td>@Model.LandNo</td>
+                <td><label>终止日期：</label></td>
+                <td>@string.Format("{0:yyyy-MM-dd}", Model.LandEndTime)</td>
+                <td><label>剩余土地年限(年)：</label></td>
+                <td>@Model.LandSpareYear</td>
+            </tr>
+            <tr>
+                <td><label>国有土地使用号：</label></td>
+                <td colspan="3">@Model.LandUserNo</td>
+                <td><label>土地坐落：</label></td>
+                <td colspan="3">@Model.LandAddress</td>
+            </tr>
+        </table>
+
+        <table width="99%" border="0" cellspacing="0" cellpadding="0" class="project-info-xx">
+            <tr>
+                <td width="12%"><label>借款人姓名：</label></td>
+                <td width="38%">@Model.BorrowerName</td>
+                <td width="12%"><label>借款人身份证：</label></td>
+                <td width="38%">@Model.BorrowerId</td>
+            </tr>
+        </table>
+    </div>
+
+
+ 
+</div>

@@ -1,0 +1,134 @@
+﻿/*选项卡*/
+.tab-layout{
+	width:100%;
+	margin: 0 auto;
+}
+.tab-layout .tab-layout-title{
+    height: 30px;
+    line-height: 20px;
+    position: relative;
+    padding: 0 32px;
+    padding-top: 3px;
+    z-index: 10;
+    background: #f2f2f2;
+    overflow: hidden
+}
+.tab-layout .tab-layout-title .tab-layout-left-arrow,.tab-layout .tab-layout-title .tab-layout-right-arrow{
+	font-size: 16px;
+	font-weight: 700;
+	padding:5px 10px;
+	color: #656565;
+	height:30px;
+	overflow: hidden;
+	position: absolute;
+	z-index: 99;
+	cursor: pointer;
+    top: -1px;
+}
+.tab-layout .tab-layout-title .tab-layout-left-arrow{
+	left: 0;
+    border-right: 1px solid #d1d1d1
+}
+.tab-layout .tab-layout-title .tab-layout-left-arrow[disabled],.tab-layout .tab-layout-title .tab-layout-right-arrow[disabled] {
+    cursor: not-allowed
+}
+.tab-layout .tab-layout-title  .tab-layout-left-arrow .line{
+    border-left: 1px solid #fff;
+    position: absolute;
+    height: 30px;
+    right: 0px;
+}
+.tab-layout .tab-layout-title .tab-layout-right-arrow .line {
+    border-left: 1px solid #fff;
+    position: absolute;
+    height: 30px;
+    left: 0px;
+} 
+.tab-layout .tab-layout-title .tab-layout-right-arrow{
+	right: 0;
+    border-left: 1px solid #d1d1d1
+}
+.tab-layout .tab-layout-title .tab-layout-content{
+	width:100%; 
+	overflow: hidden;
+}
+
+.tab-layout .tab-layout-title .tab-layout-content ul{
+	width:9999999px; 
+	zoom:1;
+	height:30px;
+	overflow: hidden;
+}
+.tab-layout .tab-layout-title .tab-layout-content ul::after{
+	clear: both;
+	content: '';
+}
+.tab-layout .tab-layout-title .tab-layout-content li.item-content{
+	float: left;
+}
+.tab-layout .tab-layout-title .tab-layout-content li.item-content{
+	padding:5px 20px 0 5px;
+	height: 30px;
+	display:inline-block;
+	white-space:nowrap; 
+	overflow:hidden;
+	text-overflow:ellipsis;
+	background: #ccc;
+	position: relative;
+	margin-left:3px;
+	border:1px solid #d2dbe4;
+	border-bottom: 0;
+	border-radius:  10px 10px 0 0;
+	cursor: pointer;
+    background: #cadbe5;
+    background: -moz-linear-gradient(top, #ffffff 0%, #cadbe5 100%);
+    background: -webkit-linear-gradient(top, #ffffff 0%,#cadbe5 100%); 
+    background: linear-gradient(to bottom, #ffffff 0%,#cadbe5 100%); 
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#cadbe5',GradientType=0 );
+    overflow: hidden;
+}
+.tab-layout .tab-layout-title .tab-layout-content li.item-content.sm {
+    padding:5px 5px 0 5px;
+}
+.tab-layout .tab-layout-title .tab-layout-content li.item-content.current{
+     background: #fff;
+     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0 );
+}
+.tab-layout .tab-layout-title .tab-layout-content li.item-content a {
+     color: #848484;
+}
+.tab-layout .tab-layout-title .tab-layout-content li.item-content.current a,.tab-layout .tab-layout-title .tab-layout-content li.item-content.current a:hover {
+    color: #424242;
+}
+.tab-layout .tab-layout-title .tab-layout-content li.item-content .item-del{
+	color: #80807f;
+    font-size: 12px;
+    position: absolute;
+    right: 0;
+    top: -1px;
+    cursor: pointer;
+    padding:2px 0 0 2px;
+}
+.iFrameHide{
+	display: none;
+}
+.iFrameShow{
+	border:0;
+	width:100%;
+}
+.contextmenu{
+	width:100px;
+	position:absolute;
+	z-index:99999;
+	background:#fff;
+	border:1px solid #ccc
+}
+.contextmenu ul {
+     margin: 0;
+}
+.contextmenu ul li{
+	padding: 5px 10px;
+}
+.tab-layout-body {
+    position: relative
+}

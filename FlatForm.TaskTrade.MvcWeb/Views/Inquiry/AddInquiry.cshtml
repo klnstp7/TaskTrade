@@ -1,0 +1,1322 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+<script src="~/Scripts/Base.js"></script>
+<link href="~/Content/plug-in/autocomplete/jquery.autocomplete.css" rel="stylesheet" />
+<script src="~/Content/plug-in/autocomplete/jquery.autocomplete.js"></script>
+<script src="~/Content/plug-in/bootstrap/bootstrap.min.js"></script>
+<div class="inquiry-info ck-report">
+    <div class="inquiry-info-list">
+        <ul class="f-cf">
+            <li><a href="javascript:void(0);" class="current">快速添加询价记录</a></li>
+            <li><a href="javascript:void(0);">添加完整询价单</a></li>
+        </ul>
+
+    </div>
+    <div class="inquiry-info-tab">
+        <div style="display: block; ">
+            <div style="width: 100%; margin-left: auto; margin-right: auto">
+                <form id="quickInquiry">
+                    <input type="hidden" id="Id" name="Id" />
+                    <input type="hidden" id="CustomerId" name="CustomerId">
+                    <input type="text" name="isToProject" value="false" id="isToProject" style="display:none;">
+                    <input type="text" id="OnlineBusinessId" name="OnlineBusinessId" style="display: none" />
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="inquiry">
+                        <tr>
+                            <td class="left">城市</td>
+                            <td><input type="text" value="" readonly="readonly" id="City" name="City" /></td>
+                            <td class="left">小区名称</td>
+                            <td>
+                                <input type="text" value="" id="ResidentialAreaName" name="ResidentialAreaName" />
+                                <input type="text" id="ResidentialAreaId" name="ResidentialAreaId" style="display: none" />
+                            </td>
+                            <td class="left">建筑面积</td>
+                            <td><input type="text" value="" id="BuildingArea" name="BuildingArea" /></td>
+                        </tr>
+                        <tr>
+                            <td class="left">地址</td>
+                            <td colspan="5"><input type="text" value="" id="ResidentialAddress" name="Address" /></td>
+                        </tr>
+                        <tr>
+                            <td class="left">客户姓名</td>
+                            <td><input type="text" value="" id="CustomerName" name="CustomerName" /></td>
+                            <td class="left">客户手机</td>
+                            <td><input type="text" value="" id="Tel" name="Tel" /></td>                           
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="text-align: center"><button type="button" class="btn btn-sm btn-add" id="save"><span class="btn-icon add-icon"></span>保存</button>&nbsp;&nbsp;<button type="button" class="btn btn-sm btn-project" name="attendto" id="attendto"><span class="project-icon btn-icon"></span>转立项</button></td>
+                        </tr>
+                    </table>
+                </form>
+                <div class="inquiry-tab">
+                    <div data-example-id="togglable-tabs">
+                        <ul id="myTabs" class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active">
+                                <a href="#HistoryInquiry" id="history-tab" role="tab" data-toggle="tab" aria-controls="HistoryInquiry" aria-expanded="true" onclick="TabForLoad('HistoryInquiry')">历史询价记录</a>
+                            </li>
+                            <li role="presentation" class="">
+                                <a href="#OfferCase" role="tab" id="baopan-tab" data-toggle="tab" aria-controls="OfferCase" aria-expanded="false" onclick="TabForLoad('OfferCase')">报盘案例</a>
+                            </li>
+                            <li role="presentation" class="">
+                                <a href="#DealCase" id="done-tab" role="tab" data-toggle="tab" class="dropdown-toggle" aria-expanded="false" aria-controls="DealCase" onclick="TabForLoad('DealCase')">成交案例</a>
+                            </li>
+                            <li role="presentation" class="">
+                                <a href="#ReportCase" id="baogao-tab" role="tab" data-toggle="tab" class="dropdown-toggle" aria-expanded="false" aria-controls="ReportCase" onclick="TabForLoad('ReportCase')">报告案例</a>
+                            </li>
+                        </ul>
+                        <div id="myTabContent" class="tab-content">
+                            <div role="tabpanel" class="tab-pane fade active in" id="HistoryInquiry" aria-labelledby="home-tab">
+                                <div class="filterArea">
+                                    <p style="text-align:center;display:none;">当前无更多数据</p>
+                                </div>
+                                <table class="table table-bordered table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <td data-field="CreatorName">添加人</td>
+                                            <td data-field="CreateTime">询价时间</td>
+                                            <td data-field="ResidentialAreaName">小区名称</td>
+                                            <td data-field="Address">地址</td>
+                                            <td data-field="BuildingArea">面积㎡</td>
+                                            <td data-field="MortgageResult">单价（元㎡）</td>
+                                            <td data-field="InquiryResult">总价（万元）</td> 
+                                            @*<td data-field="MaxFloor">总楼层</td>
+                                            <td data-field="Floor">所在楼层</td>
+                                            <td data-field="Bank">询价机构</td>
+                                            <td data-field="InquirySource">询价来源</td>*@
+                                            <td data-field="IsToProject">立项</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="HistoryInquiryTable"></tbody>
+                                </table>
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="OfferCase" aria-labelledby="profile-tab">
+                                <div class="filterArea">
+                                    <p class="text-color-red"><span id="OfferCaseAreaMessage"></span><span id="OfferCaseCount"></span></p>
+                                    <p>
+                                        面积：<a href="javascript:void(0);">不限</a><a href="javascript:void(0);">50以下</a><a href="javascript:void(0);">50~70</a><a href="javascript:void(0);">70~90</a><a href="javascript:void(0);">90~110</a><a href="javascript:void(0);">	110~130</a><a href="javascript:void(0);">130~150</a><a href="javascript:void(0);">	150~200</a><a href="javascript:void(0);">200~300</a><a href="javascript:void(0);">300以上</a>
+                                    </p>
+                                    <p style="text-align:center;display:none;">当前无更多数据</p>
+                                </div>
+                                <table class="table table-bordered table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <td>案例来源</td>
+                                            <td>时间</td>
+                                            <td>行政区</td>
+                                            <td>小区名称</td>
+                                            <td>单价（元㎡）</td>
+                                            <td>总价（万元）</td>
+                                            <td>建筑面积(㎡)</td>
+                                            <td>总楼层</td>
+                                            <td>所在楼层</td>
+                                            <td>户型</td>
+                                            <td>朝向</td>
+                                            <td>建成年代</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="OfferCaseTable"></tbody>
+                                </table>
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="DealCase" aria-labelledby="done-tab">
+                                <div class="filterArea">
+                                    <p class="text-color-red"><span id="DealCaseAreaMessage"></span><span id="DealCaseCount"></span></p>
+                                    <p>
+                                        面积：<a href="javascript:void(0);">不限</a><a href="javascript:void(0);">50以下</a><a href="javascript:void(0);">50~70</a><a href="javascript:void(0);">70~90</a><a href="javascript:void(0);">90~110</a><a href="javascript:void(0);">	110~130</a><a href="javascript:void(0);">130~150</a><a href="javascript:void(0);">	150~200</a><a href="javascript:void(0);">200~300</a><a href="javascript:void(0);">300以上</a>
+                                    </p>
+                                    <p style="text-align:center;display:none;">当前无更多数据</p>
+                                </div>
+                                <table class="table table-bordered table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <td>案例来源</td>
+                                            <td>时间</td>
+                                            <td>行政区</td>
+                                            <td>小区名称</td>
+                                            <td>单价（元㎡）</td>
+                                            <td>总价（万元）</td>
+                                            <td>建筑面积(㎡)</td>
+                                            <td>总楼层</td>
+                                            <td>所在楼层</td>
+                                            <td>户型</td>
+                                            <td>朝向</td>
+                                            <td>建成年代</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="DealCaseTable"></tbody>
+                                </table>
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="ReportCase" aria-labelledby="baogao-tab">
+                                <div class="filterArea">
+                                    <p class="text-color-red"><span id="ReportCaseAreaMessage"></span><span id="ReportCaseCount"></span></p>
+                                    <p>
+                                        面积：<a href="javascript:void(0);">不限</a><a href="javascript:void(0);">50以下</a><a href="javascript:void(0);">50~70</a><a href="javascript:void(0);">70~90</a><a href="javascript:void(0);">90~110</a><a href="javascript:void(0);">	110~130</a><a href="javascript:void(0);">130~150</a><a href="javascript:void(0);">	150~200</a><a href="javascript:void(0);">200~300</a><a>300以上</a>
+                                    </p>
+                                    <p style="text-align:center;display:none;">当前无更多数据</p>
+                                </div>
+                                <table class="table table-bordered table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <td>行政区</td>
+                                            <td>时间</td>
+                                            <td>小区名称</td>
+                                            <td>项目地址</td>
+                                            <td>价格时点</td>
+                                            <td>单价(元/㎡)</td>
+                                            <td>总价(万元)</td>
+                                            <td>建筑面积（㎡）</td>
+                                            <td>总楼层</td>
+                                            <td>所在楼层</td>
+                                            <td>户型</td>
+                                            <td>朝向</td>
+                                            <td>建成年代</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ReportCaseTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <form id="allInquiry">
+                <table style="" class="allquiry">
+                    <tr>
+                        <td colspan="5" style="text-align: center; font-size: 30px; border-bottom-width:0px;"><strong>房地产抵押评估询价单</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" style=" border-top-width:0px;" align="right">询字第<input id="InquiryNo" name="InquiryNo" type="text" class="sm" placeholder="询价单号" />号 &nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td><b>估价使用方</b></td>
+                        <td colspan="4"><input type="text" value="" id="AppraiseUse" name="AppraiseUse" placeholder="估价使用方" /></td>
+                    </tr>
+                    <tr>
+
+                        <td><b>估价委托人</b></td>
+                        <td colspan="4"><input type="text" value="" id="AppraiseDelegatePerson" name="AppraiseDelegatePerson" placeholder="估价委托人" /></td>
+                    </tr>
+                    <tr>
+                        <td><b>估价对象</b></td>
+                        <td colspan="4"><input type="text" value="" id="ResidentialAddress1" name="Address" placeholder="估价对象" /></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2"><b>估价目的</b></td>
+                        <td colspan="4">
+                            <span class="form_valid">
+                                <label for="AppraisePurpose_0"><input type="radio" name="AppraisePurpose" id="AppraisePurpose_0" value="抵押(按揭)" checked="checked" />抵押(按揭)</label>
+                                <label for="AppraisePurpose_1"><input type="radio" name="AppraisePurpose" id="AppraisePurpose_1" value="抵押(非按揭)" />抵押(非按揭)</label>
+                                <label for="AppraisePurpose_2"><input type="radio" name="AppraisePurpose" id="AppraisePurpose_2" value="价值鉴定" />价值鉴定</label>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"><input type="text" value="" id="AppraisePurposeDesc" name="AppraisePurposeDesc" /></td>
+                    </tr>
+                    <tr>
+                        <td><b>价值时点</b></td>
+                        <td colspan="4"><input type="text" value="" class="laydate-icon" id="AppraiseDate" name="AppraiseDate" /></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="5" width="20%"><b>基础信息</b></td>
+                        <td width="20%"><b>小区名称</b></td>
+                        <td width="20%"><input type="text" value="" id="ResidentialAreaName1" name="ResidentialAreaName" /></td>
+                        <td width="20%"><b>建筑面积</b></td>
+                        <td width="20%"><input type="text" value="" id="BuildingArea1" name="BuildingArea" /></td>
+                    </tr>
+                    <tr>
+                        <td>设定朝向</td>
+                        <td><input type="text" value="" id="Toword" name="Toword" /></td>
+                        <td>设定房屋结构</td>
+                        <td><input type="text" value="" id="HouseStruct" name="HouseStruct" /></td>
+                    </tr>
+                    <tr>
+                        <td>设定用途</td>
+                        <td><input type="text" value="" id="SetPurpose" name="SetPurpose" /></td>
+                        <td>设定其他</td>
+                        <td><input type="text" value="" id="SetOther" name="SetOther" /></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2"><b>是否存在抵押</b></td>
+                        <td colspan="3" class="form_valid"><label for="IsMortgage_yes"><input type="radio" name="IsMortgage" id="IsMortgage_yes" value="1" checked="checked" />是 </label><label for="IsMortgage_no"><input type="radio" name="IsMortgage" value="0" id="IsMortgage_no" />否</label></td>
+
+                    </tr>
+                    <tr>
+                        <td colspan="3"><textarea id="MortgageDesc" name="MortgageDesc"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="6"><b>估价结果</b></td>
+                        <td>单价</td>
+                        <td colspan="3">¥：<span><input type="text" value="" id="InquiryPrice" name="InquiryPrice" /></span>元/平方米</td>
+                    </tr>
+                    <tr>
+                        <td>总价</td>
+                        <td colspan="3">¥：<span><input type="text" value="" id="InquiryResult" name="InquiryResult" /></span>万元</td>
+                    </tr>
+                    <tr>
+                        <td>大写金额</td>
+                        <td colspan="3">¥：<span><input type="text" value="" id="UpperAmount" name="UpperAmount" /></span>元</td>
+                    </tr>
+                    <tr>
+                        <td>预计处置税费</td>
+                        <td colspan="3">¥：<span><input type="text" value="" id="DisposeFee" name="DisposeFee" /></span>万元</td>
+                    </tr>
+                    <tr>
+                        <td>应补地价</td>
+                        <td colspan="3">¥：<span><input type="text" value="" id="LandPremium" name="LandPremium" /></span>万元</td>
+                    </tr>
+                    <tr>
+                        <td>扣后净值</td>
+                        <td colspan="3">¥：<span><input type="text" value="" id="MinusNetWorth" name="MinusNetWorth" /></span>万元</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2"><b>特殊事项说明</b></td>
+                        <td>是否有看房记录</td>
+                        <td colspan="3">
+                            <label for="IsHouseRecord_yes"><input type="radio" name="IsHouseRecord" id="IsHouseRecord_yes" value="1" checked="checked" />是 </label>
+                            <label for="IsHouseRecord_no"><input type="radio" name="IsHouseRecord" id="IsHouseRecord_no" value="0" />否</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <div style="width:100%;" id="SpecialRemark">
+                                <ul></ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2"><b>询价单有效期</b></td>
+                        <td colspan="4">
+                            <select id="Select_ValidityDate" name="EffectivePeriod"><option value="三个月">三个月</option><option value="半年">半年</option><option value="一年">一年</option></select>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom-width:0px;">
+                        <td colspan="4">
+                            本价格咨询自出具之日起<span id="ValidityDate">三个月</span>内有效，但在此期间市场变化较快或国家经济形式、城市规划、相关税费和银行利率发生变化，估价结果应重新评估。
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" align="right" style="border-width:0px;"><span style="margin-right:40px">评估机构名称<input type="text" value="" class="sm" id="AppraiseOrg" name="AppraiseOrg" /></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" align="right" style="border-width:0px;"><span style="margin-right:40px">估价单出具日期<input type="text" value="" class="sm laydate-icon" id="IssueDate" name="IssueDate" readonly="readonly" /></span></td>
+                    </tr>
+                    @*<tr style="border-width:0px;">
+                            <td align="right" colspan="5" style="border-width:0px;"><span style="margin-right:40px">（盖章）</span></td>
+                        </tr>*@
+                    <tr>
+                        <td colspan="5" style="border-width: 0px; text-align: center">
+                            <button type="button" class="btn btn-sm btn-add" id="allInquiry_submit"><span class="btn-icon add-icon"></span>保存</button>
+                            <button type="button" class="btn btn-sm btn-print" name="print" id="print" onclick="PrintInquriy()"><span class="btn-icon print-icon"></span>打印询价单</button>
+                        </td>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="selectcity" id="selectcity">
+    <div class="city-select-tab"><a href="javascript:void(0);" class="current">城市</a><a href="javascript:void(0);">行政区</a></div>
+    <div class="city-select-content">
+        <div class="city-select clearfix">
+            @{
+                foreach (var item in ViewBag.Citys)
+                {
+                    <a href="javascript:void(0);" onclick="selected('@item',event)">@item</a>
+                }
+            }
+        </div>
+        <div class="city-select clearfix" id="disc">
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var cityObj = {};
+    cityObj.cite = "@ViewBag.UserCity";
+    cityObj.disc = "";
+    var needShowLoading = true;
+    var dialog;
+    var customerid = 0;
+    var inquiryid = '@Request.QueryString["id"]';
+    var onlineBusinessId = '@(Request.QueryString["onlineBussinessId"])';
+    var action = '@Request.QueryString["action"]';
+    $(function () {
+        if (action == null || action == "") {
+            $("#City").val(cityObj.cite);
+            selected(cityObj.cite);
+        }
+
+        //城市行政区选项卡
+        $(".city-select-tab a").each(function () {
+            $(this).click(function (event) {
+                if (event && event.stopPropagation) {
+                    event.stopPropagation();
+                } else {
+                    window.event.cancelBubble = true;
+                }
+                var _idx = $(this).index();
+                $(".city-select-tab a").removeClass("current");
+                $(".city-select-tab a:eq(" + _idx + ")").addClass("current");
+                $(".city-select-content .city-select").hide();
+                $(".city-select-content .city-select:eq(" + _idx + ")").show();
+            });
+        });
+
+        //tab切换
+        $('.inquiry-info-list li a').click(function () {
+            $('.inquiry-info-list li a').addClass("current");
+            $(this).parent().siblings(".inquiry-info-list li").children("a").removeClass("current");
+            $(".inquiry-info-tab > div").hide().eq($('.inquiry-info-list li a').index(this)).show();
+            //if ($(this).parent().index() == 1) {
+            //    $("#ResidentialAddress1").val($("#ResidentialAddress").val());
+            //    $("#ResidentialAreaName1").val($("#ResidentialAreaName").val());
+            //    $("#BuildingArea1").val($("#BuildingArea").val());
+            //}
+        });
+
+
+        $("#ResidentialAddress").keyup(function () {
+            $("#ResidentialAddress1").val($(this).val());
+        });
+        $("#ResidentialAddress1").keyup(function () {
+            $("#ResidentialAddress").val($(this).val());
+        });
+        $("#ResidentialAreaName1").keyup(function () {
+            $("#ResidentialAreaName").val($(this).val());
+        });
+        $("#ResidentialAreaName").keyup(function () {
+            $("#ResidentialAreaName1").val($(this).val());
+        });
+        $("#BuildingArea1").keyup(function () {
+            $("#BuildingArea").val($(this).val());
+        });
+        $("#BuildingArea").keyup(function () {
+            $("#BuildingArea1").val($(this).val());
+        });
+        //城市选中
+        $("#City").click(function (event) {
+            event.stopPropagation();
+            var obj = $("#City").offset();
+            $("#selectcity").css({ "left": obj.left, "top": obj.top + $("#City").height() + 2 });
+            $("#selectcity").toggle();
+        });
+
+        //小区输入
+        $("#ResidentialAreaName").keyup(function () {
+            var colour = this.value == "" ? "1px solid #FFA8A8" : "1px solid #95B8E7";
+            this.style.border = colour;
+        });
+
+        //小区模糊匹配
+        $('#ResidentialAreaName').autocomplete("/Inquiry/GetXiaoquList", {
+            delay: 0,
+            dataType: "json",
+            width: 340,
+            scroll: true,
+            matchCase: false,
+            scrollHeight: 300,
+            autoFill: false,
+            extraParams: {
+                data: function () { return $("#ResidentialAreaName").val(); },
+                cityname: function () { return cityObj.cite; }
+            },
+            parse: function (data) {
+                return $.map(data, function (row) {
+                    if (row === null) {
+                        return false;
+                    }
+                    return {
+                        data: row,
+                        value: row.ResidentialAreaName
+                    };
+                });
+            },
+            formatItem: function (row, i, max) {
+                return "小区名：" + row.ResidentialAreaName + " | 小区地址: " + row.Address;
+            },
+            formatResult: function (row) {
+                return "小区名：" + row.ResidentialAreaName + " | 小区地址: " + row.Address;
+            },
+            formatMatch: function (row, i, max) {
+                return "小区名：" + row.ResidentialAreaName + " | 小区地址: " + row.Address;
+            }
+        }).result(function (event, data) {
+            cityObj.disc = data.xingzhengqu;
+            $("#ResidentialAreaName").val(data.ResidentialAreaName);
+            $("#ResidentialAreaName1").val(data.ResidentialAreaName);
+            $("#ResidentialAddress").val(cityObj.cite + cityObj.disc + data.Address);
+            $("#ResidentialAddress1").val(cityObj.cite + cityObj.disc + data.Address);
+            $("#ResidentialAreaId").val(data.residentialAreaId);
+            $("#City").val(cityObj.cite + data.xingzhengqu);
+        });
+
+        //快速估价表单
+        $("#quickInquiry").validate({
+            onkeyup: false,
+            rules: {
+                //客户手机
+                Tel: {
+                    isMobile: true
+                },
+                //客户姓名
+                CustomerName: {
+                    stringCheck: true,
+                    maxlength: 50
+                },
+                //小区名称
+                ResidentialAreaName: {
+                    required: true,
+                    maxlength: 50
+                },
+                //小区地址
+                ResidentialAddress: {
+                    maxlength: 50
+                },
+                //建筑面积
+                BuildingArea: {
+                    required: true,
+                    posintdec: true
+                }
+            },
+            messages: {
+                Tel: {
+                    isMobile: "输入正确格式的手机号"
+                },
+                CustomerName: {
+                    stringCheck: "请输入正确格式的客户姓名",
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                ResidentialAreaName: {
+                    required: "请输入小区名称"
+                },
+                BuildingArea: {
+                    required: "请输入面积",
+                    posintdec: "必须数字(最多输入两位小数)"
+                },
+                ResidentialAddress: {
+                    maxlength: jQuery.validator.format("请输入最大长度为{n}的小区地址")
+                }
+            },
+            success: function (label) {
+                layer.close(dialog);
+                $("#" + label[0].htmlFor).removeClass("error-border");
+            },
+            errorPlacement: function (error, element) {
+                $("#" + element[0].id).addClass("error-border");
+                dialog = layer.tips(error[0].innerHTML, "#" + element[0].id, {
+                    tips: [2, '#F99228']
+                });
+            }
+        });
+
+
+        $("#save").click(function () {
+            if (!$("#quickInquiry").valid())
+                return;
+            SaveInquiry(false);
+        });
+        $("#attendto").click(function () {
+            if (!$("#quickInquiry").valid())
+                return;
+            SaveInquiry(true);
+        });
+        //完整询价表单提交
+        $("#allInquiry_submit").click(function () {
+            if (!$("#allInquiry").valid())
+                return;
+            SaveInquiry(false);
+        });
+
+
+
+        //隐藏城市和行政区选择
+        $(document).click(function (event) {
+            if (event && event.stopPropagation) {
+                event.stopPropagation();
+            } else {
+                window.event.cancelBubble = true;
+            }
+            $("#selectcity").hide();
+        });
+
+        //渲染数据
+        if (inquiryid > 0) {
+            LoadInquiry(inquiryid, action);
+        }
+        else if (onlineBusinessId > 0) {
+            $("#MortgageDesc").val(_textIsMortgage.yes);
+            SpecialRemarkHtml(_textSpecialRemark.yes);
+            LoadOnlineBusiness(onlineBusinessId);
+        } else {
+            cityObj.cite = "@ViewBag.UserCity";
+            $("#MortgageDesc").val(_textIsMortgage.yes);
+            SpecialRemarkHtml(_textSpecialRemark.yes);
+            //初始化行政区
+            //$("#City").val('@ViewBag.UserCity');
+            //RegionChange('', '');
+        }
+
+        $(".filterArea").each(function () {
+            $(this).find("a").click(function () {
+                $(this).siblings("a").removeClass("current");
+                $(this).addClass("current");
+            });
+        });
+
+
+    });
+
+    //询价总价转大写金额
+    function ChangeUpperAmount(obj) {
+        $("#Lb_UpperAmount").html(digitUppercase(obj));
+        $("#UpperAmount").val(digitUppercase(obj));
+    }
+
+    /** 数字金额大写转换(可以处理整数,小数,负数) */
+    function digitUppercase(n) {
+        var fraction = ['角', '分'];
+        var digit = [
+            '零', '壹', '贰', '叁', '肆',
+            '伍', '陆', '柒', '捌', '玖'
+        ];
+        var unit = [
+            ['', '万', '亿'],
+            ['', '拾', '佰', '仟']
+        ];
+        var head = n < 0 ? '欠' : '';
+        n = Math.abs(n) * 10000;
+        var s = '';
+        for (var i = 0; i < fraction.length; i++) {
+            s += (digit[Math.floor(n * 10 * Math.pow(10, i)) % 10] + fraction[i]).replace(/零./, '');
+        }
+        s = s;
+        n = Math.floor(n);
+        for (var i = 0; i < unit[0].length && n > 0; i++) {
+            var p = '';
+            for (var j = 0; j < unit[1].length && n > 0; j++) {
+                p = digit[n % 10] + unit[1][j] + p;
+                n = Math.floor(n / 10);
+            }
+            s = p.replace(/(零.)*零$/, '').replace(/^$/, '零') + unit[0][i] + s;
+        }
+        return head + s.replace(/(零.)*零/, '')
+            .replace(/(零.)+/g, '零')
+            .replace(/^整$/, '');
+    };
+
+    //选中城市
+    function selected(name, event) {
+        if (event) {
+            if (event.stopPropagation) {
+                event.stopPropagation();
+            } else {
+                window.event.cancelBubble = true;
+            }
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/Inquiry/GetRegion",
+            data: { cityName: name },
+            success: function (data) {
+                var str = "";
+                for (var i = 0; i < data.length; i++) {
+                    str += '<a href="javascript:void(0);" onclick=selecteddisc("' + data[i] + '",event)>' + data[i] + '</a>';
+                }
+                $("#disc").html(str);
+                cityObj.cite = name;
+                $(".city-select-tab a").removeClass("current");
+                $(".city-select-tab a:eq(1)").addClass("current");
+                $(".city-select-content .city-select").hide();
+                $(".city-select-content .city-select:eq(1)").show();
+                $("#City").val(name);
+            },
+            error: function (e) {
+                $("#City").html("");
+            }
+        });
+    }
+    //选中行政区
+    function selecteddisc(name, event) {
+        if (event && event.stopPropagation) {
+            event.stopPropagation();
+        } else {
+            window.event.cancelBubble = true;
+        }
+        cityObj.disc = name;
+        $("#City").val(cityObj.cite + cityObj.disc);
+        $("#selectcity").hide();
+    }
+
+    //根据tab选中的项来加载具体某一项的数据
+    function TabForLoad(title, begin, end, isNotSkip, casefrom) {
+        var isDefault = false;
+        if ($("#ResidentialAreaName").val() == '') {
+            layer.msg("请填写小区名称", { icon: 2, shade: [0.3, '#000'],time:1000 });
+            return;
+        }
+        if (needShowLoading) { showLoadingTips(); }
+        needShowLoading = true;
+        if (begin == undefined && !isNotSkip && $("#BuildingArea").val() != "" && !isNaN($("#BuildingArea").val())) {
+            var area = parseInt($("#BuildingArea").val(), 10);
+            begin = parseInt(area / 10) * 10;
+            end = begin + 10;
+            //$(".AreaMessage").html("温馨提示：系统已经自动帮您按建筑面积筛选出相近数据:" + begin + "-" + end + "㎡，如果无相关数据，将自动加载全部数据");
+            $("#OfferCaseAreaMessage").html("温馨提示：系统已经自动帮您按建筑面积筛选出相近数据:" + begin + "-" + end + "㎡");
+            $("#DealCaseAreaMessage").html("温馨提示：系统已经自动帮您按建筑面积筛选出相近数据:" + begin + "-" + end + "㎡");
+            $("#ReportCaseAreaMessage").html("温馨提示：系统已经自动帮您按建筑面积筛选出相近数据:" + begin + "-" + end + "㎡");
+            isDefault = true;
+        }
+        if (!casefrom) casefrom = "";
+        if (title == 'HistoryInquiry')
+            LoadHistoryInquiry();
+        if (title == 'OfferCase')
+            LoadOfferCase(begin, end, casefrom, isDefault);
+        if (title == 'DealCase')
+            LoadDealCase(begin, end, casefrom, isDefault);
+        if (title == 'ReportCase')
+            LoadReportCase(begin, end, isDefault);
+    }
+
+    function LoadHistoryInquiry() {     //历史询价记录
+        $("#HistoryInquiryTable").html('');
+        var url = "/Inquiry/GetInquiryList?ResidentialAreaName=" + encodeURI($("#ResidentialAreaName").val()) + "&Address=" + encodeURI($("#ResidentialAddress").val()) + "&index=1&rows=1000" + "&City=" + encodeURI(cityObj.cite);
+        $.ajax({
+            url: url,
+            success: function (data) {
+                var rows = data.rows;
+                if (data.total <= 0) {
+                    $("#HistoryInquiryTable").parent().hide();
+                    $("#HistoryInquiryTable").parent().prev().find("p:last").show();
+                    return;
+                }
+                $("#HistoryInquiryTable").parent().show();
+                $("#HistoryInquiryTable").parent().prev().find("p:last").hide();
+
+                for (var i = 0; i < rows.length; i++) {
+                    var sb = [];
+
+                    $("#HistoryInquiryTable").append("<tr><td>" + rows[i].CreatorName + "</td>"
+                        + "<td>" + rows[i].CreateTime + "</td>"
+                        + "<td>" + rows[i].ResidentialAreaName + "</td>"
+                        + "<td>" + rows[i].Address + "</td>"
+                        + "<td>" + rows[i].BuildingArea + "</td>"
+                        + "<td>" + rows[i].InquiryPrice + "</td>"
+                        + "<td>" + rows[i].InquiryResult + "</td>" 
+                        //+ "<td>" + rows[i].MaxFloor + "</td>"
+                        //+ "<td>" + rows[i].Floor + "</td>"
+                        //+ "<td>" + (rows[i].Bank == null ? "" : rows[i].Bank) + "</td>"
+                        //+ "<td>" + rows[i].InquirySource + "</td>"
+                        + "<td>" + rows[i].IsToProject + "</td></tr>");
+                }
+                $("#HistoryInquiryTable").html($("#HistoryInquiryTable").html().replace(/null/g, ""));
+            },
+            complete: function (XmlHttpRequest, textStatus) {
+                hideLoadingTips();
+            }
+        });
+    }
+
+    function LoadOfferCase(begin, end, casefrom, isDefault) {      //报盘案例
+        $("#OfferCaseTable").html('');
+        var url = "/Inquiry/GetOfferForSaleList?residentialareaname=" + encodeURI($("#ResidentialAreaName").val()) + "&residentialAreaId=" + encodeURI($("#ResidentialAreaId").val()) + "&CityName=" + encodeURI(cityObj.cite) + "&casefrom=" + encodeURI(casefrom) + "&isDefault=" + isDefault;
+        if (begin != null && end != null) {
+            url += "&begin=" + begin + "&end=" + end;
+        }
+        $.ajax({
+            url: url,
+            type: "post",
+            success: function (data) {
+                var resultcount = data.resultCount;
+                $("#OfferCaseCount").html("&nbsp;您所在账户只能查看5条数据，当前系统历史询价记录共" + resultcount + "条。");
+                var rows = data.rows;
+                if (data.resultCount == "0") {
+                    $("#OfferCaseTable").parent().hide();
+                    $("#OfferCaseTable").parent().prev().find("p:last").show();
+                    return;
+                }
+                $("#OfferCaseTable").parent().show();
+                $("#OfferCaseTable").parent().prev().find("p:last").hide();
+                for (var i = 0; i < rows.length; i++) {
+                    $("#OfferCaseTable").append("<tr><td>" + rows[i].CaseFrom + "</td>" + "<td>" + rows[i].CaseTime + "</td>"
+                        + "<td>" + rows[i].DistrictName + "</td>" + "<td>" + rows[i].ResidentialAreaName + "</td>"
+                        + "<td>" + rows[i].UnitPrice + "</td>" + "<td>" + rows[i].TotalPrice + "</td>"
+                        + "<td>" + rows[i].BuildingArea + "</td>" + "<td>" + rows[i].Floors + "</td>"
+                        + "<td>" + rows[i].Floor + "</td>" + "<td>" + rows[i].UnitShape + "</td>"
+                        + "<td>" + rows[i].Toward + "</td>" + "<td>" + rows[i].BuildingCompletedYear + "</td></tr>");
+                }
+                $("#OfferCaseTable").html($("#OfferCaseTable").html().replace(/null/g, ""));
+            },
+            complete: function (XmlHttpRequest, textStatus) {
+                hideLoadingTips();
+            }
+        });
+    }
+    function LoadDealCase(begin, end, casefrom, isDefault) {       //成交案例
+        $("#DealCaseTable").html('');
+        var url = "/Inquiry/GetHouseResoldCaseList?residentialareaname=" + encodeURI($("#ResidentialAreaName").val()) + "&residentialAreaId=" + encodeURI($("#ResidentialAreaId").val()) + "&CityName=" + encodeURI(cityObj.cite) + "&Address=" + encodeURI($("#ResidentialAddress").val()) + "&casefrom=" + encodeURI(casefrom) + "&isDefault=" + isDefault;
+        if (begin != null && end != null) {
+            url += "&begin=" + begin + "&end=" + end;
+        }
+        $.ajax({
+            url: url,
+            type: "post",
+            success: function (data) {
+                var resultcount = data.resultCount;
+                $("#DealCaseCount").html("&nbsp;您所在账户只能查看5条数据，当前系统历史询价记录共" + resultcount + "条。");
+                var rows = data.rows;
+                if (data.resultCount == "0") {
+                    $("#DealCaseTable").parent().hide();
+                    $("#DealCaseTable").parent().prev().find("p:last").show();
+                    return;
+                }
+                $("#DealCaseTable").parent().show();
+                $("#DealCaseTable").parent().prev().find("p:last").hide();
+
+                for (var i = 0; i < rows.length; i++) {
+                    $("#DealCaseTable").append("<tr><td>" + rows[i].CaseFrom + "</td>" + "<td>" + rows[i].CaseTime + "</td>"
+                        + "<td>" + rows[i].DistrictName + "</td>" + "<td>" + rows[i].ResidentialAreaName + "</td>"
+                        + "<td>" + rows[i].UnitPrice + "</td>" + "<td>" + rows[i].TotalPrice + "</td>"
+                        + "<td>" + rows[i].BuildingArea + "</td>" + "<td>" + rows[i].Floors + "</td>"
+                        + "<td>" + rows[i].Floor + "</td>" + "<td>" + rows[i].UnitShape + "</td>"
+                        + "<td>" + rows[i].Toward + "</td>" + "<td>" + rows[i].BuildingCompletedYear + "</td></tr>");
+                }
+                $("#DealCaseTable").html($("#DealCaseTable").html().replace(/null/g, ""));
+            },
+            complete: function (XmlHttpRequest, textStatus) {
+                hideLoadingTips();
+            }
+        });
+    }
+    function LoadReportCase(begin, end, isDefault) {       //报告案例
+        $("#ReportCaseTable").html('');
+        var url = "/Inquiry/GetHouseAppraisalCaseList?residentialareaname=" + encodeURI($("#ResidentialAreaName").val()) + "&residentialAreaId="
+            + encodeURI($("#ResidentialAreaId").val()) + "&CityName=" + encodeURI(cityObj.cite) + "&Address=" + encodeURI($("#ResidentialAddress").val()) + "&isDefault=" + isDefault;
+        if (begin != null && end != null) {
+            url += "&begin=" + begin + "&end=" + end;
+        }
+        $.ajax({
+            url: url,
+            type: "post",
+            success: function (data) {
+                var rows = data.rows;
+                var resultcount = data.resultCount;
+                $("#ReportCaseCount").html("&nbsp;您所在账户只能查看5条数据，当前系统历史询价记录共" + resultcount + "条。");
+                if (data.resultCount == "0") {
+                    $("#ReportCaseTable").parent().hide();
+                    $("#ReportCaseTable").parent().prev().find("p:last").show();
+                    return;
+                }
+                $("#ReportCaseTable").parent().show();
+                $("#ReportCaseTable").parent().prev().find("p:last").hide();
+
+                for (var i = 0; i < rows.length; i++) {
+                    $("#ReportCaseTable").append("<tr><td>" + rows[i].DistrictName + "</td>" + "<td>" + rows[i].CaseTime + "</td>"
+                        + "<td>" + rows[i].ResidentialAreaName + "</td>" + "<td>" + rows[i].Address + "</td>"
+                        + "<td>" + rows[i].DateofValue + "</td>" + "<td>" + rows[i].UnitPrice + "</td>"
+                        + "<td>" + rows[i].TotalPrice + "</td>" + "<td>" + rows[i].BuildingArea + "</td>"
+                        + "<td>" + rows[i].Floors + "</td>" + "<td>" + rows[i].Floor + "</td>"
+                        + "<td>" + rows[i].UnitShape + "</td>" + "<td>" + rows[i].Toward + "</td>"
+                        + "<td>" + rows[i].BuildingCompletedYear + "</td></tr>");
+                }
+                $("#ReportCaseTable").html($("#ReportCaseTable").html().replace(/null/g, ""));
+            },
+            complete: function (XmlHttpRequest, textStatus) {
+                hideLoadingTips();
+            }
+        });
+    }
+
+    //保存询价
+    function SaveInquiry(isToProject) {
+        //记录日志是询价转立项还是直接保存
+        //$("#isToProject").val(isToProject);
+        var quickData = $("#quickInquiry").serializeObject();
+        quickData.City = cityObj.cite;
+        quickData.District = cityObj.disc;
+        var allData = $("#allInquiry").serializeObject();
+        var postData = $.extend({}, quickData, allData);
+        postData.IsHouseRecord = (postData.IsHouseRecord == 1 ? true : false);
+        postData.IsMortgage = (postData.IsMortgage == 1 ? true : false);
+        $.ajax({
+            url: "/Inquiry/SaveInquiry",
+            type: "POST",
+            beforesend: showLoadingTips(),
+            data: postData,
+            success: function (result) {
+                if (!isToProject) {
+                    layer.alert(result.message, { icon: 1, closeBtn: false }, function () {
+                        layer.closeAll();
+                        //parent.$("#url").attr("src", "/Inquiry/Index");
+                        parent.changeIframe("Index_Inquiry", "询价列表", "/Inquiry/Index");
+                    });
+                } else {
+                    layer.alert(result.message, { icon: 1, closeBtn: false }, function () {
+                        //重新拼接URL
+                        var url = "@Url.Action("AddingProject", "Acceptance")?from=AddInquiry&InquiryId=" + result.data + "&CustomerName=" + $('#CustomerName').val() + "&Tel=" + $('#Tel').val()
+                            + "&City=" + cityObj.cite + "&District=" + (cityObj.disc ? cityObj.disc : "") + "&ResidentialAreaName=" + $('#ResidentialAreaName').val()
+                            + "&ResidentialAddress=" + $('#ResidentialAddress').val() + "&BuildingArea=" + $('#BuildingArea').val() + "&PropertyType=null";
+                        parent.changeIframe("AddingProject_Acceptance", "添加立项", url);
+                        parent.removeItem("AddInquiry_Inquiry");
+                    });
+
+                }
+            },
+            error: function () {
+                layer.alert('保存失败!', { icon: 2 });
+
+            }
+        });
+    }
+
+    //加载询价数据
+    function LoadInquiry(id, action) {
+        if (!id || id == 0)
+            return;
+        showLoadingTips();
+        $.ajax({
+            type: "post",
+            url: "/Inquiry/GetInquiry",
+            data: { inquiryId: id },
+            success: function (data) {
+                if (data.Customer != null) {
+                    customerid = data.CustomerId;
+                    $('#CustomerName').val(data.Customer.CustomerName);
+                    $('#Tel').val(data.Customer.Tel);
+                    $('#CustomerId').val(data.CustomerId);
+                    //$("#ico-collapse").click();
+                }
+                //赋值
+                inquiryid = data.Id;
+                $("#Id").val(inquiryid);
+                $('#ResidentialAreaName').val(data.ResidentialAreaName);
+                $('#ResidentialAddress').val(data.Address);
+                if (data.BuildingArea != null) $('#BuildingArea').val(data.BuildingArea.toFixed(2));
+                cityObj.cite = data.City;
+                cityObj.disc = data.District;
+                selected(cityObj.cite);
+                $('#City').val(data.City+data.District);
+                if (action == "view" || data.IsToProject) {
+                    DisableAll();
+                }
+
+                $("#allInquiry").find("input[type=text]").each(function () {
+                    var name = $(this).attr('name');
+                    if (data[name]) {
+                        $(this).val(data[name]);
+                    }
+                });
+                $("#allInquiry").find("textarea").each(function () {
+                    var name = $(this).attr('name');
+                    if (data[name]) {
+                        $(this).val(data[name]);
+                    }
+                });
+
+                $("input[name='AppraisePurpose'][value='" + data['AppraisePurpose'] + "']").attr("checked", true);
+                $("input[name='IsMortgage'][value='" + (data['IsMortgage'] ? "1" : "0") + "']").attr("checked", true);
+                $("input[name='IsHouseRecord'][value='" + (data['IsHouseRecord'] ? "1" : "0") + "']").attr("checked", true);
+
+                $("#allInquiry").find("select").each(function () {
+                    var name = $(this).attr('name');
+                    if (data[name]) {
+                        $(this).val(data[name]);
+                    }
+                });
+                $("#ValidityDate").text(data["EffectivePeriod"]);
+                SpecialRemarkHtml(data["IsHouseRecord"] ? _textSpecialRemark.yes : _textSpecialRemark.no);
+                //显示第一列
+                $("#myTabs").find("li:first>a").click();
+            },
+            complete: function (XmlHttpRequest, textStatus) {
+                hideLoadingTips();
+            }
+        });
+    }
+
+    //加载在线业务
+    function LoadOnlineBusiness(onlineBusinessId) {
+        if (onlineBusinessId == 'undefined' || onlineBusinessId == null)
+            return;
+        $("#OnlineBusinessId").val(onlineBusinessId);
+        showLoadingTips();
+        $.ajax({
+            url: "/OnlineBusiness/GetOnlineBusinessById",
+            data: { id: onlineBusinessId },
+            success: function (data) {
+                if (data.IsStop) {
+                    layer.alert("线上业务已终止", { icon: 0 });
+                    return;
+                }
+                if (data.IsInquiry) {
+                    layer.alert("线上业务已询价", { icon: 0 });
+                    return;
+                }
+                $("#ResidentialAreaName").val(data.Community);
+                $("#ResidentialAddress").val(data.HouseAddress);
+                $("#ResidentialAreaName1").val(data.Community);
+                $("#ResidentialAddress1").val(data.HouseAddress);
+                $("#Toword").val(data.Orientation); 
+                if (data.Area != null) {
+                    $('#BuildingArea').val(parseFloat(data.Area).toFixed(2));
+                    $('#BuildingArea1').val(parseFloat(data.Area).toFixed(2));
+                }
+                $("#SetPurpose").val(data["PlanUse"]);
+                cityObj.cite = data.City;
+                cityObj.disc = data.Region;
+                $('#City').val(data.City + data.Region);
+            },
+            complete: function (XmlHttpRequest, textStatus) {
+                hideLoadingTips();
+            }
+        });
+    }
+
+    function DisableAll() {
+        $("input").attr("disabled", "disabled");
+        $("button").remove();
+        $("select").attr("disabled", "disabled");
+        //$(".inquiry-tab").remove();
+    }
+
+    $(".filterArea").find("a").each(function () {
+        $(this).click(function () {
+            $(".filterArea").find("a").attr("selected", false);
+            $(this).attr("selected", true);
+            var area = $(this).html().split("~");
+            var begin;
+            var notskip;
+            var end;
+            //特殊的处理(不限、50以下、300以上)
+            if (area.length == 1) {
+                if (area[0] == "不限") {
+                    begin = null;
+                    end = null;
+                    notskip = true;
+                }
+                if (area[0] == "50以下") {
+                    begin = 0;
+                    end = 50;
+                }
+                if (area[0] == "300以上") {
+                    begin = 300;
+                    end = 5000;
+                }
+            } else {
+                begin = area[0];
+                end = area[1];
+            }
+            var selecttitile = $("#myTabContent .active").attr("id");
+            TabForLoad(selecttitile, begin, end, notskip);
+        });
+    });
+
+
+
+</script>
+<script type="text/javascript">
+    var _textIsMortgage = {};
+    var printData;
+    _textIsMortgage.yes = "根据《房地产抵押估价指导意见》的有关规定，房地产抵押价值等于假定未设立法定优先受偿权利下的市场价值减去房地产估价师知悉的法定优先受偿款。估价对象于价值时点存在抵押他项权利，本次评估以原有的抵押权注销后再设立新的抵押权为假设前提，故不考虑此项优先受偿款。";
+    _textIsMortgage.no = "根据《房地产抵押估价指导意见》的有关规定，房地产抵押价值等于假定未设立法定优先受偿权利下的市场价值减去房地产估价师知悉的法定优先受偿款。根据估价委托人提供的资料，估价对象不存在估价师知悉的法定优先受偿款，故法定优先受偿款为0元。";
+    var _textSpecialRemark = {};
+    _textSpecialRemark.yes = ["1、本次询价单所依据的资料由委托方提供，如相关数据发生变化，估价结果需做相应调整。",
+        "2、本次询价单意见仅供委托方内部参考，不得用在其他用途。", "3、本次询价结果已对估价对象进行实地现场勘察。",
+        "4、本次出具的询价单，只用于委托人评估了解房地产抵押价值参考使用，其估价结果的有效期为三个月，询价单超过三个月的请委托方重新评估。",
+        "5、若改变估价目的、价值时点、估价假设前提及使用条件，估价结果亦会发生变化，需向本估价机构咨询后重新出具询价单。由此对询价单使用人造成的损失，估价机构不承担任何责任。",
+        "6、估价结果是反映估价对象在本次估价目的下的房地产价值，估价中未考虑国家宏观经济政策发生变化、市场供应关系变化、市场结构转变、遇有自然力和其他不可抗力等因素对房地产价值的影响，也没有考虑估价对象将来可能承担违约责任的事宜，以及特殊交易方式下的特殊交易价格等对评估价值的影响。当上述条件发生变化时，估价结果一般也会发生变化。"
+            ];
+    _textSpecialRemark.no = _textSpecialRemark.yes.concat();
+    _textSpecialRemark.no[2] = "3、本次询价单结果未对估价对象进行实地现场勘察，如与实际不符，会对初评结果产生影响，相关数据会发生变化，估价结果需做相应调整。";
+    $(function() {
+        laydate({
+            elem: '#AppraiseDate',
+            choose: function (dates) { //选择好日期的回调
+                $("#AppraiseDate").focus();
+            }
+        });
+        laydate({
+            elem: '#IssueDate',
+            choose: function (dates) { //选择好日期的回调
+                $("#IssueDate").focus();
+            }
+        });
+
+        $("input[name=AppraisePurpose]").each(function() {
+
+            $(this).click(function() {
+                $(this).attr("checked", "checked");
+                if ($(this).attr("id") == "AppraisePurpose_2") {
+                    $("#AppraisePurposeDesc").val("为【" + $("#AppraiseUse").val() + "】确定房地产抵押贷款额度提供价值参考依据。");
+                } else {
+                    $("#AppraisePurposeDesc").val("为【" + $("#AppraiseUse").val() + "】了解估价对象市场价值提供参考依据而评估房地产价值。");
+                }
+            });
+        });
+
+        $("#AppraiseUse").keyup(function () {
+            $("input[name=AppraisePurpose][checked=checked]").each(function () {
+                if ($(this).attr("id") == "AppraisePurpose_2") {
+                    $("#AppraisePurposeDesc").val("为【" + $("#AppraiseUse").val() + "】确定房地产抵押贷款额度提供价值参考依据。");
+                } else {
+                    $("#AppraisePurposeDesc").val("为【" + $("#AppraiseUse").val() + "】了解估价对象市场价值提供参考依据而评估房地产价值。");
+                }
+            });
+
+        });
+
+        //完整询价表单验证
+        $("#allInquiry").validate({
+            onkeyup: false,
+            rules: {
+                //估价使用方
+                AppraiseUse: {
+                    required: true,
+                    maxlength: 50
+                },
+                //估价委托人
+                AppraiseDelegatePerson: {
+                    required: true,
+                    maxlength: 50
+                },
+                //估价对象
+                ResidentialAddress: {
+                    required: true,
+                    maxlength: 50
+                },
+                //估价目的下拉
+                AppraisePurpose1: {
+                    required: true
+                },
+                //估价目的
+                AppraisePurpose: {
+                    required: true
+                },
+                //单价
+                InquiryPrice: {
+                    required: true,
+                    posint: true
+                },
+                //总价
+                InquiryResult: {
+                    required: true,
+                    posint: false
+                },
+                //大写金额
+                UpperAmount: {
+                    required: true
+                },
+                //预计处置税费
+                DisposeFee: {
+                    posint: true
+                },
+                //应补地价
+                LandPremium: {
+                    posint: true
+                },
+                //扣后净值
+                MinusNetWorth: {
+                    posint: true
+                },
+                //小区名称
+                ResidentialAreaName: {
+                    required: true,
+                    maxlength: 50
+                },
+                //建筑面积
+                BuildingArea: {
+                    required: true,
+                    posint: false
+                },
+                //评估机构名称
+                AppraiseOrg: {
+                    required: true
+                },
+                //估价单出具日期
+                IssueDate: {
+                    required: true,
+                }
+            },
+            messages: {
+                AppraiseUse: {
+                    required: "请输入估价使用方",
+                    maxlength: jQuery.validator.format("请输入最大长度为{n}的估价使用方")
+                },
+                AppraiseDelegatePerson: {
+                    required: "请输入估价委托人",
+                    maxlength: jQuery.validator.format("请输入最大长度为{n}的估价委托人")
+                },
+                ResidentialAddress: {
+                    required: "请输入估价对象",
+                    maxlength: jQuery.validator.format("请输入最大长度为{n}的小区地址")
+                },
+                AppraisePurpose1: {
+                    required: "请选中估价目的"
+                },
+                AppraisePurpose: {
+                    required: "请输入估价目的"
+                },
+                InquiryPrice: {
+                    required: "请输入询价单价",
+                    posint: "必须数字(正整数)"
+                },
+                InquiryResult: {
+                    required: "请输入询价总价",
+                    posint: "必须数字"
+                },
+                UpperAmount: {
+                    required: true
+                },
+                DisposeFee: {
+                    posint: "必须数字(正整数)"
+                },
+                LandPremium: {
+                    posint: "必须数字(正整数)"
+                },
+                MinusNetWorth: {
+                    posint: "必须数字(正整数)"
+                },
+                ResidentialAreaName: {
+                    required: "请输入小区名称",
+                    maxlength: jQuery.validator.format("请输入最大长度为{n}的小区名称")
+                },
+
+                BuildingArea: {
+                    required: "请输入建筑面积",
+                    posint: "必须数字"
+                },
+                AppraiseOrg: {
+                    required: "请输入估价机构",
+                },
+                IssueDate: {
+                    required: "请输入估价单出具日期",
+                }
+            },
+            success: function(label) {
+                if ($("input[name=" + label[0].htmlFor + "]").is(':radio')) {
+                    $("input[name=" + label[0].htmlFor + "]").parent().parent().next(".error").remove();
+                } else {
+                    layer.close(dialog);
+                    $("#" + label[0].htmlFor).removeClass("error-border");
+                }
+            },
+            errorPlacement: function(error, element) {
+
+                if (element.is(':radio')) {
+                    var html = "<span class='error' style='color:red'> " + error[0].innerHTML + "</span>";
+                    element.closest('.form_valid').after(html);
+                } else {
+                    $("#" + element[0].id).addClass("error-border");
+                    dialog = layer.tips(error[0].innerHTML, "#" + element[0].id, {
+                        tips: [2, '#F99228']
+                    });
+                }
+            }
+        });
+        //建筑面积
+        $("#allInquiry").on("keyup", "#BuildingArea1", function () {
+            //面积
+            var $BuildingArea = $(this).val();
+            //单价
+            var $InquiryPrice = $("#InquiryPrice").val();
+            var $MortgagePrice = $("#MortgagePrice").val();
+
+            var reg = new RegExp("^\\d+(\\.\\d+)?$");
+            if ((reg.test($BuildingArea)) && (reg.test($InquiryPrice)) && $BuildingArea != "" && $InquiryPrice != "") {
+                $("#InquiryResult").val((parseFloat($BuildingArea) * parseFloat($InquiryPrice) / 10000).toFixed(2));
+                ChangeUpperAmount((parseFloat($BuildingArea) * parseFloat($InquiryPrice) / 10000).toFixed(2));
+                $("#MortgageResult").val((parseFloat($BuildingArea) * parseFloat($MortgagePrice) / 10000).toFixed(2));
+            } else {
+                $("#InquiryResult").val("");
+                $("#MortgageResult").val("");
+                ChangeUpperAmount(0);
+            }
+
+        });
+
+        //单价
+        $("#allInquiry").on("keyup", "#InquiryPrice", function () {
+            //单价
+            var $InquiryPrice = $(this).val();
+            //面积
+            var $BuildingArea = $("#BuildingArea1").val();
+
+            var reg = new RegExp("^\\d+(\\.\\d+)?$");
+            if ((reg.test($BuildingArea)) && (reg.test($InquiryPrice)) && $BuildingArea != "" && $InquiryPrice != "") {
+                $("#InquiryResult").val((parseFloat($BuildingArea) * parseFloat($InquiryPrice) / 10000).toFixed(2));
+                ChangeUpperAmount((parseFloat($BuildingArea) * parseFloat($InquiryPrice) / 10000).toFixed(2));
+            } else {
+                $("#InquiryResult").val("");
+                ChangeUpperAmount(0);
+            }
+
+        });
+
+        $("#allInquiry").on("keyup", "#MortgagePrice", function () {
+            //单价
+            var $MortgagePrice = $(this).val();
+            //面积
+            var $BuildingArea = $("#BuildingArea1").val();
+
+            var reg = new RegExp("^\\d+(\\.\\d+)?$");
+            if ((reg.test($BuildingArea)) && (reg.test($MortgagePrice)) && $BuildingArea != "" && $MortgagePrice != "") {
+                $("#MortgageResult").val((parseFloat($BuildingArea) * parseFloat($MortgagePrice) / 10000).toFixed(2));
+            } else {
+                $("#MortgageResult").val("");
+            }
+        });
+
+        //存在抵押
+        $("input[name=IsMortgage]").each(function() {
+            $(this).click(function() {
+                $(this).attr("checked", "checked");
+                if ($(this).attr("id") == "IsMortgage_yes") {
+                    $("#MortgageDesc").val(_textIsMortgage.yes);
+                } else {
+                    $("#MortgageDesc").val(_textIsMortgage.no);
+                }
+            });
+        });
+
+        //是否看房
+        $("input[name=IsHouseRecord").each(function() {
+            $(this).click(function() {
+
+                $(this).attr("checked", "checked");
+                if ($(this).attr("id") == "IsHouseRecord_yes") {
+                    SpecialRemarkHtml(_textSpecialRemark.yes);
+                } else {
+                    SpecialRemarkHtml(_textSpecialRemark.no);
+                }
+
+            });
+        });
+
+        //有效时间
+        $("#Select_ValidityDate").change(function() {
+           var _val =  $(this).children('option:selected').val();
+           $("#ValidityDate").text(_val);
+        });
+
+
+    });
+
+    function SpecialRemarkHtml(arry) {
+        var str = "";
+        for (var i = 0; i < arry.length; i++) {
+            str += "<li>" + arry[i] + "</li>";
+        }
+        $("#SpecialRemark ul").html(str);
+    }
+
+    function PrintInquriy() {
+        printData = $("#allInquiry").serializeObject();
+
+        printData.SpecialRemark = printData['IsHouseRecord'] ? _textSpecialRemark.yes : _textSpecialRemark.no;
+        window.open("/Inquiry/Print");
+    }
+</script>

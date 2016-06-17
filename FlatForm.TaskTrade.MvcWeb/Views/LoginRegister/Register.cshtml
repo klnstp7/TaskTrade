@@ -1,0 +1,565 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <title>用户注册</title>
+    <link href="~/Content/plug-in/jquery-citypicker/citypicker-2.0.css" rel="stylesheet" />
+    <script src="~/Content/plug-in/jquery/jquery-1.10.2.min.js"></script>
+    <link href="~/Content/css/login.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="~/Content/plug-in/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="~/Content/plug-in/jquery-validation/messages_cn.js"></script>
+    <script type="text/javascript" src="~/Content/plug-in/autocomplete/jquery.autocomplete.js"></script>
+    <link href="~/Content/plug-in/autocomplete/jquery.autocomplete.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="~/Content/plug-in/layer/layer.js"></script>
+    <script src="~/Content/plug-in/jquery-citypicker/citypicker-2.0.js"></script>
+    <script src="~/Content/plug-in/jquery/jquery.form.js"></script>
+</head>
+<body class="registered-bg">
+    <div class="registered-head">
+        <!--<a href="javascript:;"><img src="../../Content/images/loginimgs/Register_logo.jpg" /></a>
+        <p>用户注册</p>-->
+        <a href="javascript:;"><img src="../../Content/images/loginimgs/rigistered_lg.jpg" /></a>
+    </div>
+
+    <div class="registered-main">
+        <div class="registered-list">
+            <div class="registered-tl">
+                <a id="user" href="javascript:;" class="current">个人用户</a>
+            </div>
+            <div class="registered-tr">
+                <a id="qiye" href="javascript:;">企业用户</a>
+            </div>
+        </div>
+        <div class="registered-tab">
+            <div class="registered-contior">
+                <div id="personal" class="registered-nei">
+                    <form id="personaluser">
+                        <table border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td class="registered-tab-label">用户名：</td>
+                                <td width="70%"><input type="text" name="username" id="username" class="registered-tab-input" /><span class="registered-tab-man">*</span></td>
+                            </tr>
+                            <tr style="height: 8px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label">登录密码：</td>
+                                <td><input type="password" name="loginpassword1" id="loginpassword1" class="registered-tab-input" /><span class="registered-tab-man">*</span></td>
+                            </tr>
+                            <tr style="height: 8px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label">手机号码：</td>
+                                <td>
+                                    <input type="text" name="cellphone" id="cellphone" class="registered-tab-input" style="width: 168px;" />
+                                    <button tabIndex="-1" id="btnSendCode" type="button" class="registered-fs" onclick="send();">发送验证码</button>
+                                    <span class="registered-tab-man">*</span>
+                                </td>
+                            </tr>
+                            <tr style="height: 8px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label">手机验证码：</td>
+                                <td><input type="text" class="registered-tab-input" name="phonecode1" id="phonecode1" /><span class="registered-tab-man">*</span></td>
+                            </tr>
+                            <tr style="height: 8px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label">公司机构：</td>
+                                <td style="width: 268px;">
+                                    @*<input class="registered-tab-input down_arrow" name="usercompanyname" id="usercompanyname" />*@
+                                    <input type="text" class="registered-tab-input" name="usercompanyname" id="usercompanyname" />                                  
+                                </td>
+                            </tr>
+                            <tr style="height: 24px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label"></td>
+                                <td><div class="registered-btnl"></div><button type="button" class="registered-sub" name="personregister" id="personregister">注册</button><div class="registered-btnr"></div></td>
+                            </tr>
+                            <tr style="height: 12px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label"></td>
+                                <td class="registered-p">已有账户？<a href="@ViewBag.ReLogInUrl?service=@ViewBag.ReLogInUrl">登录</a></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                <div id="enterprise" class="registered-nei" style="display:none;">
+                    <form id="formcompany">
+                        <table border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td class="registered-tab-label">公司名称：</td>
+                                <td width="70%"><input type="text" name="CompanyName" id="companynames" class="registered-tab-input" /><span class="registered-tab-man">*</span></td>
+                            </tr>
+                            <tr style="height: 8px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label">公司地址：</td>
+                                <td><input type="text" name="CompanyAddress" id="companyaddress" class="registered-tab-input" /></td>
+                                <td class="registered-tab-man"></td>
+                            </tr>
+                            <tr style="height: 8px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label">管理员用户名：</td>
+                                <td><input type="text" name="CompanyUserName" id="adminusername" class="registered-tab-input" /><span class="registered-tab-man">*</span></td>
+                            </tr>
+                            <tr style="height: 8px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label">登录密码：</td>
+                                <td><input type="password" name="CompanyPassword" id="companypassword" class="registered-tab-input" /><span class="registered-tab-man">*</span></td>
+                            </tr>
+                            <tr style="height: 8px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label">所在城市：</td>
+                                <td style="width: 268px;">
+                                    <input readonly="readonly" name="City" id="companycity" class="registered-tab-input down_arrow" />
+                                    <span class="registered-tab-man">*</span>
+                                </td>
+                            </tr>
+                            <tr style="height: 8px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label">联系人：</td>
+                                <td><input type="text" name="Contact" id="companycontacts" class="registered-tab-input" /></td>
+                            </tr>
+                            <tr style="height: 8px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label">联系电话：</td>
+                                <td><input type="text" name="Tel" id="contactsnumber" class="registered-tab-input" /></td>
+                            </tr>
+                            <tr style="height: 8px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label">营业执照上传：</td>
+                                <td>
+                                    <div class="file">
+                                        <input name="viewfile" type="text" readonly="readonly" id="viewfile" class="inputstyle">
+                                        <input type="file" name="companymaterial" id="companymaterial" class="registered-tab-input inputfile" onchange="document.getElementById('viewfile').value=this.value;" style="width: 252px;" />
+                                        <i class="registered-fs ziliao">执照上传</i><span class="registered-tab-man">*(请上传图像文件)</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr style="height: 8px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label">备注：</td>
+                                <td><input type="text" name="Remark" id="remark" class="registered-tab-input" /></td>
+                            </tr>
+
+                            <tr style="height: 24px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label"></td>
+                                <td><div class="registered-btnl"></div><button type="button" class="registered-sub" id="companyregister">注册</button><div class="registered-btnr"></div></td>
+                            </tr>
+                            <tr style="height: 12px;"></tr>
+                            <tr>
+                                <td class="registered-tab-label"></td>
+                                <td class="registered-p">已有账户？<a href="@ViewBag.ReLogInUrl?service=@ViewBag.ReLogInUrl">登录</a></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var _showloadingTip;
+        //tab切换
+        $(function () {
+            
+            $("#user").click(function () {
+                $("#user").parent().children("a").addClass("current");
+                $(this).parent().siblings("div").children("a").removeClass("current");
+                $("#personal").show("fast");
+                $("#enterprise").hide();
+            });
+            $("#qiye").click(function () {
+                $("#qiye").parent().children("a").addClass("current");
+                $(this).parent().siblings("div").children("a").removeClass("current");
+                $("#enterprise").show("fast");
+                $("#personal").hide();
+            });
+
+            //companyBindings();
+
+            //城市匹配
+            $('#companycity').click(function () {
+                cityShow();
+
+                $('.mod_list_city').hover(function () {
+
+                }, function () {
+                    hideCity();
+                });
+            });
+            //$("#companycity").autocomplete(city, {
+            //    minChars: 0, width: 264
+            //});
+            //个人注册提交
+            $("#personregister").click(function () {
+                var flag = $("#personaluser").valid();
+                if (flag) {
+                    reg();
+                } else {
+                    layer.alert('请填写完整相关信息!', { title: false, closeBtn: false, icon: 5, time: 2000 });
+
+                }
+            });
+            //企业注册提交
+            $("#companyregister").click(function () {
+                var flag = $("#formcompany").valid();
+                if (flag) {
+                    regCompany();
+                } else {
+                    layer.alert('请填写完整相关信息!', { title: false, closeBtn: false, icon: 5, time: 2000 });
+                }
+            });
+            ////个人用户
+            $("#personaluser").validate({
+                debug: true,
+                rules: {
+                    //用户名
+                    username: {
+                        stringCheck: true,
+                        required: true,
+                        maxlength: 20
+                    },
+                    //登录密码
+                    loginpassword1: {
+                        stringCheck: true,
+                        required: true,
+                        minlength: 6,
+                        maxlength: 25
+                    },
+                    //手机号码
+                    cellphone: {
+                        isMobile: true,
+                        required: true,
+                        maxlength: 11
+                    },
+                    //手机验证码
+                    phonecode1: {
+                        required: true,
+                        maxlength: 6,
+                        minlength: 6,
+                        isDigits: true
+
+                    }
+                    ////公司机构
+                    //usercompanyname: {
+                    //    required: true
+                    //}
+                },
+                messages: {
+                    username: {
+                        stringCheck: "输入不能包含特殊字符",
+                        required: "请输入用户名",
+                        maxlength: "输入不能超过20个字符"
+                    },
+                    loginpassword1: {
+                        stringCheck: "输入不能包含特殊字符",
+                        required: "请输入登录密码",
+                        minlength: "输入不能少于6个字符",
+                        maxlength: "输入不能超过25个字符"
+                    },
+                    cellphone: {
+                        isMobile: "请输入正确的手机号码",
+                        required: "请输入手机号码",
+                        maxlength: "输入不能超过11个数字"
+                    },
+                    phonecode1: {
+                        required: "请输入手机验证码",
+                        maxlength: "输入不能超过6个数字",
+                        minlength: "输入不能少于5个数字",
+                        isDigits: "请输入正确格式的验证码"
+                    }//,
+                    //usercompanyname: {
+                    //    required: "请选择公司机构"
+                    //}
+                },
+                errorPlacement: function (error, element) {
+                    element.closest('.registered-tab-input').next(".error").remove();
+                    if (error[0].innerHTML != "") {
+                        var html = '<label class="error">' + error[0].innerHTML + '</label>';
+                        element.closest('.registered-tab-input').after(html);
+                        element.siblings('span').removeClass("success").addClass("error").text("");
+                    }
+                },
+                success: function (label) {
+                    label.remove();
+                    $("#" + label[0].htmlFor).siblings("span").addClass("success").removeClass("error").text("");
+                }
+            });
+            $("#formcompany").validate({
+
+                rules: {
+                    //公司名称
+                    CompanyName: {
+                        stringCheck: true,
+                        required: true,
+                        maxlength: 100
+                    },
+                    //公司地址
+                    CompanyAddress: {
+                        stringCheck: true,
+                        maxlength: 100,
+                        required: false,
+                    },
+                    //管理员用户名
+                    CompanyUserName: {
+                        stringCheck: true,
+                        required: true,
+                        maxlength: 20
+                    },
+                    //管理员登录密码
+                    CompanyPassword: {
+                        required: true,
+                        maxlength: 30,
+                        minlength: 6,
+                        stringCheck: true
+
+                    },
+                    //所在城市
+                    City: {
+                        required: true
+                    },
+                    //联系人
+                    Contact: {
+                        stringCheck: true,
+                        maxlength: 30
+                    },
+                    //联系人电话
+                    Tel: {
+                        ContentType: true
+                    },
+                    //企业资料
+                    companymaterial: {
+                        required: true
+                    },
+                    //备注
+                    Remark: {
+                        maxlength: 200,
+                        stringCheck: true
+                    }
+                },
+                messages: {
+                    CompanyName: {
+                        stringCheck: "输入不能包含特殊字符",
+                        required: "请输入公司名称",
+                        maxlength: "输入不能超过100个字符"
+                    },
+                    CompanyAddress: {
+                        stringCheck: "输入不能包含特殊字符",
+                        maxlength: "输入不能超过100个字符"
+                    },
+                    CompanyUserName: {
+                        stringCheck: "输入不能包含特殊字符",
+                        required: "请输入管理员用户名",
+                        maxlength: "输入不能超过20个字符"
+                    },
+                    CompanyPassword: {
+                        stringCheck: "输入不能包含特殊字符",
+                        maxlength: "输入不能超过30个字符",
+                        minlength: "输入不能少于6个字符",
+                        required: "请输入管理员登录密码"
+                    },
+                    companycity: {
+                        required: "请选择公司所在城市",
+                    },
+                    companycontacts: {
+                        stringCheck: "输入不能包含特殊字符",
+                        maxlength: "输入不能超过30个字符"
+                    },
+                    Tel: {
+                        ContentType: "输入正确联系号码",
+                    },
+                    companymaterial: {
+                        required: "请上传企业资料",
+                    },
+                    remark: {
+                        maxlength: "输入不能超过200个字符",
+                        stringCheck: "不能包含特殊字符"
+                    }
+                },
+                errorPlacement: function (error, element) {
+                    element.closest('.registered-tab-input').next(".error").remove();
+                    if (error[0].innerHTML != "") {
+                        var html = '<label class="error">' + error[0].innerHTML + '</label>';
+                        element.closest('.registered-tab-input').after(html);
+                        element.siblings('span').removeClass("success").addClass("error").text("");
+                    }
+                },
+                success: function (label) {
+                    label.remove();
+                    $("#" + label[0].htmlFor).siblings("span").addClass("success").removeClass("error").text("");
+                }
+            });
+        });
+
+        function companyBindings() {
+            $.ajax({
+                url: "@Url.Action("GetCompanys", "LoginRegister")",
+                async: true,
+                dataType: "json",
+                type: "GET",
+                data: { 'qs': new Date().toString() },
+                success: function(result) {
+                    //公司机构
+                    $("#usercompanyname").autocomplete(result.Data, {
+                        minChars: 0,
+                        width: 264,
+                        max: result.Data.length
+                    });
+                },
+                error: function(XmlHttpRequest, textStatus, errorThrown) {
+                    var $errorPage = XmlHttpRequest.responseText;
+                }
+            });
+        }
+
+        function cityShow() {
+            var top = $('#companycity').offset().top + 40;
+            var left = $('#companycity').offset().left;
+            citypicker.show({ left: left, top: top }, function(data) {
+                $('#companycity').val(data);
+            });
+        }
+
+        function send() {
+            var phone = $('#cellphone').val();
+            var reg = /^0?1[3|7|5|8][0-9]\d{8}$/;
+            if (!reg.test(phone)) {
+                layer.alert('请输入正确的手机号码', { icon: 2 });
+                return;
+            }
+
+            sendSecurityCode(phone);
+            settime();
+        }
+
+        var countdown = 60;
+
+        function settime() {
+            var obj = $('#btnSendCode');
+            if (countdown == 0) {
+                obj.attr("disabled", false);
+                obj.text("发送验证码");
+                countdown = 60;
+                return;
+            } else {
+                obj.attr("disabled", true);
+                obj.text("重新发送(" + countdown + ")");
+                countdown--;
+            }
+            setTimeout(function() {
+                settime();
+            }, 1000);
+        }
+
+        function sendSecurityCode(phone) {
+            $.ajax({
+                url: "@Url.Action("SendSecurityCode", "LoginRegister")" + "?phoneNumber=" + phone,
+                async: true,
+                dataType: "json",
+                type: "GET",
+                data: { 'qs': new Date().toString() },
+                success: function (result) {
+                    layer.alert(result.Message, { icon: 1 });
+                },
+                error: function(XmlHttpRequest, textStatus, errorThrown) {
+                    var $errorPage = XmlHttpRequest.responseText;
+                }
+            });
+        }
+
+        function reg() {
+
+            var userAccount = $('#username').val();
+            var password = $('#loginpassword1').val();
+            var phone = $('#cellphone').val();
+            var companyName = $('#usercompanyname').val();
+            var desc = $('#phonecode1').val();
+            if ($("#personaluser").valid()) {
+                showLoadingTips();
+                $.ajax({
+                    url: "@Url.Action("Register", "LoginRegister")",
+                    async: true,
+                    dataType: "json",
+                    type: "POST",
+                    data: {
+                        'UserAccount': userAccount,
+                        'Password': password,
+                        'Phone': phone,
+                        'CompanyName': companyName,
+                        'Desc': desc,
+                        'qs': new Date().toString()
+                    },
+                    success: function(result) {
+                        if (result.Success) {
+                            layer.alert('注册成功', { icon: 1 });
+                            setTimeout(function() {
+                                location.href = result.Others;
+                            }, 3000);
+                        } else {
+                            layer.alert(result.Message, { icon: 2 });
+                        }
+                        hideLoadingTips();
+                    },
+                    error: function (XmlHttpRequest, textStatus, errorThrown) {
+                        hideLoadingTips();
+                        var $errorPage = XmlHttpRequest.responseText;
+                    }
+                });
+            }
+        }
+
+        function regCompany() {
+
+            if ($("#formcompany").valid()) {
+                var file = $('#companymaterial').val();
+
+                if (file == "") {
+                    layer.alert('请选择企业资料', { icon: 2 });
+                    return;
+                } else {
+                    var extStart = file.lastIndexOf(".");
+                    var ext = file.substring(extStart, file.length).toUpperCase();
+                    if (ext != ".BMP" && ext != ".PNG" && ext != ".GIF" && ext != ".JPG" && ext != ".JPEG") {
+                        alert("图片限于png,gif,jpeg,jpg格式");
+                        return;
+                    }
+                }
+                showLoadingTips();
+                //开始ajax操作
+                $("#formcompany").ajaxSubmit({
+                    type: "POST", //提交类型
+                    dataType: "json", //返回结果格式
+                    url: "@Url.Action("RegisterCompany", "LoginRegister")",
+                data: $('#formcompany').serialize(),
+                success: function (result) {
+                    if (result.Success) {
+                        layer.alert('公司信息提交成功', { icon: 1 });
+                        setTimeout(function () {
+                            location.href = result.Others;
+                        }, 3000);
+                    }
+                    else {
+                        layer.alert(result.Message, { icon: 2 });
+                    }
+                    hideLoadingTips();
+                },
+                error: function (data) { layer.alert(data.msg, { icon: 2 }); },//请求失败的函数
+                async: true
+            });
+        }
+        }
+        function hideCity() {
+            $('.mod_list_city').hide();
+        }
+ 
+     
+        function showLoadingTips() {
+            _showloadingTip = layer.load(2, {
+                shade: [0.1, '#000']
+            });
+        }
+        function hideLoadingTips() {
+            layer.close(_showloadingTip);
+        } 
+    </script>
+</body>
+</html>

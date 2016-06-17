@@ -1,0 +1,372 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+
+<ul class="m-crm">
+    <li><a href="@Url.Action("Welcome", "Home")"><i class="fa fa-home"></i>&nbsp;&nbsp;首页</a> <span class="divider">&gt;</span></li>
+    <li><a href="@Url.Action("Index", "ProjectReview")">&nbsp;&nbsp;项目审核</a> <span class="divider">&gt;</span></li>
+    <li>查看详细</li>
+</ul>
+
+<div class="project-info ck-report">
+    <div class="project-info-list">
+        <ul class="f-cf">
+            <li><a href="javascript:void(0);" class="current">基本信息</a></li>
+            <li><a href="javascript:void(0);">流程跟进</a></li>
+            <li><a href="javascript:void(0);">报告历史数据</a></li>
+        </ul>
+
+    </div>
+    <div class="project-info-tab">
+        <div style="display: block;">
+            <h5 class="table-title">项目信息</h5>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="project-info-xx">
+                <tr>
+                    <td width="9%">报告号：</td>
+                    <td width="11%" id="baseReportNo"></td>
+                    <td width="8%">流水号：</td>
+                    <td width="11%" id="baseProjectNo"></td>
+                    <td width="10%">地址：</td>
+                    <td colspan="5" id="baseProjectAddress"></td>
+                </tr>
+                <tr>
+                    <td>估价委托人：</td>
+                    <td id="basePrincipal"></td>
+                    <td>建成年代：</td>
+                    <td id="baseBuildedYear"></td>
+                    <td>询值单价(元/㎡)：</td>
+                    <td id="baseInquiryPrice"></td>
+                    <td>询值总价(万元)：</td>
+                    <td id="baseInquiryResult" colspan="3"></td>
+                </tr>
+                <tr>
+                    <td>项目分类：</td>
+                    <td id="baseProjectType"></td>
+                    <td>物业分类：</td>
+                    <td id="basePropertyType"></td>
+                    <td>估价目的：</td>
+                    <td width="9%" id="baseBusinessType"></td>
+                    <td width="11%">所属机构：</td>
+                    <td width="9%" id="baseDepartmentId"></td>
+                    <td width="11%">客户姓名：</td>
+                    <td width="8%" id="baseCustomerName"></td>
+                </tr>
+            </table>
+            <h5 class="table-title">汇总数据</h5>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="project-info-xx">
+                <tr>
+                    <td width="9%">所属公司：</td>
+                    <td width="11%" id="sumCompany"></td>
+                    <td width="8%">所属部门:</td>
+                    <td width="11%" id="sumDepartment"></td>
+                    <td width="10%">项目名称:</td>
+                    <td width="9%" id="sumProjectName"></td>
+                    <td width="11%">报告完整编号:</td>
+                    <td width="9%" id="sumReportNo"></td>
+                    <td width="11%">报告年度:</td>
+                    <td width="8%" id="sumReportYear"></td>
+                </tr>
+                <tr>
+                    <td>报告月度:</td>
+                    <td id="sumReportMonth"></td>
+                    <td>估价目的:</td>
+                    <td id="sumEvalGoal"></td>
+                    <td>目的描述: </td>
+                    <td id="sumGoalDescription"></td>
+                    <td>估价委托人: </td>
+                    <td id="sumEvalEntrust"></td>
+                    <td>报告使用方:</td>
+                    <td id="sumReportUse"></td>
+                </tr>
+                <tr>
+                    <td>支行:</td>
+                    <td id="sumSubbranch"></td>
+                    <td>现场勘察人员:</td>
+                    <td id="sumSurveyPeople"></td>
+                    <td>报告撰写人员:</td>
+                    <td id="sumReportWriting"></td>
+                    <td>项目推广名:</td>
+                    <td id="sumProjectPopularizeName" colspan="3"></td>
+                </tr>
+                <tr>
+                    <td>项目所在省:</td>
+                    <td id="sumProjectProvince"></td>
+                    <td>项目所在市:</td>
+                    <td id="sumProjectCity"></td>
+                    <td>项目区县:</td>
+                    <td id="sumProjectDistrict" colspan="5"></td>
+
+                </tr>
+                <tr>
+                    <td>余下地址:</td>
+                    <td id="sumOtherAddress" colspan="3"></td>
+                    <td> 项目完整地址: </td>
+                    <td id="sumProjectAddress" colspan="5"></td>
+
+                </tr>
+                <tr>
+                    <td>实地勘察期:</td>
+                    <td id="sumSurveyTime"></td>
+                    <td>价值日期:</td>
+                    <td id="sumWorthTime"></td>
+                    <td>作业起始日期:</td>
+                    <td id="sumJobStartTime"></td>
+                    <td>作业终止日期:</td>
+                    <td id="sumJobEndTime"></td>
+                    <td>报告有效期: </td>
+                    <td id="sumReportValidityTerm"></td>
+                </tr>
+                <tr>
+                    <td>估价师1:</td>
+                    <td id="sumQuantitySurveyor1"></td>
+                    <td>估价师2: </td>
+                    <td id="sumQuantitySurveyor2"></td>
+                    <td>估价师合并:</td>
+                    <td id="sumQuantitySurveyorJoin"></td>
+                    <td>估价方法1:</td>
+                    <td id="sumEvalMethod1"></td>
+                    <td>估价方法2:</td>
+                    <td id="sumEvalMethod2"></td>
+                </tr>
+                <tr>
+                    <td>方法汇总:</td>
+                    <td id="sumEvalMethodJoin"></td>
+                    <td>评估总价（万元）:</td>
+                    <td id="sumEvaluateTotal"></td>
+                    <td>评估单价(元/㎡):</td>
+                    <td id="sumEvaluatePrice"></td>
+                    <td> 房屋所有权证证号/工程许可证号: </td>
+                    <td id="sumHouserOwnerNo"></td>
+                    <td>房屋所有权人:</td>
+                    <td id="sumHouserOwner"></td>
+                </tr>
+                <tr>
+                    <td>产权性质:</td>
+                    <td id="sumPropertyNature"></td>
+                    <td>建筑面积（㎡）:</td>
+                    <td id="sumArchitectureArea"></td>
+                    <td> 建筑结构: </td>
+                    <td id="sumBuildingStructure"></td>
+                    <td>建成年代: </td>
+                    <td id="sumBuiltYear"></td>
+                    <td>登记用途:</td>
+                    <td id="sumRegisterUse"></td>
+                </tr>
+                <tr>
+                    <td>所在楼层:</td>
+                    <td id="sumFloor"></td>
+                    <td>总楼层:</td>
+                    <td id="sumMaxFloor"></td>
+                    <td>楼层: </td>
+                    <td id="sumFloorJoin"></td>
+                    <!--<td>朝向:  </td>
+            <td></td>-->
+                    <td>户型:</td>
+                    <td id="sumHouseType" colspan="3"></td>
+                </tr>
+                <tr>
+                    <td>装修程度:</td>
+                    <td id="sumDecoration"></td>
+                    <td>国有土地使用证号:</td>
+                    <td id="sumLandUserNo"></td>
+                    <td>土地坐落:</td>
+                    <td id="sumLandAddress"></td>
+                    <td>土地使用权人: </td>
+                    <td id="sumLandUsePeople"></td>
+                    <td>土地使用权类型:</td>
+                    <td id="sumLandUseType"></td>
+                </tr>
+                <tr>
+                    <td>土地使用权面积（㎡）:</td>
+                    <td id="sumLandUseArea" colspan="3"></td>
+                    <!--<td>抵押权状况:</td>
+            <td></td>-->
+                    <td>剩余土地年限（年）:</td>
+                    <td id="sumLandSpareYear"></td>
+                    <td> 剩余经济寿命（年）: </td>
+                    <td id="sumSpareEconomicsYear"></td>
+                    <td>最高使用年限（年）:</td>
+                    <td id="sumMaxUseYear"></td>
+                </tr>
+                <tr>
+                    <td>土地用途:</td>
+                    <td id="sumLandUse"></td>
+                    <td> 终止日期: </td>
+                    <td id="sumLandEndTime"></td>
+                    <td>其他影响因素:</td>
+                    <td id="sumOtherInfluenceFactor"></td>
+                    <td>交易日期: </td>
+                    <td id="sumBusinessTime" colspan="3"></td>
+                    <!--<td>户数:</td>
+            <td></td>-->
+                </tr>
+                <tr>
+                    <!--<td>地上物状况:</td>
+            <td colspan="3"></td>-->
+                    <td> 环线: </td>
+                    <td id="sumLoopLine"></td>
+                    <td>成交总价（万元）: </td>
+                    <td id="sumDealTotal"></td>
+                    <td> 成交单价（元/㎡）: </td>
+                    <td id="sumDealPrice" colspan="5"></td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <table id="processInfo" width="100%" border="0" cellspacing="0" cellpadding="0" class="project-info-xx">
+                <tr>
+                    <td width="30%">操作人 </td>
+                    <td width="35%">跟进信息 </td>
+                    <td width="35%">操作时间</td>
+                </tr>
+
+            </table>
+        </div>
+        <div>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="gather">
+                <thead>
+                <td width="34%">文件类型</td>
+                <td width="33%">更改时间</td>
+                <td width="33%">操作</td>
+                </thead>
+                <tbody id="history"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+    <script type="text/javascript">
+        var projectId=@ViewBag.ProjectID;
+        $(function () {
+            baseInfo(projectId);
+            GetProjectStateInfoList(projectId);
+            GetReportHistory(projectId);
+            GetSummaryInfo(projectId);
+        });
+
+        //tab切换
+        $('.project-info-list li a').click(function () {
+            $('.project-info-list li a').addClass("current");
+            $(this).parent().siblings(".project-info-list li").children("a").removeClass("current");
+            $(".project-info-tab > div").hide().eq($('.project-info-list li a').index(this)).show();
+        });
+
+        //基本信息
+        function baseInfo(id) {
+            $.post("@Url.Content("~/ProjectReview/ProjectInfo")", { "Id": id }, function (result) {
+                //alert(result.ReportNo);
+                $("#baseReportNo").text(result.ReportNo == null ? "" : result.ReportNo);
+                $("#baseProjectNo").text(result.ProjectNo == null ? "" : result.ProjectNo);
+                $("#baseProjectAddress").text(result.ProjectAddress == null ? "" : result.ProjectAddress);
+                $("#basePrincipal").text(result.Principal == null ? "" : result.Principal);
+                $("#baseBuildedYear").text(result.BuildedYear == null ? "" : result.BuildedYear);
+                $("#baseProjectType").text(result.ProjectType == null ? "" : result.ProjectType);
+                $("#basePropertyType").text(result.PropertyType == null ? "" : result.PropertyType);
+                $("#baseBusinessType").text(result.BusinessType == null ? "" : result.BusinessType);
+                $("#baseDepartmentId").text(result.DepartmentId == null ? "" : result.DepartmentId);
+                $("#baseCustomerName").text(result.CustomerName == null ? "" : result.CustomerName);
+                $("#baseInquiryPrice").text(result.InquiryPrice == null ? "" : result.InquiryPrice);
+                $("#baseInquiryResult").text(result.InquiryResult == null ? "" : result.InquiryResult);
+            });
+        }
+
+        //流程跟进
+        function GetProjectStateInfoList(id) {
+            $(".curContent").remove();
+            $.post("@Url.Content("~/ProjectReview/GetProjectStateInfoList")", { "Id": id }, function (result) {
+                var list = result.list;
+                var html = "";
+                $.each(list, function (i) {
+                    html += '<tr class="curContent">'
+                        + '<td>' + list[i]["Operator"] + '</td>'
+                        + '<td>' + list[i]["Content"] + '</td>'
+                        + '<td>' + list[i]["OperationTime"] + '</td>'
+                        + '</tr>';
+                });
+                $("#processInfo").append(html);
+            });
+        }
+
+        //报告历史数据
+        function GetReportHistory(id) {
+            $("#history").children().remove();
+            $.post("@Url.Content("~/ProjectReview/GetReportHistoryByProjectId")", { "projectId": id }, function(result) {
+                var list = result.list;
+                var html = "";
+                $.each(list, function(i) {
+                    html += '<tr class="historyContent">'
+                        + '<td>' + list[i]["FileName"] + '</td>'
+                        + '<td>' + list[i]["CreateTime"] + '</td>'
+                        + '<td><a href="../ProjectReview/ViewReporHistory?resourceId=' + list[i]["ResourceId"] + '">查看</a></td>'
+                        + '</tr>';
+                });
+                $("#history").append(html);
+            });
+        }
+
+        //获取汇总数据
+        function GetSummaryInfo(id) {
+            $.post("@Url.Content("~/ProjectReview/GetSummaryInfo")", { "Id": id }, function(result) {
+                $("#sumCompany").text(result.sumCompany == null ? "" : result.sumCompany);
+                $("#sumDepartment").text(result.sumDepartment == null ? "" : result.sumDepartment);
+                $("#sumProjectName").text(result.sumProjectName == null ? "" : result.sumProjectName);
+                $("#sumReportNo").text(result.sumReportNo == null ? "" : result.sumReportNo);
+                $("#sumReportYear").text(result.sumReportYear == null ? "" : result.sumReportYear);
+                $("#sumReportMonth").text(result.sumReportMonth == null ? "" : result.sumReportMonth);
+                $("#sumEvalGoal").text(result.sumEvalGoal == null ? "" : result.sumEvalGoal);
+                $("#sumGoalDescription").text(result.sumGoalDescription == null ? "" : result.sumGoalDescription);
+                $("#sumEvalEntrust").text(result.sumEvalEntrust == null ? "" : result.sumEvalEntrust);
+                $("#sumReportUse").text(result.sumReportUse == null ? "" : result.sumReportUse);
+                $("#sumSubbranch").text(result.sumSubbranch == null ? "" : result.sumSubbranch);
+                $("#sumSurveyPeople").text(result.sumSurveyPeople == null ? "" : result.sumSurveyPeople);
+                $("#sumReportWriting").text(result.sumReportWriting == null ? "" : result.sumReportWriting);
+                $("#sumProjectPopularizeName").text(result.sumProjectPopularizeName == null ? "" : result.sumProjectPopularizeName);
+                $("#sumProjectProvince").text(result.sumProjectProvince == null ? "" : result.sumProjectProvince);
+                $("#sumProjectCity").text(result.sumProjectCity == null ? "" : result.sumProjectCity);
+                $("#sumProjectDistrict").text(result.sumProjectDistrict == null ? "" : result.sumProjectDistrict);
+                $("#sumOtherAddress").text(result.sumOtherAddress == null ? "" : result.sumOtherAddress);
+                $("#sumProjectAddress").text(result.sumProjectAddress == null ? "" : result.sumProjectAddress);
+                $("#sumSurveyTime").text(result.sumSurveyTime == null ? "" : result.sumSurveyTime);
+                $("#sumWorthTime").text(result.sumWorthTime == null ? "" : result.sumWorthTime);
+                $("#sumJobStartTime").text(result.sumJobStartTime == null ? "" : result.sumJobStartTime);
+                $("#sumJobEndTime").text(result.sumJobEndTime == null ? "" : result.sumJobEndTime);
+                $("#sumReportValidityTerm").text(result.sumReportValidityTerm == null ? "" : result.sumReportValidityTerm);
+                $("#sumQuantitySurveyor1").text(result.sumQuantitySurveyor1 == null ? "" : result.sumQuantitySurveyor1);
+                $("#sumQuantitySurveyor2").text(result.sumQuantitySurveyor2 == null ? "" : result.sumQuantitySurveyor2);
+                $("#sumQuantitySurveyorJoin").text(result.sumQuantitySurveyorJoin == null ? "" : result.sumQuantitySurveyorJoin);
+                $("#sumEvalMethod1").text(result.sumEvalMethod1 == null ? "" : result.sumEvalMethod1);
+                $("#sumEvalMethod2").text(result.sumEvalMethod2 == null ? "" : result.sumEvalMethod2);
+                $("#sumEvalMethodJoin").text(result.sumEvalMethodJoin == null ? "" : result.sumEvalMethodJoin);
+                $("#sumEvaluateTotal").text(result.sumEvaluateTotal == null ? "" : result.sumEvaluateTotal);
+                $("#sumEvaluatePrice").text(result.sumEvaluatePrice == null ? "" : result.sumEvaluatePrice);
+                $("#sumHouserOwnerNo").text(result.sumHouserOwnerNo == null ? "" : result.sumHouserOwnerNo);
+                $("#sumHouserOwner").text(result.sumHouserOwner == null ? "" : result.sumHouserOwner);
+                $("#sumPropertyNature").text(result.sumPropertyNature == null ? "" : result.sumPropertyNature);
+                $("#sumArchitectureArea").text(result.sumArchitectureArea == null ? "" : result.sumArchitectureArea);
+                $("#sumBuildingStructure").text(result.sumBuildingStructure == null ? "" : result.sumBuildingStructure);
+                $("#sumBuiltYear").text(result.sumBuiltYear == null ? "" : result.sumBuiltYear);
+                $("#sumRegisterUse").text(result.sumRegisterUse == null ? "" : result.sumRegisterUse);
+                $("#sumFloor").text(result.sumFloor == null ? "" : result.sumFloor);
+                $("#sumMaxFloor").text(result.sumMaxFloor == null ? "" : result.sumMaxFloor);
+                $("#sumFloorJoin").text(result.sumFloorJoin == null ? "" : result.sumFloorJoin);
+                $("#sumHouseType").text(result.sumHouseType == null ? "" : result.sumHouseType);
+                $("#sumDecoration").text(result.sumDecoration == null ? "" : result.sumDecoration);
+                $("#sumLandUserNo").text(result.sumLandUserNo == null ? "" : result.sumLandUserNo);
+                $("#sumLandAddress").text(result.sumLandAddress == null ? "" : result.sumLandAddress);
+                $("#sumLandUsePeople").text(result.sumLandUsePeople == null ? "" : result.sumLandUsePeople);
+                $("#sumLandUseType").text(result.sumLandUseType == null ? "" : result.sumLandUseType);
+                $("#sumLandUseArea").text(result.sumLandUseArea == null ? "" : result.sumLandUseArea);
+                $("#sumLandSpareYear").text(result.sumLandSpareYear == null ? "" : result.sumLandSpareYear);
+                $("#sumSpareEconomicsYear").text(result.sumSpareEconomicsYear == null ? "" : result.sumSpareEconomicsYear);
+                $("#sumMaxUseYear").text(result.sumMaxUseYear == null ? "" : result.sumMaxUseYear);
+                $("#sumLandUse").text(result.sumLandUse == null ? "" : result.sumLandUse);
+                $("#sumLandEndTime").text(result.sumLandEndTime == null ? "" : result.sumLandEndTime);
+                $("#sumOtherInfluenceFactor").text(result.sumOtherInfluenceFactor == null ? "" : result.sumOtherInfluenceFactor);
+                $("#sumBusinessTime").text(result.sumBusinessTime == null ? "" : result.sumBusinessTime);
+                $("#sumLoopLine").text(result.sumLoopLine == null ? "" : result.sumLoopLine);
+                $("#sumDealTotal").text(result.sumDealTotal == null ? "" : result.sumDealTotal);
+                $("#sumDealPrice").text(result.sumDealPrice == null ? "" : result.sumDealPrice);
+            });
+        }
+
+    </script>

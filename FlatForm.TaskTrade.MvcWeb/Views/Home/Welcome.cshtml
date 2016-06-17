@@ -1,0 +1,114 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PEP</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="~/Content/plug-in/ace/ace.min.css" />
+    <link href="~/Content/css/font-awesome.min.css" rel="stylesheet" />
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="~/Content/css/font-awesome-ie7.min.css">
+    <![endif]-->
+    <link rel="stylesheet" href="~/Content/css/style.css?v=0.5" />
+</head>
+<body class="welcome">
+    @*<ul class="m-crm">
+            <li><a href="javascript:;"><i class="fa fa-home"></i>&nbsp;&nbsp;首页</a> <span class="divider">&gt;</span></li>
+            <li>欢迎光临</li>
+        </ul>*@
+    <div class="welcome-body">
+
+        <a href="javascript:void(0);" class="btns add-xunjia">1&nbsp;添加询价</a>
+        <a href="javascript:void(0);" class="btns add-lixiang">1&nbsp;添加立项</a>
+        <a href="javascript:void(0);" class="btns project-review">5&nbsp;项目审核</a>
+        <a href="javascript:void(0);" class="btns report-send">7&nbsp;报告发送</a>
+
+        <div class="app">
+    
+            <div class="app-code">
+                @*<div class="title">外业系统安卓版</div>*@
+                <div class="andriod-code">&nbsp;</div>
+                <div class="android-logo">
+                    <p>Android</p>
+                    <p>外采APP</p>
+                </div>
+            </div>
+            <div class="app-code">
+                @*<div class="title">外业系统IOS版</div>*@
+                <div class="ios-code"> &nbsp;</div>
+                <div class="ios-logo">
+                    <p>iOS</p>
+                    <p>外采APP</p>
+                </div>
+            </div>
+        </div>
+        <div class="welcome-title">虚线为非必要路径</div>
+    </div>
+
+
+    <script type="text/javascript" src="~/Content/plug-in/jquery/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            int();
+            $(window).resize(function () {
+                int();
+            });
+
+            $(".welcome-body a").each(function () {
+                $(this).click(function () {
+                    var obj, url;
+                    var _idx = $(this).index();
+                    switch (_idx) {
+                        case 0:
+                            parent.$(".nav-list li").removeClass("current");
+                            parent.$(".nav-list li:eq(0)").addClass("current");
+                            obj = parent.$(".nav-list li:eq(0) li:eq(0)").find(".arrow");
+                            obj.parent().parent().css({ "background": "#82C0D6", "color": "#000" });
+                            parent.$(".nav-list li:eq(0) li:eq(0)").addClass("current");
+                            //url = parent.$(".nav-list li:eq(0) li:eq(0)").attr("tag");
+                            //parent.$("#url").attr("src", url);
+                            parent.changeIframe('AddInquiry_Inquiry', '添加询价', '@Url.Action("AddInquiry", "Inquiry")');
+                            break;
+                        case 1:
+                            parent.$(".nav-list li").removeClass("current");
+                            parent.$(".nav-list>li:eq(1)").addClass("current");
+                            obj = parent.$(".nav-list>li:eq(1) li:eq(0)").find(".arrow");
+                            obj.parent().parent().css({ "background": "#82C0D6", "color": "#000" });
+                            parent.$(".nav-list li:eq(1) li:eq(0)").addClass("current");
+                            //url = parent.$(".nav-list>li:eq(1) li:eq(0)").attr("tag");
+                            //parent.$("#url").attr("src", url);
+                            parent.changeIframe('AddingProject_Acceptance', '添加立项', '@Url.Action("AddingProject", "Acceptance")')
+                            break;
+                        case 2:
+                            parent.$(".nav-list>li:eq(3)").click();
+                            break;
+                        case 3:
+                            parent.$(".nav-list>li:eq(4)").click();
+                            break;
+
+                    }
+                });
+            });
+        });
+        function int() {
+            var _clientHeight, wrapHeight;
+            _clientHeight = parent.$("body").height();
+            wrapHeight = $(".welcome-body").height();
+            if (_clientHeight == 0) {
+                _clientHeight = $("body").height();
+            }
+            if (_clientHeight - 70 > wrapHeight) {
+                $(".welcome-body").css("margin-top", (_clientHeight - wrapHeight) / 4);
+            } else {
+                $(".welcome-body").css("margin-top", "0");
+            }
+        }
+
+
+    </script>
+</body>
+</html>

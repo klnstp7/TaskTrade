@@ -1,0 +1,426 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>评E评/估价流程与管理系统</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <link href="~/Content/plug-in/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/css/font-awesome.min.css" rel="stylesheet" />
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="~/Content/css/font-awesome-ie7.min.css">
+    <![endif]-->
+    <link rel="stylesheet" href="~/Content/plug-in/ace/ace.min.css" />
+    <link rel="stylesheet" href="~/Content/plug-in/ace/ace-rtl.min.css" />
+    <link rel="stylesheet" href="~/Content/plug-in/ace/ace-skins.min.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="~/Content/plug-in/ace/ace-ie.min.css"/>
+    <![endif]-->
+    <link rel="stylesheet" href="~/Content/css/style.css?version=v0.1" />
+    <link rel="stylesheet" href="~/Content/css/tabs.css" />
+    <script type="text/javascript" src="~/Content/plug-in/jquery/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="~/Content/plug-in/ace/ace-extra.min.js"></script>
+    <script type="text/javascript" src="~/Content/plug-in/iscroll/iscroll.js?version=v0.1"></script>
+    <script type="text/javascript" src="~/Content/plug-in/layer/layer.js?version=v0.1"></script>
+    <!--[if lt IE 9]>
+    <script type="text/javascript"  src="~/Content/plug-in/bootstrap.extends/html5shiv.min.js"></script>
+    <script type="text/javascript"  src="~/Content/plug-in/bootstrap.extends/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body class="skin-1 oh bc-white" style="overflow:hidden">
+    <div class="navbar navbar-default" id="navbar">
+
+        <div class="navbar-container f-cf" id="navbar-container">
+            <div class="navbar-header pull-left">
+                <a href="javascript:;" class="navbar-brand logo">
+                    <small>
+                        <i>
+                            <img src="~/Content/images/banner-logo.png" />
+                        </i>
+                    </small>
+                </a>
+                <ul class="users-info pull-left  hidden-sm hidden-xs ">
+                    <li>
+                        <a href="javascript:void(0);">
+                            <i class="fa fa-map-marker"></i>&nbsp;&nbsp;<span id="cityName">@ViewBag.City</span>
+                        </a>
+                        <div id="cityList" class="cityList" style="display:none; position: absolute; border: 1px solid #ccc; background: #fff; color: #34b5e2; width:300px">
+                            @{
+                                foreach (var item in ViewBag.Citys)
+                                {
+                                    <a href="javascript:void(0);" onclick="selected('@item',event)" style="float: left; color: #34b5e2; text-align: center; width: 33%; display: inline-block; margin-top: 5px; margin-bottom: 5px;">@item</a>
+                                }
+                            }
+                        </div>
+                    </li>
+                    <li id="changeCity" style="cursor:pointer;">
+                        &nbsp;&nbsp;&nbsp;&nbsp; 城市切换
+                    </li>
+                </ul>
+            </div>
+            <ul class="navbar-header pull-right users-info hidden-sm hidden-xs ">
+                @*<li class="">
+                        <a href="javascript:;" title="系统设置">
+                            <i class="fa fa-gear"></i>&nbsp;&nbsp;系统设置
+                        </a>
+                    </li>
+                    <li class="line">/</li>*@
+
+                <li>
+                    <a href="javascript:void(0);" title="首页" onclick="changeIframe('welcome', '欢迎界面' , '@Url.Action("Welcome", "Home")' , 'true' )">
+                        <i class="fa fa-home"></i>&nbsp;&nbsp;首页
+                    </a>
+                </li>
+                <li class="line">/</li>
+                <li>
+                    <a href="http://101.200.145.92:9199/bin/view/Main/" title="帮助" target='_blank'>
+                        <i class="fa fa-question-circle"></i>&nbsp;&nbsp;帮助
+                    </a>
+                </li>
+                <li class="line">/</li>
+                <li>
+                    <a href="javascript:;" title="@ViewBag.UserAccount">
+                        <i class="fa fa-user"></i>&nbsp;&nbsp;@ViewBag.UserAccount
+                    </a>
+                </li>
+                <li class="line">/</li>
+                <li>
+                    <a href="@ViewBag.ReLogInUrl?service=@ViewBag.ReLogInUrl" title="退出" target="_self">
+                        <i class="fa fa-power-off"></i>&nbsp;&nbsp;退出
+                    </a>
+                </li>
+            </ul>
+</div>
+    </div>
+    <div class="main-container" id="main-container">
+
+        <div class="main-container-inner">
+
+            <div class="sidebar" id="sidebar">
+                @*<h2 class="head">
+                        <span class="wrap"><i class="fa fa-tv"></i><span class="menu-text">后台管理系统</span></span>
+                    </h2>*@
+                <ul class="nav nav-list">
+                    @*<li onclick="changeIframe('Welcome','欢迎界面','@Url.Action("Welcome", "Home")')">
+                <a href="javascript:void(0);">
+                    <div class="menu-btn">
+                        <i class="fa fa-tv"></i>
+                        <span class="menu-name">首&nbsp;&nbsp;&nbsp;&nbsp;页</span>
+                    </div>
+
+                </a>
+            </li>*@
+                    <li>
+                        <a href="javascript:void(0);" class="dropdown-toggle">
+                            <div class="menu-btn">
+                                <i class="fa fa-comment-o"></i>
+                                <span class="menu-name">询&nbsp;&nbsp;&nbsp;&nbsp;价</span>
+                            </div>
+                            <b class="arrow fa fa-angle-right"></b>
+                        </a>
+                        <ul class="submenu">
+                            <li onclick="changeIframe('AddInquiry_Inquiry','添加询价','@Url.Action("AddInquiry", "Inquiry")')">
+                                <a href="javascript:void(0);">
+                                    <i class="fa fa-keyboard-o"></i>
+                                    添加询价
+                                </a>
+                            </li>
+                            <li onclick="changeIframe('Index_Inquiry','询价列表','@Url.Action("Index", "Inquiry")')">
+                                <a href="javascript:void(0);">
+                                    <i class="fa fa-list"></i>
+                                    询价列表
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="dropdown-toggle">
+                            <div class="menu-btn">
+                                <i class="fa fa-tag"></i>
+                                <span class="menu-name">立项受理</span>
+                            </div>
+                            <b class="arrow fa fa-angle-right"></b>
+                        </a>
+                        <ul class="submenu">
+                            <li onclick="changeIframe('AddingProject_Acceptance','添加立项','@Url.Action("AddingProject", "Acceptance")')">
+                                <a href="javascript:void(0);">
+                                    <i class="fa fa-pencil"></i>
+                                    添加立项
+                                </a>
+                            </li>
+                            <li onclick="changeIframe('Index_Acceptance','立项列表','@Url.Action("Index", "Acceptance")')">
+                                <a href="javascript:void(0);">
+                                    <i class="fa fa-edit"></i>
+                                    立项列表
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li onclick="changeIframe('Index_OnlineBusiness','线上业务','@Url.Action("Index", "OnlineBusiness")')">
+                        <a href="javascript:void(0);">
+                            <div class="menu-btn">
+                                <i class="fa fa-list-alt"></i>
+                                <span class="menu-name">线上业务</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li onclick="changeIframe('Index_ProjectReview','项目审核','@Url.Action("Index", "ProjectReview")')">
+                        <a href="javascript:void(0);">
+                            <div class="menu-btn">
+                                <i class="fa fa-diamond"></i>
+                                <span class="menu-name">项目审核</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li onclick="changeIframe('Index_ReportDelivery','报告发送','@Url.Action("Index", "ReportDelivery")')">
+                        <a href="javascript:void(0);">
+                            <div class="menu-btn">
+                                <i class="fa fa-file-text-o"></i>
+                                <span class="menu-name">报告发送</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@ViewBag.WaiCaiUrl" target='_blank'>
+                            <div class="menu-btn">
+                                <i class="fa fa-paste"></i>
+                                <span class="menu-name">外业任务</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li onclick="changeIframe('Index_IntegratedQuery','综合查询','@Url.Action("Index", "IntegratedQuery")')">
+                        <a href="javascript:void(0);">
+                            <div class="menu-btn">
+                                <i class="fa fa-users"></i>
+                                <span class="menu-name">综合查询</span>
+                            </div>
+                        </a>
+                    </li>
+                    @if (ViewBag.IsSupperUser)
+                    {
+                        <li onclick="changeIframe('CompanyCheck_CompanyCheck','公司审核','@Url.Action("CompanyCheck", "CompanyCheck")')">
+                            <a href="javascript:void(0);">
+                                <div class="menu-btn">
+                                    <i class="fa fa-archive"></i>
+                                    <span class="menu-name">公司审核</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li id="last">
+                            <a href="javascript:void(0);" class="dropdown-toggle" >
+                                <div class="menu-btn">
+                                    <i class="fa fa-tag"></i>
+                                    <span class="menu-name">系统设置</span>
+                                </div>
+                                <b class="arrow fa fa-angle-right"></b>
+                            </a>
+                            <ul class="submenu"> <li onclick="changeIframe('Index_Params', '参     数', '@Url.Action("Index", "Params")') ">
+                                    <a href="javascript:void(0);">
+                                        <div class="menu-btn">
+                                            <i class="fa fa-cog"></i>
+                                            <span class="menu-name">参&nbsp;&nbsp;&nbsp;&nbsp;数</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                @if (ViewBag.IsCompanyManage || ViewBag.IsSupperUser)
+                                {
+                                    <li tag="@ViewBag.PowerSysUrl" opentype="newwindow">
+                                        <a href="javascript:void(0);">
+                                            <div class="menu-btn">
+                                                <i class="fa fa-user"></i>
+                                                <span class="menu-name">权限管理</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                        </ul>
+                        <div class="closed" id="close"><i class="fa fa-chevron-left"></i>&nbsp;收起菜单&nbsp;</div>
+                        <div class="opened" id="open" style=" display: none; ">&nbsp;展开&nbsp;<i class="fa fa-chevron-right"></i></div>
+</div>
+            <div class="main-content">
+                <div class="page-content" id="page-content">
+                    @*<iframe id="url" src="@Url.Action("Welcome", "Home")" scrolling="yes" frameborder="0" style="border:0;width:100%"></iframe>*@
+                    @*<div class="tab-layout" id="tab-layout">
+                        <div class="tab-layout-title">
+                            <div class="tab-layout-left-arrow" onclick="prev()"><span class="line"></span><i class="fa fa-caret-left"></i></div>
+                            <div class="tab-layout-right-arrow" onclick="next()"><span class="line"></span><i class="fa fa-caret-right"></i></div>
+                            <div class="tab-layout-content">
+                                <ul></ul>
+                            </div>
+                        </div>
+                        <div class="tab-layout-body"></div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <script type="text/javascript" src="~/Content/plug-in/jquery/jquery.tabs.js"></script>
+    <script type="text/javascript">
+        var _index = 6;
+        try {
+            ace.settings.check('main-container', 'fixed');
+            ace.settings.check('sidebar', 'fixed');
+            ace.settings.check('sidebar', 'collapsed');
+        } catch (e) { }
+        $(function() {
+            if (('@ViewBag.IsSupperUser').toLowerCase() == "true") {
+                _index = 8;
+            } else {
+                _index = 6;
+            }
+            if (('@ViewBag.IsSupperUser').toLowerCase() == "true" && (('@ViewBag.IsCompanyManage').toLowerCase() == "true" || ('@ViewBag.IsSupperUser').toLowerCase() == "true")) {
+                $("body").remove('#last');
+            }
+            $("body").click(function(event) {
+                if (event && event.stopPropagation) {
+                    event.stopPropagation();
+                } else {
+                    window.event.cancelBubble = true;
+                }
+                $("#cityList").hide();
+            });
+            closemenu();
+            changeIframe('welcome', '欢迎界面', '@Url.Action("Welcome", "Home")', 'true');
+
+            $("#sidebar, #url").height($(window).height() - 70);
+            //窗口大小自适应
+            $(window).resize(function() {
+                resizeWin();
+                $("#sidebar, #url").height($(window).height() - 70);
+            });
+            $(".nav-list li").click(function(event) {
+                event.stopPropagation();
+                $(".nav-list li").removeClass("current");
+                $(this).addClass("current");
+                if ($(this).index() == 1 || $(this).index() == 0 || $(this).index() == _index) {
+                    var obj = $(this).find(".arrow");
+                    if (obj.hasClass("fa-angle-right")) {
+                        obj.removeClass("fa-angle-right").addClass("fa-angle-down");
+                        obj.parent().parent().css({ "background": "#82C0D6", "color": "#000" });
+                        $(this).siblings().each(function() {
+                            if ($(this).is(':has(ul)')) {
+                                $(this).find(".arrow").removeClass("fa-angle-down").addClass("fa-angle-right ");
+                                $(this).attr("style", "");
+                                $(this).find(".submenu").slideUp(200);
+                            }
+                        });
+                        obj.parent().siblings(".submenu").slideDown(200);
+                    } else {
+                        obj.addClass("fa-angle-right").removeClass("fa-angle-down");
+                        if ($(this).parent(".submenu").length > 0) {
+                            $(".nav-list li:eq(0), .nav-list li:eq(1), .nav-list li:eq(" + _index + ")").attr("style", "");
+
+                            //$(".nav-list li:eq(1)").find(".submenu").slideUp(200);
+                        } else {
+                            obj.removeClass("fa-angle-down").addClass("fa-angle-right ");
+                            obj.parent().parent().attr("style", "");
+                            obj.parent().siblings(".submenu").slideUp(200);
+                        }
+                    }
+                } else {
+                    if ($(this).parent(".submenu").length > 0) {
+                        $(".nav-list li:eq(0), .nav-list li:eq(1)").attr("style", "");
+                        //$(".nav-list li:eq(1)").find(".submenu").slideUp(200);
+                    } else {
+                        $(this).siblings().each(function() {
+                            if ($(this).is(':has(ul)')) {
+                                $(this).find(".arrow").removeClass("fa-angle-down").addClass("fa-angle-right ");
+                                $(this).attr("style", "");
+                                $(this).find(".submenu").slideUp(200);
+                            }
+                        });
+                    }
+                }
+                var url = $(this).attr("tag");
+                if ($(this).attr("opentype") != null && $(this).attr("opentype") == "newwindow") {
+                    window.open(url);
+                }
+            });
+
+
+            $("#close").click(function() {
+                closemenu();
+            });
+            $("#open").click(function() {
+                $("#sidebar").removeClass("menu-min");
+                $("#sidebar .head").css("width", "210px");
+                $("#sidebar .head > span").addClass("wrap");
+                $("#open").hide();
+                $("#close").show();
+                $(".dropdown-toggle").find(".arrow").show();
+            });
+
+            $("#changeCity").click(function(event) {
+                event.stopPropagation();
+                $("#cityList").toggle();
+            });
+            var iscroll = new IScroll("#sidebar", {
+                snap: true,
+                scrollbars: true,
+                mouseWheel: true,
+                fadeScrollbars: true,
+                bounce: false
+            });
+        });
+
+        function changeIframe(id, name, url, del) {
+            additem(id, name, url, del);
+        }
+
+        function delFrame(id) {
+            delitem(id);
+        }
+
+        function selected(item, event) {
+            if (event && event.stopPropagation) {
+                event.stopPropagation();
+            } else {
+                window.event.cancelBubble = true;
+            }
+            $.ajax({
+                url: '/Home/ChangeCity',
+                cache: false,
+                data: { cityName: item },
+                success: function(result) {
+
+                }
+            });
+            $("#cityName").text(item);
+            $(".cityList").hide();
+        }
+
+
+        function closemenu() {
+            $("#sidebar").addClass("menu-min");
+            $("#sidebar .head").css("width", "60px");
+            $("#sidebar .head > span").removeClass("wrap");
+            $("#close").hide();
+            $("#open").show();
+            $(".dropdown-toggle").find(".arrow").hide();
+        }
+    </script>
+    <!--[if lte IE 7]>
+        <script type="text/javascript">
+            $(function() {
+                layer.open({
+                    type: 1,
+                    title: false,
+                    closeBtn: 0,
+                    shadeClose: true,
+                    content: '<div class="alert alert-danger" role="alert" id="alert">请您使用360浏览器或IE8及以上浏览器，获得更好用户体验</div>'
+                });
+            });
+        </script>
+    <![endif]-->
+
+</body>
+
+</html>

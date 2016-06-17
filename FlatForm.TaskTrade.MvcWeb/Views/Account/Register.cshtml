@@ -1,0 +1,609 @@
+﻿@{
+    Layout = null;
+}
+
+<html>
+<head>
+    <title>用户注册</title>
+    <link href="~/Content/plug-in/jquery-citypicker/citypicker-2.0.css" rel="stylesheet" />
+    <script type="text/javascript" src="../Scripts/jquery-1.8.2.min.js"></script>
+    <script src="~/Content/plug-in/jquery-citypicker/citypicker-2.0.js"></script>
+    <script src="~/Content/plug-in/jquery/jquery.form.js"></script>
+    <style>
+        body {
+            font-family: "微软雅黑";
+            padding: 0;
+            margin: 0;
+        }
+
+        img {
+            border: 0;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        button {
+            outline: none;
+            border: 0;
+            cursor: pointer;
+        }
+
+        .registered-bg {
+            background: #42bfe8;
+        }
+
+        .registered-head {
+            width: 100%;
+            height: 67px;
+            background: #fff;
+        }
+
+            .registered-head::after {
+                clear: both;
+            }
+
+            .registered-head a {
+                margin-left: 50px;
+                float: left;
+            }
+
+            .registered-head p {
+                height: 39px;
+                line-height: 39px;
+                font-size: 18px;
+                color: #97979d;
+                margin: 14px 0;
+                float: left;
+                border-left: 1px solid #C5C5C5;
+                padding-left: 16px;
+            }
+
+        .registered-main {
+            margin-left: 12%;
+            margin-right: 12%;
+            margin-top: 32px;
+            margin-bottom: 32px;
+        }
+
+        .registered-list {
+            display: block;
+            height: 44px;
+            font-size: 18px;
+            clear: both;
+        }
+
+        .registered-tl {
+            float: left;
+            margin-right: 6px;
+            width: 154px;
+            height: 44px;
+        }
+
+            .registered-tl a {
+                float: left;
+                padding: 7px 30px;
+                width: 94px;
+                height: 30px;
+                line-height: 30px;
+                text-align: right;
+                border-radius: 6px 6px 0 0;
+                color: #525151;
+                background: #C7ECF8 url(../../Content/images/loginimgs/personal_bg.png) no-repeat 20px 8px;
+            }
+
+                .registered-tl a.current {
+                    float: left;
+                    padding: 7px 30px;
+                    width: 94px;
+                    height: 30px;
+                    background: #fff url(../../Content/images/loginimgs/personal_bg.png) no-repeat 20px -33px;
+                    color: #45b8ef;
+                }
+
+        .registered-tr {
+            float: left;
+            margin-right: 6px;
+            width: 154px;
+            height: 44px;
+        }
+
+            .registered-tr a {
+                float: left;
+                padding: 7px 30px;
+                width: 94px;
+                height: 30px;
+                line-height: 30px;
+                text-align: right;
+                border-radius: 6px 6px 0 0;
+                color: #525151;
+                background: #C7ECF8 url(../../Content/images/loginimgs/personal_bg.png) no-repeat 20px -83px;
+            }
+
+                .registered-tr a.current {
+                    float: left;
+                    padding: 7px 30px;
+                    width: 94px;
+                    height: 30px;
+                    background: #fff url(../../Content/images/loginimgs/personal_bg.png) no-repeat 20px -124px;
+                    color: #45b8ef;
+                }
+
+        .registered-tab {
+            width: 100%;
+            padding: 20px 0;
+            background: #fff;
+            border-radius: 0 6px 6px 6px;
+        }
+
+        .registered-contior {
+            width: 420px;
+            margin: 0 auto;
+        }
+
+            .registered-contior table {
+                display: none;
+            }
+
+        .registered-tab-label {
+            width: 110px;
+            height: 40px;
+            padding-right: 6px;
+            text-align: right;
+            font-size: 14px;
+            color: #525151;
+            font-weight: 600;
+        }
+
+        .registered-tab-input {
+            width: 268px;
+            height: 36px;
+            line-height: 36px;
+            margin-right: 6px;
+            padding: 0 0 0 6px;
+            border: 1px solid #DEDEDE;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            float: left;
+        }
+
+        .registered-tab-man {
+            width: 33px;
+            text-align: left;
+            color: #EA2A27;
+        }
+
+        .registered-p {
+            font-size: 14px;
+            color: #525151;
+            text-align: center;
+        }
+
+            .registered-p a {
+                color: #45b8ef;
+            }
+
+        .registered-btnl {
+            width: 6px;
+            height: 37px;
+            float: left;
+            background: url(../../Content/images/loginimgs/button_l.png) no-repeat;
+        }
+
+        .registered-fs {
+            width: 94px;
+            height: 36px;
+            float: left;
+            border: 1px solid #51BCF0;
+            background: #E7F6FB;
+            color: #51BCF0;
+        }
+
+        .registered-btnr {
+            width: 6px;
+            height: 37px;
+            float: left;
+            background: url(../../Content/images/loginimgs/button_r.png) no-repeat;
+        }
+
+        .registered-sub {
+            width: 256px;
+            height: 37px;
+            float: left;
+            font-size: 14px;
+            color: #fff;
+            background: url(../../Content/images/loginimgs/button_bg.png) repeat-x;
+        }
+    </style>
+</head>
+<body class="registered-bg">
+    <div class="registered-head">
+        <!--<a href="javascript:;"><img src="../../Content/images/loginimgs/Register_logo.jpg" /></a>
+        <p>用户注册</p>-->
+        <a href="javascript:;"><img src="../../Content/images/loginimgs/rigistered_lg.jpg" /></a>
+    </div>
+
+    <div class="registered-main">
+        <div class="registered-list">
+            <div class="registered-tl">
+                <a id="user" href="javascript:;" class="current">个人用户</a>
+            </div>
+            <div class="registered-tr">
+                <a id="qiye" href="javascript:;">企业用户</a>
+            </div>
+        </div>
+
+        <div class="registered-tab">
+            <div class="registered-contior">
+                <form id="personaluser">
+                    <table id="personal" width="100%" border="0" cellspacing="0" cellpadding="0" style="display: block;">
+                        <tr>
+                            <td class="registered-tab-label">用户名：</td>
+                            <td><input id="txtUserAccount" type="text" name="txtUserAccount" class="registered-tab-input" maxlength="30" /></td>
+                            <td class="registered-tab-man">*</td>
+                        </tr>
+                        <tr style="height: 8px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label">登录密码：</td>
+                            <td><input id="txtPassword" type="password" name="txtPassword" class="registered-tab-input" maxlength="30" /></td>
+                            <td class="registered-tab-man">*</td>
+                        </tr>
+                        <tr style="height: 8px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label">手机号码：</td>
+                            <td><input id="txtPhone" type="text" name="txtPhone" class="registered-tab-input" style="width: 168px;" maxlength="11" /><button tabIndex="-1" id="btnSendCode" type="button" class="registered-fs" onclick="send();">发送验证码</button></td>
+                            <td class="registered-tab-man">*</td>
+                        </tr>
+                        <tr style="height: 8px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label">手机验证码：</td>
+                            <td><input id="txtSecurityCode" type="text" name="txtSecurityCode" class="registered-tab-input" maxlength="8" /></td>
+                            <td class="registered-tab-man">*</td>
+                        </tr>
+                        <tr style="height: 8px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label">公司机构：</td>
+                            <td><input id="txtCompany" type="text" name="txtCompany" class="registered-tab-input" maxlength="50" /></td>
+                            <td class="registered-tab-man"></td>
+                        </tr>
+                        <tr style="height: 24px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label"></td>
+                            <td><div class="registered-btnl"></div><button type="button" class="registered-sub" onclick="reg();">注册</button><div class="registered-btnr"></div></td>
+                            <td class="registered-tab-man"></td>
+                        </tr>
+                        <tr style="height: 12px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label"></td>
+                            <td class="registered-p">已有账户？<a href="javascript:;">登录</a></td>
+                            <td class="registered-tab-man"></td>
+                        </tr>
+                    </table>
+                </form>
+                <form name="formCompany" id="formCompany">
+                    <table id="enterprise" width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td class="registered-tab-label">公司名称：</td>
+                            <td><input name="CompanyName" type="text" class="registered-tab-input" maxlength="50" /></td>
+                            <td class="registered-tab-man">*</td>
+                        </tr>
+                        <tr style="height: 8px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label">公司地址：</td>
+                            <td><input name="Address" type="text" class="registered-tab-input" maxlength="100" /></td>
+                            <td class="registered-tab-man"></td>
+                        </tr>
+                        <tr style="height: 8px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label">管理员用户名：</td>
+                            <td><input name="UserName" type="text" class="registered-tab-input" maxlength="30" /></td>
+                            <td class="registered-tab-man">*</td>
+                        </tr>
+                        <tr style="height: 8px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label">登录密码：</td>
+                            <td><input name="Password" type="password" class="registered-tab-input" maxlength="30" /></td>
+                            <td class="registered-tab-man">*</td>
+                        </tr>
+                        <tr style="height: 8px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label">所在城市：</td>
+                            <td>
+                                @*<select class="registered-tab-input">
+                                        <option></option>
+                                    </select>*@
+                                <input readonly="readonly" id="city1" name="City" type="text" class="registered-tab-input" />
+                            </td>
+                            <td class="registered-tab-man">*</td>
+                        </tr>
+                        <tr style="height: 8px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label">联系人：</td>
+                            <td><input name="Contact" type="text" class="registered-tab-input" maxlength="30" /></td>
+                            <td class="registered-tab-man"></td>
+                        </tr>
+                        <tr style="height: 8px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label">联系电话：</td>
+                            <td><input name="Tel" type="text" class="registered-tab-input" maxlength="30" /></td>
+                            <td class="registered-tab-man"></td>
+                        </tr>
+                        <tr style="height: 8px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label">企业资料上传：</td>
+                            <td>
+                                <input type="file" class="registered-tab-input" name="uploadFileCtrl" accept="image/*" />
+                                @*<button type="button" class="registered-fs">资料上传</button>*@
+                            </td>
+                            <td class="registered-tab-man">*</td>
+                        </tr>
+                        <tr style="height: 8px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label">备注：</td>
+                            <td><input name="Remark" type="text" class="registered-tab-input" maxlength="100" /></td>
+                            <td class="registered-tab-man"></td>
+                        </tr>
+
+                        <tr style="height: 24px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label"></td>
+                            <td><div class="registered-btnl"></div><button type="button" class="registered-sub" onclick="regCompany();">注册</button><div class="registered-btnr"></div></td>
+                            <td class="registered-tab-man"></td>
+                        </tr>
+                        <tr style="height: 12px;"></tr>
+                        <tr>
+                            <td class="registered-tab-label"></td>
+                            <td class="registered-p">已有账户？<a href="javascript:;">登录</a></td>
+                            <td class="registered-tab-man"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        //tab切换
+        $(document).ready(function () {
+            $("#user").click(function () {
+                $("#user").parent().children("a").addClass("current");
+                $(this).parent().siblings("div").children("a").removeClass("current");
+                $("#personal").show("fast");
+                $("#enterprise").hide()
+
+                document.onkeydown = function (e) {
+                    var ev = document.all ? window.event : e;
+                    if (ev.keyCode == 13) {
+                        reg();
+                    }
+                }
+            });
+            $("#qiye").click(function () {
+                $("#qiye").parent().children("a").addClass("current");
+                $(this).parent().siblings("div").children("a").removeClass("current");
+                $("#enterprise").show("fast")
+                $("#personal").hide();
+
+                document.onkeydown = function (e) {
+                    var ev = document.all ? window.event : e;
+                    if (ev.keyCode == 13) {
+                        regCompany();
+                    }
+                }
+            });
+
+            document.onkeydown = function (e) {
+                var ev = document.all ? window.event : e;
+                if (ev.keyCode == 13) {
+                    reg();
+                }
+            }
+
+
+            $('#city1').click(function () {
+                cityShow();
+            });
+        });
+
+        //$(window).resize(function () {
+        //    cityShow();
+        //});
+
+        function cityShow() {
+            var top = $('#city1').offset().top + 40;
+            var left = $('#city1').offset().left;
+            citypicker.show({ left: left, top: top }, function (data) {
+                $('#city1').val(data);
+            });
+        }
+
+        function send() {
+            var phone = $('#txtPhone').val();
+            var reg = /^0?1[3|4|5|8][0-9]\d{8}$/;
+            if (!reg.test(phone)) {
+                alert("请输入正确的手机号码!");
+                return;
+            }
+
+            sendSecurityCode(phone);
+            settime();
+        }
+
+        var countdown = 10;
+        function settime() {
+            var obj = $('#btnSendCode');
+            if (countdown == 0) {
+                obj.attr("disabled", false);
+                obj.text("发送验证码");
+                countdown = 10;
+                return;
+            } else {
+                obj.attr("disabled", true);
+                obj.text("重新发送(" + countdown + ")");
+                countdown--;
+            }
+            setTimeout(function () {
+                settime()
+            }, 1000)
+        }
+
+        function sendSecurityCode(phone) {
+            $.ajax({
+                url: "@Url.Action("SendSecurityCode", "Account")" + "?phoneNumber=" + phone,
+                async: true,
+                dataType: "json",
+                type: "GET",
+                data: { 'qs': new Date().toString() },
+                complete: function (XmlHttpRequest, textStatus) {
+                },
+                success: function (result) {
+                    alert(result.Message);
+                },
+                error: function (XmlHttpRequest, textStatus, errorThrown) {
+                    var $errorPage = XmlHttpRequest.responseText;
+                }
+            });
+        }
+
+        function reg() {
+            var userAccount = $('#txtUserAccount').val();
+            var password = $('#txtPassword').val();
+            var phone = $('#txtPhone').val();
+            var companyName = $('#txtCompany').val();
+            var desc = $('#txtSecurityCode').val();
+            var reg = /^0?1[3|4|5|8][0-9]\d{8}$/;
+
+            if (userAccount.length <= 0) {
+                alert("请填写用户名");
+                return;
+            }
+            else if (userAccount.length < 6) {
+                alert("用户名至少需要6位");
+                return;
+            }
+            else if (password.length <= 0) {
+                alert("请填写登录密码");
+                return;
+            }
+            else if (password.length < 6) {
+                alert("登录密码至少需要6位");
+                return;
+            }
+            else if (phone.length <= 0) {
+                alert("请填写手机号码");
+                return;
+            }
+            else if (!reg.test(phone)) {
+                alert("请输入正确的手机号码!");
+                return;
+            }
+            else if (desc.length <= 0) {
+                alert("请填写手机验证码");
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Register", "Account")",
+                async: true,
+                dataType: "json",
+                type: "POST",
+                data: {
+                    'UserAccount': userAccount,
+                    'Password': password,
+                    'Phone': phone,
+                    'CompanyName': companyName,
+                    'Desc': desc,
+                    'qs': new Date().toString()
+                },
+                complete: function (XmlHttpRequest, textStatus) {
+                },
+                success: function (result) {
+                    if (result.Success) {
+                        location.href = 'http://www.baidu.com';
+                    }
+                    else {
+                        alert(result.Message);
+                    }
+                },
+                error: function (XmlHttpRequest, textStatus, errorThrown) {
+                    var $errorPage = XmlHttpRequest.responseText;
+                }
+            });
+        }
+
+        function regCompany() {
+            var companyName = document.formCompany.CompanyName.value;
+            var address = document.formCompany.Address.value;
+            var userName = document.formCompany.UserName.value;
+            var password = document.formCompany.Password.value;
+            var city = document.formCompany.City.value;
+            var contact = document.formCompany.Contact.value;
+            var tel = document.formCompany.Tel.value;
+            var remark = document.formCompany.Remark.value;
+            var reg = /^0?1[3|4|5|8][0-9]\d{8}$/;
+            var file = document.formCompany.uploadFileCtrl.value;
+            if (companyName.length <= 0) {
+                alert("请填写公司名称");
+                return;
+            }
+            else if (companyName.length < 6) {
+                alert("公司名称至少需要6位");
+                return;
+            }
+            if (userName.length <= 0) {
+                alert("请填写管理员用户名");
+                return;
+            }
+            else if (password.length <= 0) {
+                alert("请填写登录密码");
+                return;
+            }
+            else if (password.length < 6) {
+                alert("登录密码至少需要6位");
+                return;
+            }
+            else if (city.length <= 0) {
+                alert("请选择所在城市");
+                return;
+            }
+            else if (tel.length > 0 && !reg.test(tel)) {
+                alert("请输入正确的手机号码!");
+                return;
+            }
+            if (file == "") {
+                alert("请选择企业资料");
+                document.formCompany.uploadFileCtrl.focus();
+                return;
+            } else {
+                var extStart = file.lastIndexOf(".");
+                var ext = file.substring(extStart, file.length).toUpperCase();
+                if (ext != ".BMP" && ext != ".PNG" && ext != ".GIF" && ext != ".JPG" && ext != ".JPEG") {
+                    alert("图片限于png,gif,jpeg,jpg格式");
+                    return;
+                }
+            }
+
+            //开始ajax操作
+            $("#formCompany").ajaxSubmit({
+                type: "POST",//提交类型
+                dataType: "json",//返回结果格式
+                url: "@Url.Action("RegisterCompany", "Account")",
+                data: $('#formCompany').serialize(),
+                success: function (result) {
+                    if (result.Success) {
+                        location.href = 'http://www.baidu.com';
+                    }
+                    else {
+                        alert(result.Message);
+                    }
+                },
+                error: function (data) { alert(data.msg); },//请求失败的函数
+                async: true
+
+            });
+        }
+    </script>
+</body>
+</html>

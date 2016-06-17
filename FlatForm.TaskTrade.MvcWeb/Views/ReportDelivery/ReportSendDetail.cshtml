@@ -1,0 +1,181 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+@*<ul class="m-crm">
+    <li><a href="@Url.Action("Welcome", "Home")"><i class="fa fa-home"></i>&nbsp;&nbsp;首页</a> <span class="divider">&gt;</span></li>
+    <li><a href="@Url.Content("~/ReportDelivery/Index")">报告发送</a>&nbsp;&nbsp;<span class="divider">&gt;</span></li>
+    <li>报告发送详细</li>
+</ul>*@
+
+<div class="inquire-tab">
+        <div>
+            <form id="reportsearchinfo">
+                <table width="100%" class="mar_t_20" border="0" cellspacing="0" cellpadding="0" style="width: 720px;margin-bottom: 10px;">
+                    <tr>
+                        <td>快递公司：</td>
+                        <td><input id="SendExpress" name="SendExpress" type="text" class="report-input" /></td>
+                        <td>快递单号：</td>
+                        <td><input id="ExpressNo" name="ExpressNo" type="text" class="report-input" /></td>
+                        <td>接收地址：</td>
+                        <td><input id="SendAddress" name="SendAddress" type="text" class="report-input" /></td>
+                        <td><button id="reportSearch" type="button" class="report-btn-1">查询</button></td>
+                    </tr>
+                </table>
+            </form>
+            <div id="reportsearchinfo1">
+                <table id="reportData"></table>
+            </div>
+        </div>
+</div>
+
+<script type="text/javascript">
+    var takeProjectId = "";
+
+    $(function () {
+
+        //报告发送查询验证
+        $("#reportsearchinfo").validate({
+            rules: {
+                //快递公司
+                SendExpress: {
+                    maxlength: 100
+                },
+                //快递单号
+                ExpressNo: {
+                    maxlength: 25,
+                    isDigits: true
+                },
+                //接收地址
+                SendAddress: {
+                    maxlength: 200
+                }
+            },
+            messages: {
+                txtSendExpress: {
+                    maxlength: jQuery.validator.format("亲,字符不用超过100个")
+                },
+                ExpressNo: {
+                    maxlength: jQuery.validator.format("亲,字符不用超过25个"),
+                    isDigits: "输入的必须为数字"
+                },
+                SendAddress: {
+                    maxlength: jQuery.validator.format("亲,字符不用超过200个")
+                }
+            },
+            success: function (label) {
+                layer.close(dialog);
+                $("#" + label[0].htmlFor).removeClass("error-border");
+            },
+            errorPlacement: function (error, element) {
+                $("#" + element[0].id).addClass("error-border");
+                dialog = layer.tips(error[0].innerHTML, "#" + element[0].id, {
+                    tips: [2, '#F99228']
+                });
+            }
+        });
+
+        //查询
+        $('#reportSearch').click(reportRefresh);
+        //初始化
+        viewReport("@ViewBag.Id")
+    });
+
+    //查询
+    function reportRefresh() {
+        var flag = $("#reportsearchinfo").valid();
+        if (flag) {
+            $('#reportData').bootstrapTable("destroy");
+            reportint();
+        }
+    }
+
+    //初始化
+    function viewReport(id) {
+        reportint()
+        takeProjectId = id;
+        $('#reportData').bootstrapTable('refresh');
+    }
+
+    //报告发送
+    function reportint() {
+        $('#reportData').bootstrapTable({
+            url: '/ReportDelivery/GetReportData', //请求后台的URL（*）
+            dataType: "json",
+            method: 'get', //请求方式（*）
+            striped: true, //是否显示行间隔色
+            cache: false, //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true, //是否显示分页（*）
+            queryParams: function (params) {
+                return {
+                    sendExpress: $("#SendExpress").val(),
+                    expressNo: $('#ExpressNo').val(),
+                    sendAddress: $('#SendAddress').val(),
+                    projectId: takeProjectId,
+                    rows: params.limit, //页面大小
+                    index: params.offset / params.limit + 1,
+                };
+            }, //传递参数（*）
+            sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1, //初始化加载第一页，默认第一页
+            pageSize: 10, //每页的记录行数（*）
+            pageList: [10, 25, 50, 100], //可供选择的每页的行数（*）
+            strictSearch: true,
+            height: 'auto',
+            singleSelect: false,
+            uniqueId: "Id", //每一行的唯一标识，一般为主键列
+            cardView: false, //是否显示详细视图
+            detailView: false, //是否显示父子表
+            columns: [
+                {
+                    title: '发送方式',
+                    field: 'SendType',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '快递公司',
+                    field: 'SendExpress',
+                    align: 'left',
+                    valign: 'middle',
+                },
+                {
+                    title: '快递单号',
+                    field: 'ExpressNo',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '接收地址',
+                    field: 'SendAddress',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '收件人',
+                    field: 'Receiver',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '收件人电话',
+                    field: 'ReciverMobile',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '已发送份数',
+                    field: 'SendQuantity',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '备注',
+                    field: 'Remark',
+                    align: 'left',
+                    valign: 'middle'
+                }
+            ]
+        });
+    }
+
+</script>

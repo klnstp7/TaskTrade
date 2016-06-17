@@ -1,0 +1,245 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+@*<ul class="m-crm">
+    <li><a href="@Url.Action("Welcome", "Home")"><i class="fa fa-home"></i>&nbsp;&nbsp;首页</a> <span class="divider">&gt;</span></li>
+    <li><a href="@Url.Action("Index", "ProjectReview")">&nbsp;&nbsp;项目审核</a> <span class="divider">&gt;</span></li>
+    <li>新建报告</li>
+</ul>*@
+
+<form id="formData" enctype="multipart/form-data">
+    <div class="detail">
+        <h3>新建报告</h3>
+        <table width="98%" cellpadding="0" cellspacing="0" border="0" class="xj-report">
+            <tr>
+                <td>报告号</td>
+                <td class="f-tl"><input type="text" class="detail-input" id="ReportNo" name="ReportNo" /><span class="text-color-red">*</span></td>
+                <td>小区名称</td>
+                <td class="f-tl"><input type="text" class="detail-input" id="ResidentialAreaName" name="ResidentialAreaName" /><span class="text-color-red">*</span></td>
+                <td>小区地址</td>
+                <td class="f-tl"><input type="text" class="detail-input" id="ResidentialAddress" name="ResidentialAddress" /><span class="text-color-red">*</span></td>
+
+            </tr>
+            <tr>
+                <td>物业类型</td>
+                <td class="f-tl">
+                    <select id="PropertyType" name="PropertyType" class="detail-input">
+                        <option value="">请选择</option>
+                        @foreach (var item in ViewBag.WuyeType)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select><span class="text-color-red">*</span>
+                </td>
+                <td>
+                    项目分类
+                </td>
+                <td class="f-tl">
+                    <select id="ProjectType" name="ProjectType" class="detail-input">
+                        <option value="">请选择</option>
+                        @foreach (var item in ViewBag.ProjectType)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select><span class="text-color-red">*</span>
+                </td>
+                @*<input id="ProjectType" name="ProjectType" class="input-sty " type="text" />*@
+                <td>
+                    估价目的
+                </td>
+                <td class="f-tl">
+                    <select id="BusinessType" name="BusinessType" class="detail-input">
+                        <option value="">请选择</option>
+                        @foreach (var item in ViewBag.BusinessType)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select><span class="text-color-red">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td> 报告类型</td>
+                <td class="f-tl">
+                    <select id="ResourceType" name="ResourceType" class="detail-input">
+                        <option value="">请选择</option>
+                        @foreach (var item in ViewBag.ReportType)
+                        {
+                            <option value="@item.Value">@item.Name</option>
+                        }
+                    </select><span class="text-color-red">*</span>
+                </td>
+                <td>报告上传</td>
+                <td colspan="3" class="f-tl">
+                    <input id="address" class="input-sty-longinput f-fl" readonly="readonly"  name="address" type="text" />
+                    <input type="file" id="hideFile" class="registered-tab-input inputfile" name="hideFile" onchange="document.getElementById('address').value = this.value;" /><span class="text-color-red">*</span>
+                    <button id="xuanZhe" type="button" class="box-shadow-green button-green f-fl">文件选择</button>
+                   
+                </td>
+                <td></td>
+            </tr>
+        </table>
+        <p style="text-align:center;"><button id="saveReport" type="button" class=" box-shadow-lan project-btn-noima">保存</button></p>
+
+    </div>
+
+</form>
+
+<script src="~/Content/plug-in/jquery/jquery.form.js"></script>
+<script type="text/javascript">
+
+    var dialog;
+    $(function () {
+
+        $("#formData").validate({
+            rules: {
+                ReportNo: {
+                    maxlength: 50,
+                    required: true
+                },
+                ResidentialAreaName: {
+                    maxlength: 50,
+                    required: true
+                },
+                ResidentialAddress: {
+                    maxlength: 50,
+                    required: true
+                },
+                PropertyType: {
+                    required: true
+                },
+                ProjectType: {
+                    required: true
+                },
+                BusinessType: {
+                    required: true
+                },
+                ResourceType: {
+                    required: true
+                },
+                address: {
+                    maxlength: 50,
+                    required: true
+                }
+            },
+            message: {
+                ReportNo: {
+                    maxlength: jQuery.validator.format("请输入一个长度最少是 {0} 的报告编号"),
+                    required: "请输入报告编号"
+                },
+                ResidentialAreaName: {
+                    maxlength: jQuery.validator.format("请输入一个长度最少是 {0} 的小区名称"),
+                    required: "请输入小区名称"
+                },
+                ResidentialAddress: {
+                    maxlength: jQuery.validator.format("请输入一个长度最少是 {0} 的小区地址"),
+                    required: "请输入小区地址"
+                },
+                PropertyType: {
+                    required: "请选择物业类型"
+                },
+                ProjectType: {
+                    required: "请选择项目分类"
+                },
+                BusinessType: {
+                    required: "请选择估价目的"
+                },
+                ResourceType: {
+                    required: "请选择报告类型"
+                },
+                address: {
+                    maxlength: 50,
+                    required: "请选择上传文件"
+                }
+            },
+            success: function (label) {
+
+                layer.close(dialog);
+                $("#" + label[0].htmlFor).removeClass("error-border");
+            },
+            errorPlacement: function (error, element) {
+
+                $("#" + element[0].id).addClass("error-border");
+                dialog = layer.tips(error[0].innerHTML, "#" + element[0].id, {
+                    tips: [2, '#F99228']
+                });
+            }
+        });
+        //选择点击
+        $("#xuanZhe").on("click", function () {
+            $("#hideFile").click();
+        });
+        //获取上传文件路径
+        $("#hideFile").on("change", function () {
+            var path = $("#hideFile").val();
+            var suffix = path.split('.');
+            if (suffix[suffix.length - 1] != "doc" && suffix[suffix.length - 1] != "docx") {
+                layer.msg("请上传word文件!", { icon: 5, time: 1500, shade: [0.3, '#000'] });
+                return;
+            }
+            $("#address").val(path);
+        });
+
+        //提交请求
+        $("#saveReport").on("click", function () {
+            var flag = $("#formData").valid();
+            if (flag) {
+                $("#saveReport").attr("disabled", "disabled");
+             
+                var indexs = layer.msg("正在上传，请销等...", { icon: 7, time: 30000, shade: [0.3, '#000'] });
+
+                var options = {
+                    url: "@Url.Content("~/ProjectReview/SaveReport")",
+                    type: "post", 
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    //data: data,
+                    success: function (result) { 
+                        layer.alert(result.msg, {
+                            closeBtn: 0,
+                            icon: 6,
+                            shade: [0.3, '#000']
+                        }, function () { 
+                            layer.closeAll();
+                            parent.$("#url").attr("src", "/ProjectReview/Index");
+                        });
+                        $("#saveReport").removeAttr("disabled");
+                    },
+                    error: function (result) {
+                        layer.closeAll();
+                        layer.msg("新建报告失败，请稍后再试。", { icon: 2, time: 1500, shade: [0.3, '#000'] });
+                        $("#saveReport").removeAttr("disabled"); 
+                        console.log(result);
+                    }
+                };
+                $("#formData").ajaxSubmit(options);
+                return false;
+                @*$.ajax({
+                    url: "@Url.Content("~/ProjectReview/SaveReport")",
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        //alert(result.msg);
+                        layer.alert(result.msg, {
+                            closeBtn: 0,
+                            icon: 6, shade: [0.3, '#000']
+                        }, function () {
+                            layer.closeAll();
+                            parent.$("#url").attr("src", "/ProjectReview/Index");
+                            //window.location.reload();
+                        });
+                        $("#saveReport").removeAttr("disabled");
+                    },
+                    error: function () {
+                        //alert("新建失败!");
+                        layer.closeAll();
+                        layer.msg("新建报告失败，请稍后再试。", { icon: 2, time: 1500, shade: [0.3, '#000'] });
+                        $("#saveReport").removeAttr("disabled");
+                    }
+                });*@
+            }
+        });
+    });
+
+</script>

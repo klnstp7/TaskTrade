@@ -1,0 +1,334 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+
+@*<ul class="m-crm">
+    <li><a href="@Url.Action("Welcome", "Home")"><i class="fa fa-home"></i>&nbsp;&nbsp;首页</a> <span class="divider">&gt;</span></li>
+    <li>项目审核</li>
+</ul>*@
+<div class="project-tab">
+    <form id="searchinfo">
+        <table border="0" cellspacing="0" cellpadding="0" class="project">
+            <tr>
+                <td>流水号：</td>
+                <td><input type="text" name="ProjectNo" id="ProjectNo" class="project-input" /></td>
+                <td>报告号：</td>
+                <td><input type="text" name="ReportNo" id="ReportNo" class="project-input" /></td>
+                <td>项目地址：</td>
+                <td><input type="text" name="ProjectAddress" id="ProjectAddress" class="project-input" /></td>
+                <td>小区名称：</td>
+                <td><input type="text" id="ResidentialAreaName" name="Community" class="project-input" /></td>
+                <td>审核状态：</td>
+                <td>
+                    <select id="IsApprove" name="IsApprove" class="form-control">
+                        <option value="">--请选择--</option>
+                        <option value="true">已审核</option>
+                        <option value="false">未审核</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <div class="project">
+            <button type="button" id="search" class="project-btn-1">查询</button>
+            @*<button type="button" id="down" class="project-btn-2">下载报告</button>*@
+            <button type="button" id="addReport" class="project-btn-3">新建报告</button>
+        </div>
+    </form>
+    <table id="tableList"></table>
+</div>
+
+<form id="fileForm" class="layer_feedback" style="display: none;"  enctype="multipart/form-data" >
+    <h2><span>上传报告文件</span><i class="fa fa-close pull-right" onclick="cancel()"></i></h2>
+    <input type="hidden" id="hiddenProjectId" />
+    <table>
+        <tr style="height: 18px;"></tr>
+        <tr><td class="left font_s_14" style="width:60px;">文件</td><td style="width: 280px;"><div class="file">
+            <input name="" type="text" id="viewfile" class="inputstyle" readonly="readonly">
+            <input type="file" id="ReportFile" style="width: 270px;" name="reportfile" class="registered-tab-input inputfile" onchange="document.getElementById('viewfile').value=this.value;" />
+            <i class="registered-fs ziliao">选择文件</i></div><!--<input type="file" id="ReportFile" style="width: 280px;" />--></td></tr>
+        <tr style="height: 18px;"></tr>
+        <tr><td colspan="3" class="f-tc"><button class="btn-blue" id="submitFile">保存</button></td><td></td></tr>
+    </table>
+</form>
+<script src="~/Content/plug-in/jquery/jquery.form.js"></script>
+<script type="text/javascript">
+    var index, pass, dialog;
+
+    $(function () {
+        tabint();
+
+        $('#search').click(Search);
+
+        $("#searchinfo").validate({
+            rules: {
+                //流水号
+                ProjectNo: {
+                    maxlength: 15,
+                    isDigits: true
+                },
+                //报告编号
+                reportNo: {
+                    maxlength: 18,
+                    isDigits: true
+                },
+                //物业地址
+                HouseAddress: {
+                    maxlength: 50
+                },
+                //小区名称
+                Community: {
+                    maxlength: 50
+                }
+            },
+            messages: {
+                ProjectNo: {
+                    maxlength: jQuery.validator.format("亲,字符不用超过15个"),
+                    isDigits: "输入的必须为数字"
+                },
+                reportNo: {
+                    maxlength: jQuery.validator.format("亲,字符不用超过18个"),
+                    isDigits: "输入的必须为数字"
+                },
+                HouseAddress: {
+                    maxlength: jQuery.validator.format("亲,字符不用超过50个")
+                },
+                Community: {
+                    maxlength: jQuery.validator.format("亲,字符不用超过50个")
+                }
+            },
+            success: function (label) {
+                layer.close(dialog);
+                $("#" + label[0].htmlFor).removeClass("error-border");
+            },
+            errorPlacement: function (error, element) {
+                $("#" + element[0].id).addClass("error-border");
+                dialog = layer.tips(error[0].innerHTML, "#" + element[0].id, {
+                    tips: [2, '#F99228']
+                });
+            },
+            submitHandler: function () {
+                //查询的方法
+                Search();
+            }
+        });
+
+        $(window).resize(function () {
+            $('#table').bootstrapTable('resetWidth', "100%");
+        });
+    });
+
+    //查询
+    function Search() {
+        if ($("#searchinfo").valid()) {
+            $('#tableList').bootstrapTable("destroy");
+            tabint();
+        }
+    }
+
+    //报告上传
+    function upload(id) {
+        $("#hiddenProjectId").val(id);
+        index = layer.open({
+            type: 1,
+            shade: [0.3, "#070707"],
+            closeBtn: 0,
+            area: ['420px', '230px'],
+            title: false, //不显示标题
+            content: $('.layer_feedback'), //捕获的元素
+        });
+    }
+
+    //关闭
+    function cancel() {
+        layer.close(index);
+    }
+
+    //查看报告
+    function report(id) {
+        parent.changeIframe('ViewReport_ProjectReview', '查看报告', '@Url.Content("~/ProjectReview/ViewReport?projectId=")' + id);
+        //window.location.href = "@Url.Content("~/ProjectReview/ViewReport?projectId=")" + id;
+    }
+
+    //项目审核
+    function pass(id) {
+        layer.confirm('是否确定通过审核？', {
+            btn: ['是', '否'] //按钮
+        }, function () {
+            layer.closeAll();
+            $.post("@Url.Content("~/ProjectReview/AuditProject")", { "projectId": id }, function (result) {
+                if (result == true) {
+                    layer.alert("审核成功!", { icon: 6, });
+                    Search();
+                } else {
+                    layer.alert("审核失败!", { icon: 5, });
+                }
+                //window.location.reload();
+            });
+        }, function () {
+        });
+    }
+
+    //查看详细
+    function details(id) {
+        parent.changeIframe('Detail_ProjectReview', '查看报告', '@Url.Content("~/ProjectReview/Detail?projectId=")' + id);
+        //window.location.href = "@Url.Content("~/ProjectReview/Detail?projectId=")" + id ;
+    }
+
+    //下载报告
+    function downReport(id, ProjectNo) {
+        showLoadingTips();
+        window.location.href = "@Url.Content("~/ProjectReview/DownReport?projectId=")" + id + "&ProjectNo=" + ProjectNo;
+        hideLoadingTips();
+    }
+
+    //新建报告
+    $("#addReport").on("click", function () {
+        parent.changeIframe('AddReport_ProjectReview', '新建报告', '@Url.Content("~/ProjectReview/AddReport")');
+        //window.location.href = "@Url.Content("~/ProjectReview/AddReport")";
+        });
+
+    //上传报告
+    $("#submitFile").on("click", function () {
+
+        $("#submitFile").attr("disabled", "disabled");
+        var path = $("#ReportFile").val();
+        var suffix = path.split('.');
+        if (suffix[suffix.length - 1] != "doc" && suffix[suffix.length - 1] != "docx") {
+            layer.msg("请上传word文件!", { time: 1500, icon: 5, shade: [0.3, '#000'] });
+            $("#submitFile").removeAttr("disabled");
+            return;
+        }
+        var indexs = layer.msg("正在上传，请销等...", { icon: 7, time: 30000, shade: [0.3, '#000'] });
+        var options = {
+            url: "@Url.Content("~/ProjectReview/UploadReport")",
+            type: "post",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            data: { "ProjectId": $("#hiddenProjectId").val() },
+            success: function (result) {
+                layer.alert(result.msg, {
+                    closeBtn: 0,
+                    icon: 6,
+                    shade: [0.3, '#000']
+                }, function () {
+                    layer.closeAll();
+                    Search();
+                    $("#submitFile").removeAttr("disabled");
+                });
+                
+            },
+            error: function (result) {
+                $("#submitFile").removeAttr("disabled");
+                console.log(result);
+            }
+        };
+        $("#fileForm").ajaxSubmit(options);
+
+        return false;//阻止form提交
+    });
+
+
+
+    function tabint() {
+        $('#tableList').bootstrapTable({
+            url: '/ProjectReview/GetProjectList', //请求后台的URL（*）
+            method: 'post', //请求方式（*）
+            striped: true, //是否显示行间隔色
+            cache: false, //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true, //是否显示分页（*）
+            queryParams:function(params) {
+                return{
+                    condition: { ProjectNo: $('#ProjectNo').val(), ReportNo: $('#ReportNo').val(), ProjectAddress: $('#ProjectAddress').val(), ResidentialAreaName: $('#ResidentialAreaName').val(), IsApprove: $('#IsApprove').val() },
+                    pageSize: params.limit, //页面大小
+                    pageIndex:params.offset/params.limit + 1, //页码
+                };
+            }, //传递参数（*）
+            sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1, //初始化加载第一页，默认第一页
+            pageSize: 10, //每页的记录行数（*）
+            pageList: [10, 25, 50, 100], //可供选择的每页的行数（*）
+            strictSearch: true,
+            clickToSelect: true, //是否启用点击选中行
+            height: 'auto', //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "Id", //每一行的唯一标识，一般为主键列
+            cardView: false, //是否显示详细视图
+            detailView: false, //是否显示父子表
+            columns: [
+                {
+                    title: '紧急程度',
+                    field: 'EmergencyLevel',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '流水号',
+                    field: 'ProjectNo',
+                    align: 'left',
+                    valign: 'middle',
+                },
+                {
+                    title: '报告编号',
+                    field: 'ReportNo',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '项目地址',
+                    field: 'ProjectAddress',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '审核状态',
+                    field: 'IsApprove',
+                    align: 'left',
+                    valign: 'middle',
+                    formatter: function (value, row, index) {
+                        var test = "";
+                        if (row.IsApprove == true) {
+                            test = "已审核";
+                        } else {
+                            test = "未审核";
+                        }
+                        return test;
+                    }
+                },
+                {
+                    title: '小区名称',
+                    field: 'ResidentialAreaName',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '报告类型',
+                    field: 'ReportType',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '操作',
+                    align: 'left',
+                    field: 'Id',
+                    valign: 'middle',
+                    formatter: function (value, row, index) {
+                        var a = "";
+                        var f = "";
+                        if (!row.IsSent) {
+                            a = '<a href="javascript:void(0);" onclick="upload(\'' + row.Id + '\')">上传报告</a> ';
+                            f = '<a href="/ProjectReview/AggregatedData/' + row.sumId + '">汇总数据</a> ';
+                        }
+                        var b = '<a href="javascript:void(0);" onclick="details(\'' + row.Id + '\')">查看详细</a> ';
+                        var c = '<a href="javascript:void(0);" onclick="report(\'' + row.Id + '\')">查看报告</a> ';
+                        var d = "";
+                        if (row.IsApprove == false) {
+                            d = '<a href="javascript:void(0);" onclick="pass(\'' + row.Id + '\')">审核通过</a> ';
+                        }
+                        var e = '<a href="javascript:void(0);" onclick="downReport(\'' + row.Id + '\',\'' + row.ProjectNo + '\')">下载报告</a> ';
+                        return a + b + c + d + e + f;
+                    }
+                }
+            ]
+        });
+    }
+
+</script>

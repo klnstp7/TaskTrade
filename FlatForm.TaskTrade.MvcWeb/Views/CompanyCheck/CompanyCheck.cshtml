@@ -1,0 +1,434 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+@*<ul class="m-crm">
+    <li><a href="@Url.Action("Welcome", "Home")"><i class="fa fa-home"></i>&nbsp;&nbsp;首页</a> <span class="divider">&gt;</span></li>
+    <li>公司审核</li>
+</ul>*@
+<div class="inquire-tab">
+    <form id="queryData">
+        <table border="0" cellspacing="0" cellpadding="0" class="report">
+            <tr>
+                <td>公司名称：</td>
+                <td><input id="queryCompanyName" type="text" class="report-input" name="queryCompanyName" /></td>
+                <td>城市：</td>
+                <td><input id="queryCity" type="text" class="report-input" name="queryCity" /></td>
+                <td>联系电话：</td>
+                <td><input id="queryTel" type="text" class="report-input" name="queryTel" /></td>
+                <td>审核状态：</td>
+                <td>
+                    <select id="ApproveStatus" name="ApproveStatus" class="business-input">
+                        <option></option>
+                        <option value="0">待审核</option>
+                        <option value="1">通过</option>
+                        <option value="-1">不通过</option>
+                    </select>
+                </td>
+                <td><button id="companySearch" type="button" class="report-btn-1" onclick="companyRefresh()">查询</button></td>
+            </tr>
+        </table>
+    </form>
+    <table id="companyData"></table>
+</div>
+<div id="approveDiv" class="layer_notice" style="display: none;">
+    <form id="formData">
+        <h2><i class="fa fa-close pull-right" style="" onclick="cancelcheck()"></i><span style="">公司审核</span></h2>
+        <table>
+            <tr>
+                <td class="left">公司名称</td>
+                <td><input id="txtCompanyName" type="text" value="" readonly="readonly" /></td>
+                <td class="left">公司地址</td>
+                <td><input id="txtAddress" type="text" value="" readonly="readonly" /></td>
+            </tr>
+            <tr>
+                <td class="left">联系人</td>
+                <td><input id="txtContact" type="text" value="" readonly="readonly" /></td>
+                <td class="left">联系电话</td>
+                <td><input id="txtTel" type="text" value="" name="txtTel" readonly="readonly" /></td>
+            </tr>
+            <tr>
+                <td class="left">管理员</td>
+                <td><input id="txtUserName" type="text" value="" readonly="readonly" /></td>
+                <td class="left">企业资料</td>
+                <td><a id="txtResource" target="_blank" href="javascript:;">查看资料</a><br /></td>
+            </tr>
+            <tr>
+                <td class="left">备注</td>
+                <td colspan="3"><input id="txtRemrak" type="text" value="" readonly="readonly" style="width:440px" /></td>
+            </tr>
+            <tr>
+                <td class="left" colspan="4">&nbsp;&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="4" align="center">
+                    <span style="display:none;" id="txtCompanyId"></span>
+                    <button type="button" class="btn-green" id="submit">通过</button>
+                    <button type="button" class="btn-red" id="cancel">不通过</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="resonDiv" class="layer_notice" style="display: none;">
+    <h2><i class="fa fa-close pull-right" style="" onclick="cancelno()"></i><span style="">不通过</span></h2>
+    <table>
+        <tr><td class="left">不通过原因</td><td><textarea rows="5" class="tc_textarea" id="RefuseReason" name="RefuseReason" maxlength="100"></textarea></tr>
+        <tr><td colspan="2" align="center">&nbsp;&nbsp;</td></tr>
+        <tr>
+            <td colspan="2" align="center">
+                <input type="hidden" id="Id" name="Id" />
+                <button type="button" class="btn-green" onclick="saveReson();" name="btnRefuseSummit">保存</button>
+                <button type="button" class="btn-red" onclick="cancelno();" name="btnCancel">取消</button>
+            </td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+    var index,indexno, confirm, dialog;
+    $(function () {
+
+        //列表初始化
+        tabint();
+        //表单验证(查询项)
+        $("#queryData").validate({
+            rules: {
+                queryCompanyName: {
+                    maxlength: 50
+                },
+                queryAddress: {
+                    maxlength: 50
+                },
+                queryUserName: {
+                    maxlength: 10
+                },
+                queryCity: {
+                    maxlength: 20
+                },
+                queryContact: {
+                    maxlength: 20
+                },
+                queryTel: {
+                    posint: true,
+                    maxlength: 20
+                }
+            },
+            messages: {
+                queryCompanyName: {
+                    maxlength: "请输入50字以内公司名称"
+                }, queryAddress: {
+                    maxlength: "请输入50字以内公司地址"
+                },
+                queryUserName: {
+                    maxlength: "请输入10字以内公司用户名"
+                },
+                queryCity: {
+                    maxlength: "请输入20字以内城市"
+                },
+                queryContact: {
+                    maxlength: "请输入10字以内联系人"
+                },
+                queryTel: {
+                    posint: "请输入正确联系电话",
+                    maxlength: "请输入正确联系电话"
+                }
+            },
+            success: function (label) {
+                layer.close(dialog);
+                $("#" + label[0].htmlFor).removeClass("error-border");
+            },
+            errorPlacement: function (error, element) {
+                $("#" + element[0].id).addClass("error-border");
+                dialog = layer.tips(error[0].innerHTML, "#" + element[0].id, {
+                    tips: [2, '#F99228']
+                });
+            }
+        });
+ 
+
+        //表单提交（审核通过）
+        $("#submit").click(function () {
+       
+                $.ajax({
+                    url: '@Url.Action("ApproveCompany", "CompanyCheck")',
+                    dataType: "json",
+                    type: "GET",
+                    data: {
+                        'id': $("#txtCompanyId").text(),
+                        'qs': new Date().toString()
+                    },
+                    beforesend: showLoadingTips(),
+                    success: function (result) {
+                        closeAll();
+                        if (result.Success) {
+                            companyRefresh();
+                            layer.alert('审核成功', { icon: 1 });
+                        }
+                        else {
+                            layer.alert(result.Message, { icon: 2 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg("系统繁忙,请稍后再试.", { icon: 5, time: 1200, shade: [0.3, '#000'] });
+                    }
+                });
+           
+        });
+
+        //表单提交（审核不通过）
+        $("#cancel").click(function () {
+            closeAll();
+            $(".layer_notice input").val("");
+            indexno = layer.open({
+                type: 1,
+                shade: [0.3, "#070707"],
+                closeBtn: 0,
+                area: ['600px', '280px'],
+                title: false, //不显示标题
+                content: $('#resonDiv'), //捕获的元素
+            });
+        });
+  
+        $(window).resize(function () {
+            $('#companyData').bootstrapTable('resetWidth', "100%");
+        });
+    });
+
+    function companyRefresh() {
+        var flag = $("#queryData").valid();
+        if (flag) {
+            $('#companyData').bootstrapTable("destroy");
+            tabint();
+        }
+    }
+
+
+    function tabint() {
+        $('#companyData').bootstrapTable({
+            url: '/CompanyCheck/GetCompanyData', //请求后台的URL（*）
+            method: 'post', //请求方式（*）
+            toolbar: '#toolbar', //工具按钮用哪个容器
+            striped: true, //是否显示行间隔色
+            cache: false, //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true, //是否显示分页（*）
+            sortable: false, //是否启用排序
+            sortOrder: "asc", //排序方式
+            queryParams:function(params) {
+                return {
+                    CompanyName: $("#queryCompanyName").val(),
+                    City: $('#queryCity').val(),
+                    Tel: $('#queryTel').val(),
+                    ApproveStatus: $('#ApproveStatus').val(),
+                    rows: params.limit, //页面大小
+                    index: parseInt(params.offset / params.limit) + 1, //页码
+                };
+            }, //传递参数（*）
+            sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1, //初始化加载第一页，默认第一页
+            pageSize: 10, //每页的记录行数（*）
+            pageList: [10, 25, 50, 100], //可供选择的每页的行数（*）
+            strictSearch: true,
+            clickToSelect: true, //是否启用点击选中行
+            height: 'auto', //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "Id", //每一行的唯一标识，一般为主键列
+            cardView: false, //是否显示详细视图
+            detailView: false, //是否显示父子表
+            columns: [
+                {
+                    title: '公司名称',
+                    field: 'CompanyName',
+                    align: 'left',
+                    valign: 'middle',
+                },
+                {
+                    title: '公司地址',
+                    field: 'Address',
+                    align: 'left',
+                    valign: 'middle',
+                },
+                {
+                    title: '公司用户名',
+                    field: 'UserName',
+                    align: 'left',
+                    valign: 'middle',
+                },
+                {
+                    title: '联系电话',
+                    field: 'Tel',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '联系人',
+                    field: 'Contact',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '所在城市',
+                    field: 'City',
+                    align: 'left',
+                    valign: 'middle'
+                },
+                {
+                    title: '审核状态',
+                    field: 'IsApprove',
+                    align: 'left',
+                    valign: 'middle',
+                    formatter: function (value, row, index) {
+                        var e = '';
+                        if (row.IsApprove == null) {
+                            e += '<span style="color:#FFA62F;">待审核</span> ';
+                        }
+                        else if (row.IsApprove) {
+                            e += '<span style="color:green;">通过</span> ';
+                        }
+                        else {
+                            e += '<span style="color:red;">不通过</span> ';
+                        }
+                        return e;
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'left',
+                    valign: 'middle',
+                    formatter: function (value, row, index) {
+                        var e = '';
+                        if (row.IsApprove == null) {
+                            e += '<a href="javascript:void(0);" onclick="approve(\'' + row.Id + '\')">审核</a> ';
+                        } else {
+                            e += '<span>已审</span> ';
+                        }
+                        //e += '<a href="javacript:;" onclick="del(\'' + row.Id + '\')">删除</a> ';
+                        return e;
+                    }
+                }
+            ]
+        });
+    }
+
+
+    function approve(id) {
+        $.ajax({
+            url: '@Url.Action("GetCompany", "CompanyCheck")',
+            dataType: "json",
+            type: "GET",
+            data: {
+                'id': id,
+                'qs': new Date().toString()
+            },
+            beforesend: showLoadingTips(),
+            complete: function (XmlHttpRequest, textStatus) {
+            },
+            success: function (result) {
+                hideLoadingTips();
+                if (result.Success) {
+                    $(".layer_notice input").val("");
+                    index = layer.open({
+                        type: 1,
+                        shade: [0.3, "#070707"],
+                        closeBtn: 0,
+                        area: ['600px', '280px'],
+                        title: false, //不显示标题
+                        content: $('#approveDiv'), //捕获的元素
+                    });
+
+                    var data = result.Data;
+                    $("#txtCompanyName").val(data.CompanyName);
+                    $("#txtAddress").val(data.Address);
+                    $("#txtContact").val(data.Contact);
+                    $("#txtTel").val(data.Tel);
+                    $("#txtUserName").val(data.UserName);
+                    $("#txtRemrak").val(data.Remrak);
+                    $("#txtCompanyId").text(data.Id);
+                    $("#txtResource").attr("href", result.Others);
+                }
+                else {
+                    layer.close(confirm);
+                    layer.alert(result.Message, { icon: 2 });
+                }
+            },
+            error: function () {
+                hideLoadingTips();
+                layer.msg("系统繁忙,请稍后再试.", { icon: 5, time: 1200, shade: [0.3, '#000'] });
+            }
+        });
+    }
+
+    function saveReson() {
+        $.ajax({
+            url: '@Url.Action("SaveReson", "CompanyCheck")',
+            dataType: "json",
+            type: "GET",
+            data: {
+                'id': $("#txtCompanyId").text(),
+                'reson': $("#RefuseReason").val(),
+                'qs': new Date().toString()
+            },
+            beforesend: showLoadingTips(),
+            complete: function (XmlHttpRequest, textStatus) {
+            },
+            success: function (result) {
+                closeAll();
+                if (result.Success) {
+                    companyRefresh();
+                    layer.alert('保存成功', { icon: 1 });
+                }
+                else {
+                    layer.alert(result.Message, { icon: 2 });
+                }
+            },
+            error: function () {
+                layer.msg("系统繁忙,请稍后再试.", { icon: 5, time: 1200, shade: [0.3, '#000'] });
+            }
+        });
+    }
+
+    function cancelcheck() {
+        layer.close(index);
+    }
+    function cancelno() {
+        layer.close(indexno);
+    }
+
+    function del(id) {
+        confirm = layer.confirm('是否需要删除当前公司', {
+            btn: ['确定', '取消']
+        }, function () {
+            deleteConfirm(confirm, id);
+        }, function () {
+            layer.close(confirm);
+        });
+    }
+
+    function deleteConfirm(confirm, id) {
+        $.ajax({
+            url: '@Url.Action("DeleteCompany", "CompanyCheck")',
+            dataType: "json",
+            type: "GET",
+            data: {
+                'id': id,
+                'qs': new Date().toString()
+            },
+            complete: function (XmlHttpRequest, textStatus) {
+            },
+            success: function (result) {
+                layer.close(confirm);
+                if (result.Success) {
+                    companyRefresh();
+                    layer.alert('删除成功', { icon: 1 });
+                }
+                else {
+                    layer.alert(result.Message, { icon: 2 });
+                }
+            },
+            error: function (XmlHttpRequest, textStatus, errorThrown) {
+                var $errorPage = XmlHttpRequest.responseText;
+            }
+        });
+    }
+
+    function closeAll() {
+        layer.closeAll();
+    }
+</script>

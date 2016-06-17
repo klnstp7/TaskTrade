@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="WSMethod">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="inputDTOXML" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="WSMethodResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="WSMethodResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetServiceList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="inputDTOXML" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetServiceListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetServiceListResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCaseSource">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Value" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCaseSourceResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetCaseSourceResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="WSMethodSoapIn">
+    <wsdl:part name="parameters" element="tns:WSMethod" />
+  </wsdl:message>
+  <wsdl:message name="WSMethodSoapOut">
+    <wsdl:part name="parameters" element="tns:WSMethodResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetServiceListSoapIn">
+    <wsdl:part name="parameters" element="tns:GetServiceList" />
+  </wsdl:message>
+  <wsdl:message name="GetServiceListSoapOut">
+    <wsdl:part name="parameters" element="tns:GetServiceListResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetCaseSourceSoapIn">
+    <wsdl:part name="parameters" element="tns:GetCaseSource" />
+  </wsdl:message>
+  <wsdl:message name="GetCaseSourceSoapOut">
+    <wsdl:part name="parameters" element="tns:GetCaseSourceResponse" />
+  </wsdl:message>
+  <wsdl:portType name="PeacockReportWSSoap">
+    <wsdl:operation name="WSMethod">
+      <wsdl:input message="tns:WSMethodSoapIn" />
+      <wsdl:output message="tns:WSMethodSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetServiceList">
+      <wsdl:input message="tns:GetServiceListSoapIn" />
+      <wsdl:output message="tns:GetServiceListSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCaseSource">
+      <wsdl:input message="tns:GetCaseSourceSoapIn" />
+      <wsdl:output message="tns:GetCaseSourceSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PeacockReportWSSoap" type="tns:PeacockReportWSSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="WSMethod">
+      <soap:operation soapAction="http://tempuri.org/WSMethod" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetServiceList">
+      <soap:operation soapAction="http://tempuri.org/GetServiceList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCaseSource">
+      <soap:operation soapAction="http://tempuri.org/GetCaseSource" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="PeacockReportWSSoap12" type="tns:PeacockReportWSSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="WSMethod">
+      <soap12:operation soapAction="http://tempuri.org/WSMethod" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetServiceList">
+      <soap12:operation soapAction="http://tempuri.org/GetServiceList" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCaseSource">
+      <soap12:operation soapAction="http://tempuri.org/GetCaseSource" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PeacockReportWS">
+    <wsdl:port name="PeacockReportWSSoap" binding="tns:PeacockReportWSSoap">
+      <soap:address location="http://reporttest.yunfangdata.com/WebService/PeacockReportWS.asmx" />
+    </wsdl:port>
+    <wsdl:port name="PeacockReportWSSoap12" binding="tns:PeacockReportWSSoap12">
+      <soap12:address location="http://reporttest.yunfangdata.com/WebService/PeacockReportWS.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

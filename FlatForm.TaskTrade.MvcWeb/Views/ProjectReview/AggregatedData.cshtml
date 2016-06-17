@@ -1,0 +1,1080 @@
+﻿@model Peacock.PEP.Model.DTO.SummaryDataModel
+@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+<script src="~/Content/plug-in/jquery/jquery.form.js"></script>
+<ul class="m-crm">
+    <li><a href="@Url.Action("Welcome", "Home")"><i class="fa fa-home"></i>&nbsp;&nbsp;首页</a> <span class="divider">&gt;</span></li>
+    <li><a href="@Url.Action("Index", "ProjectReview")">&nbsp;&nbsp;项目审核</a> <span class="divider">&gt;</span></li>
+    <li>汇总数据</li>
+</ul>
+<form id="forminfo">
+    
+    <div class="inquiry-tab">
+        <div class=" " style="width: 96%; margin: 0 auto; margin-top: 10px;">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="javascript:void(0);" class="dropdown-toggle" id="dtHouse">现房(成套住宅)</a></li>
+                <li><a href="javascript:void(0);" class="dropdown-toggle" id="dtCommercialOffice">现房(成套商业办公)</a></li>
+            </ul>
+        </div>
+    </div>
+        <div class="data">
+            <table width="99%" border="0" cellspacing="0" cellpadding="0" class="f-tr">
+                <tr>
+                    <td width="12%">所属公司</td>
+                    <td width="13%"><input type="text" name="Company" id="Company" class="detail-input" value="@Model.Company" /></td>
+                    <td width="12%">所属部门</td>
+                    <td width="13%"><input type="text" name="Department" id="Department" class="detail-input" value="@Model.Department" /></td>
+                    <td width="12%">报告年度</td>
+                    <td width="13%"><input type="text" name="ReportYear" id="ReportYear" class="detail-input" value="@Model.ReportYear" /></td>
+                    <td width="12%">报告月度</td>
+                    <td width="13%"><input type="text" name="ReportMonth" id="ReportMonth" class="detail-input" value="@Model.ReportMonth" /></td>
+                </tr>
+                <tr>
+                    <td>报告编号</td>
+                    <td colspan="3"><input type="text" name="ReportNo" id="ReportNo" class="detail-input" value="@Model.ReportNo" /></td>
+                    <td>项目名称</td>
+                    <td colspan="3"><input type="text" name="ProjectName" id="ProjectName" class="detail-input" value="@Model.ProjectName" /></td>
+                </tr>
+                <tr>
+                    <td>估价目的</td>
+                    <td><input type="text" name="EvalGoal" id="EvalGoal" class="detail-input" value="@Model.EvalGoal" /></td>
+                    <td>目的描述</td>
+                    <td colspan="5"><input type="text" name="GoalDescription" id="GoalDescription" class="detail-input" value="@Model.GoalDescription" /></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="data">
+            <table width="99%" border="0" cellspacing="0" cellpadding="0" class="f-tr">
+                <tr>
+                    <td width="12%">项目所在省</td>
+                    <td width="13%"><select class="detail-input" name="ProjectProvince" id="ProjectProvince"></select></td>
+                    <td width="12%">项目所在市</td>
+                    <td width="13%"><select class="detail-input" name="ProjectCity" id="ProjectCity"><option></option></select></td>
+                    <td width="12%">项目区县</td>
+                    <td width="13%"><select class="detail-input" name="ProjectDistrict" id="ProjectDistrict"><option></option></select></td>
+                    <td width="12%">小区地址</td>
+                    <td width="13%"><input type="text" class="detail-input" name="ResidentialAddress" id="ResidentialAddress" value="@Model.ResidentialAddress" /></td>
+                </tr>
+                <tr>
+                    <td width="12%">楼栋号</td>
+                    <td width="13%"><input type="text" class="detail-input" name="BuildingNo" id="BuildingNo" value="@Model.BuildingNo" /></td>
+                    <td width="12%">单元号</td>
+                    <td width="13%"><input type="text" class="detail-input" name="BuildingUnitNo" id="BuildingUnitNo" value="@Model.BuildingUnitNo" /></td>
+                    <td width="12%">户号</td>
+                    <td width="13%"><input type="text" class="detail-input" name="HouseNo" id="HouseNo" value="@Model.HouseNo" /></td>
+                </tr>
+                <tr>
+                    <td>余下地址</td>
+                    <td colspan="7"><input type="text" class="detail-input" name="OtherAddress" id="OtherAddress" value="@Model.OtherAddress" /></td>
+                </tr>
+                <tr>
+                    <td>项目完整地址</td>
+                    <td colspan="7"><input type="text" class="detail-input" name="ProjectAddress" id="ProjectAddress" value="@Model.ProjectAddress" /></td>
+                </tr>
+                <tr>
+                    <td>项目推广名</td>
+                    <td colspan="7"><input type="text" class="detail-input" name="ProjectPopularizeName" id="ProjectPopularizeName" value="@Model.ProjectPopularizeName" /></td>
+                </tr>
+                <tr>
+                    <td>估价委托人</td>
+                    <td><input type="text" class="detail-input" name="EvalEntrust" id="EvalEntrust" value="@Model.EvalEntrust" /></td>
+                    <td>报告使用方</td>
+                    <td><input type="text" class="detail-input" name="ReportUse" id="ReportUse" value="@Model.ReportUse" /></td>
+                    <td>支行</td>
+                    <td><input type="text" class="detail-input" name="Subbranch" id="Subbranch" value="@Model.Subbranch" /></td>
+                    <td>报告有效期</td>
+                    <td>
+                        <select class="detail-input" id="ReportValidityTerm" name="ReportValidityTerm">
+                            <option></option>
+                            @foreach (var item in ViewBag.ReportValidityTerms)
+                            {
+                                if (Model.ReportValidityTerm == item.Text)
+                                {
+                                    <option value="@item.Text" selected="selected">@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Text">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>实地勘察期</td>
+                    <td><input type="text" id="SurveyTime" class="detail-input laydate-icon" name="SurveyTime" readonly="readonly" value="@string.Format("{0:yyyy-MM-dd}",Model.SurveyTime)" /></td>
+                    <td>价值日期</td>
+                    <td><input type="text" id="WorthTime" class="detail-input laydate-icon" name="WorthTime" readonly="readonly" value="@string.Format("{0:yyyy-MM-dd}", Model.WorthTime)" /></td>
+                    <td>作业起始时间</td>
+                    <td><input type="text" id="JobStartTime" class="detail-input laydate-icon" name="JobStartTime" readonly="readonly" value="@string.Format("{0:yyyy-MM-dd}", Model.JobStartTime)" /></td>
+                    <td>作业终止时间</td>
+                    <td><input type="text" id="JobEndTime" class="detail-input laydate-icon" name="JobEndTime" readonly="readonly" value="@string.Format("{0:yyyy-MM-dd}", Model.JobEndTime)" /></td>
+                </tr>
+                <tr>
+                    <td>现场勘察员</td>
+                    <td><input type="text" class="detail-input" name="SurveyPeople" id="SurveyPeople" value="@Model.SurveyPeople" /></td>
+                    <td>报告撰写人员</td>
+                    <td><input type="text" class="detail-input" name="ReportWriting" id="ReportWriting" value="@Model.ReportWriting" /></td>
+                    <td>评估总价(万元)</td>
+                    <td><input type="text" class="detail-input" name="EvaluateTotal" id="EvaluateTotal" value="@Model.EvaluateTotal" /></td>
+                    <td>评估单价(元/㎡)</td>
+                    <td><input type="text" class="detail-input" name="EvaluatePrice" id="EvaluatePrice" value="@Model.EvaluatePrice" /></td>
+                   
+                </tr>
+                <tr>
+                    <td>估价师1</td>
+                    <td><input type="text" class="detail-input" name="QuantitySurveyor1" id="QuantitySurveyor1" value="@Model.QuantitySurveyor1" /></td>
+                    <td>估价师2</td>
+                    <td><input type="text" class="detail-input" name="QuantitySurveyor2" id="QuantitySurveyor2" value="@Model.QuantitySurveyor2" /></td>
+                    <td>估价师合并</td>
+                    <td><input type="text" class="detail-input" name="QuantitySurveyorJoin" id="QuantitySurveyorJoin" value="@Model.QuantitySurveyorJoin" /></td>
+                    <td>环线</td>
+                    <td>
+                        <select class="detail-input" id="LoopLine" name="LoopLine">
+                            <option></option>
+                            @foreach (var item in ViewBag.LoopLines)
+                            {
+                                if (Model.LoopLine == item.Text)
+                                {
+                                    <option value="@item.Text" selected="selected">@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Text">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>估价方法1</td>
+                    <td><input type="text" class="detail-input" name="EvalMethod1" id="EvalMethod1" value="@Model.EvalMethod1" /></td>
+                    <td>估价方法2</td>
+                    <td><input type="text" class="detail-input" name="EvalMethod2" id="EvalMethod2" value="@Model.EvalMethod2" /></td>
+                    <td>方法汇总</td>
+                    <td><input type="text" class="detail-input" name="EvalMethodJoin" id="EvalMethodJoin" value="@Model.EvalMethodJoin" /></td>
+
+                    <td>其他影响因素</td>
+                    <td><input type="text" class="detail-input" name="OtherInfluenceFactor" id="OtherInfluenceFactor" value="@Model.OtherInfluenceFactor" /></td>
+              
+                </tr>
+                <tr>
+                    <td>成交总价(万元)</td>
+                    <td><input type="text" class="detail-input" name="DealTotal" id="DealTotal" value="@Model.DealTotal" /></td>
+                    <td>成交单价(元/㎡)</td>
+                    <td><input type="text" class="detail-input" name="DealPrice" id="DealPrice" value="@Model.DealPrice" /></td>
+                    <td>交易日期</td>
+                    <td><input type="text" class="detail-input laydate-icon" name="BusinessTime" id="BusinessTime" readonly="readonly" value="@string.Format("{0:yyyy-MM-dd}", Model.BusinessTime)" /></td>
+                    <td>物理结构是否变化</td>
+                    <td><input type="text" class="detail-input" name="PhysicalHasChanged" id="PhysicalHasChanged" value="@Model.PhysicalHasChanged" /></td>
+                  
+                </tr>
+                <tr>
+                    <td>处置扣税额(万元)</td>
+                    <td><input type="text" class="detail-input" name="HandleTaxQuota" id="HandleTaxQuota" value="@Model.HandleTaxQuota" /></td>
+                    <td>扣税口净值(万元)</td>
+                    <td><input type="text" class="detail-input" name="TaxAfterNet" id="TaxAfterNet" value="@Model.TaxAfterNet" /></td>
+                    <td>补交出让金/综合地价款（元）</td>
+                    <td><input type="text" class="detail-input" name="PayLeasing" id="PayLeasing" value="@Model.PayLeasing" /></td>
+                    <td>使用现状</td>
+                    <td><input type="text" class="detail-input" name="StatusQuo" id="StatusQuo" value="@Model.StatusQuo" /></td>
+                </tr>
+
+                <tr>
+                    <td>土地增值税(元)</td>
+                    <td><input type="text" class="detail-input" name="LandVatQuota" id="LandVatQuota" value="@Model.LandVatQuota" /></td>
+                    <td>扣除土地税后(万元)</td>
+                    <td><input type="text" class="detail-input" name="TaxAfterVatQuota" id="TaxAfterVatQuota" value="@Model.TaxAfterVatQuota" /></td> 
+                    <td>项目负责人</td>
+                    <td><input type="text" class="detail-input" id="ProjectHead" name="ProjectHead" value="@Model.ProjectHead" /></td>
+                    <td> 单价类型</td>
+                    <td><input type="text" class="detail-input" id="UnitPriceType" name="UnitPriceType" maxlength="10" value="@Model.UnitPriceType" /></td>
+                </tr>
+               
+                <tr>
+                    <td>优先受偿款</td>
+                    <td colspan="7"><input type="text" class="detail-input" name="PriorityRepaymentInfo" id="PriorityRepaymentInfo" value="@Model.PriorityRepaymentInfo" /></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="data">
+            <table width="99%" border="0" cellspacing="0" cellpadding="0" class="f-tr">
+                <tr>
+                    <td width="12%">登记用途</td>
+                    <td width="13%"><input type="text" class="detail-input" id="RegisterUse" name="RegisterUse" maxlength="20" validtype="RegisterUse" value="@Model.RegisterUse" /></td>
+                    <td width="12%">现状用途</td>
+                    <td width="13%"><input type="text" class="detail-input" id="PresentUse" name="PresentUse" maxlength="20" validtype="PresentUse" value="@Model.PresentUse" /></td>
+                    <td width="12%">建筑结构</td>
+                    <td width="13%">
+                        <select class="detail-input" id="BuildingStructure" name="BuildingStructure">
+                            <option></option>
+                            @foreach (var item in ViewBag.BuildingStructures)
+                            {
+                                if (Model.BuildingStructure == item.Text)
+                                {
+                                    <option value="@item.Text" selected="selected">@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Text">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td width="12%">建成年代</td>
+                    <td width="13%"><input type="text" class="detail-input" name="BuiltYear" id="BuiltYear" value="@Model.BuiltYear" /></td>
+                </tr>
+                <tr>
+                    <td>所在楼层</td>
+                    <td><input type="text" class="detail-input" name="Floor" id="Floor" value="@Model.Floor" /></td>
+                    <td>总楼层</td>
+                    <td><input type="text" class="detail-input" name="MaxFloor" id="MaxFloor" value="@Model.MaxFloor" /></td>
+                    <td>楼层</td>
+                    <td><input type="text" class="detail-input" name="FloorJoin" id="FloorJoin" value="@Model.FloorJoin" /></td>
+                    <td>户型</td>
+                    <td><input type="text" class="detail-input" name="HouseType" id="HouseType" value="@Model.HouseType" /></td>
+                </tr>
+                <tr>
+                    <td>房屋所有权号</td>
+                    <td ><input type="text" class="detail-input" name="HouserOwnerNo" id="HouserOwnerNo" value="@Model.HouserOwnerNo" /></td>
+                    <td>房屋所有权人</td>
+                    <td><input type="text" class="detail-input" name="HouserOwner" id="HouserOwner" value="@Model.HouserOwner" /></td>
+                    <td>建筑面积（㎡）</td>
+                    <td><input type="text" class="detail-input" name="ArchitectureArea" id="ArchitectureArea" value="@Model.ArchitectureArea" /></td>
+                    <td>最高使用年限</td>
+                    <td><input type="text" class="detail-input" id="MaxUseYear" name="MaxUseYear" maxlength="5" value="@Model.MaxUseYear" /></td>
+                </tr>
+                <tr>
+                    <td>产别</td>
+                    <td><input type="text" class="detail-input" name="Yield" id="Yield" value="@Model.Yield" /></td>
+                    <td>装修程度</td>
+                    <td><input type="text" class="detail-input" name="Decoration" id="Decoration" value="@Model.Decoration" /></td>
+                    <td>产权性质</td>
+                    <td>
+                        <select class="detail-input" id="PropertyNature" name="PropertyNature">
+                            <option></option>
+                            @foreach (var item in ViewBag.PropertyNatures)
+                            {
+                                if (Model.PropertyNature == item.Text)
+                                {
+                                    <option value="@item.Text" selected="selected">@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Text">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td>剩余经济寿命（年）</td>
+                    <td><input type="text" class="detail-input" name="SpareEconomicsYear" id="SpareEconomicsYear" value="@Model.SpareEconomicsYear" /></td>
+                </tr>
+               
+            </table>
+        </div>
+
+        <div class="data">
+            <table width="99%" border="0" cellspacing="0" cellpadding="0" class="f-tr">
+                <tr>
+                    <td width="12%">土地使用权人</td>
+                    <td width="13%"><input type="text" class="detail-input" name="LandUsePeople" id="LandUsePeople" value="@Model.LandUsePeople" /></td>
+                    <td width="12%">土地用途</td>
+                    <td width="13%">
+                        <select class="detail-input" id="LandUse" name="LandUse">
+                            <option></option>
+                            @foreach (var item in ViewBag.LandUses)
+                            {
+                                if (Model.LandUse == item.Text)
+                                {
+                                    <option value="@item.Text" selected="selected">@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Text">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td width="12%">土地使用权类型</td>
+                    <td width="13%">
+                        <select class="detail-input" id="LandUseType" name="LandUseType">
+                            <option></option>
+                            @foreach (var item in ViewBag.LandUseTypes)
+                            {
+                                if (Model.LandUseType == item.Text)
+                                {
+                                    <option value="@item.Text" selected="selected">@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Text">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td width="12%">土地使用权面积(㎡)</td>
+                    <td width="13%"><input type="text" class="detail-input" name="LandUseArea" id="LandUseArea" value="@Model.LandUseArea" /></td>
+                </tr>
+                <tr>
+                    <td>图号</td>
+                    <td><input type="text" class="detail-input" name="DrawingNo" id="DrawingNo" value="@Model.DrawingNo" /></td>
+                    <td>地号</td>
+                    <td><input type="text" class="detail-input" name="LandNo" id="LandNo" value="@Model.LandNo" /></td>
+                    <td>终止日期</td>
+                    <td><input type="text" class="detail-input laydate-icon" name="LandEndTime" id="LandEndTime" readonly="readonly" value="@string.Format("{0:yyyy-MM-dd}", Model.LandEndTime)" /></td>
+                    <td>剩余土地年限(年)</td>
+                    <td><input type="text" class="detail-input" name="LandSpareYear" id="LandSpareYear" value="@string.Format("{0:F1}",Model.LandSpareYear)" /></td>
+                </tr>
+                <tr>
+                    <td>国有土地使用号</td>
+                    <td colspan="3"><input type="text" class="detail-input" name="LandUserNo" id="LandUserNo" value="@Model.LandUserNo" /></td>
+                    <td>土地坐落</td>
+                    <td colspan="3"><input type="text" class="detail-input" name="LandAddress" id="LandAddress" value="@Model.LandAddress" /></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="data">
+            <table width="99%" border="0" cellspacing="0" cellpadding="0" class="f-tr">
+                <tr>
+                    <td width="12%">借款人姓名</td>
+                    <td width="13%"><input type="text" class="detail-input" name="BorrowerName" id="BorrowerName" value="@Model.BorrowerName" /></td>
+                    <td width="12%"></td>
+                    <td width="13%"></td>
+                    <td width="12%">借款人身份证</td>
+                    <td width="13%"><input type="text" class="detail-input" name="BorrowerId" id="BorrowerId" value="@Model.BorrowerId" /></td>
+                    <td width="12%"></td>
+                    <td width="13%"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="row" style="margin:10px 0;">
+            <div class="col-md-12">
+                <div class="form-inline">
+                    <div class="control-group" style="text-align:center;">
+                        <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                        <input type="hidden" id="ProjectId" name="ProjectId" value="@Model.ProjectId" />
+                        <input type="hidden" id="DataType" name="DataType" value="@Model.DataType" />
+                        <button type="submit" class="btn btn-sm btn-add" id="save" name="save"><span class="btn-icon add-icon"></span>保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+</form>
+<script type="text/javascript">
+    var d = new Date();
+    var index, confirm, dialog;
+    //日期控件
+    $(function() {
+        laydate({
+            elem: '#SurveyTime',
+            format: 'YYYY-MM-DD',
+            event: 'focus',
+            isclear: false,
+            istoday: false,
+            issure: false,
+        });
+        laydate({
+            elem: '#WorthTime',
+            format: 'YYYY-MM-DD',
+            event: 'focus',
+            isclear: false,
+            istoday: false,
+            issure: false,
+        });
+        laydate({
+            elem: '#JobStartTime',
+            format: 'YYYY-MM-DD',
+            event: 'focus',
+            isclear: false,
+            istoday: false,
+            issure: false,
+        });
+        laydate({
+            elem: '#JobEndTime',
+            format: 'YYYY-MM-DD',
+            event: 'focus',
+            isclear: false,
+            istoday: false,
+            issure: false,
+        });
+        laydate({
+            elem: '#BusinessTime',
+            format: 'YYYY-MM-DD',
+            event: 'focus',
+            isclear: false,
+            istoday: false,
+            issure: false,
+        });
+        laydate({
+            elem: '#LandEndTime',
+            format: 'YYYY-MM-DD',
+            event: 'focus',
+            isclear: false,
+            istoday: false,
+            issure: false,
+        });
+        //验证
+
+        $("#forminfo").validate({
+            rules: {
+                //所属公司
+                Company: {
+                    maxlength: 100
+                },
+                //所属部门
+                Department: {
+                    maxlength: 100
+                },
+                //报告年度
+                ReportYear: {
+                    digits: true,
+                    min: 1000,
+                    max: 9999
+                },
+                //报告月度
+                ReportMonth: {
+                    digits: true,
+                    min: 1,
+                    max: 12
+                },
+                //报告编号
+                ReportNo: { 
+                    maxlength: 50
+                },
+                //项目名称
+                ProjectName: {
+                    maxlength: 255
+                },
+                //估价目的
+                EvalGoal: {
+                    maxlength: 255
+                },
+                //目的描述
+                GoalDescription: {
+                    maxlength: 2000
+                },
+                //小区地址
+                ResidentialAddress: {
+                    maxlength: 100
+                },
+                //余下地址
+                OtherAddress: {
+                    maxlength: 100
+                },
+                //项目推广名
+                ProjectPopularizeName: {
+                    maxlength: 255
+                },
+                //完整地址
+                ProjectAddress: {
+                    maxlength: 255
+                },
+                //估价委托人
+                EvalEntrust: {
+                    maxlength: 50
+                },
+                //报告使用方
+                ReportUse: {
+                    maxlength: 255
+                },
+                //支行
+                Subbranch: {
+                    maxlength: 100
+                },
+                //报告有效期
+                ReportValidityTerm: {
+                    maxlength: 50
+                },
+                //现场勘察员
+                SurveyPeople: {
+                    maxlength: 50
+                },
+                //报告撰写员
+                ReportWriting: {
+                    maxlength: 50
+                },
+                //估价师1
+                QuantitySurveyor1: {
+                    maxlength: 50
+                },
+                //估价师2
+                QuantitySurveyor2: {
+                    maxlength: 50
+                },
+                //估价方法1
+                EvalMethod1: {
+                    maxlength: 200
+                },
+                //估价方法2
+                EvalMethod2: {
+                    maxlength: 200
+                },
+                //评估总价(万元)
+                EvaluateTotal: {
+                    posintdec: true,
+                    maxlength: 20
+                },
+                //成交总价
+                DealTotal: {
+                    posintdec: true,
+                    maxlength: 20
+                },
+                //成交单价
+                DealPrice: {
+                    posintdec: true,
+                    maxlength: 20
+                },
+                //评估单价
+                EvaluatePrice: {
+                    posintdec: true,
+                    maxlength: 20
+                },
+                //土地扣税款
+                HandleTaxQuota: {
+                    maxlength: 20
+                },
+                //扣税口净值
+                TaxAfterNet: {
+                    maxlength: 20
+                },
+                //其他影响因素
+                OtherInfluenceFactor: {
+                    maxlength: 200
+                },
+                ///综合地价款
+                PayLeasing: {
+                    maxlength: 50
+                },
+                //优先补偿款
+                PriorityRepaymentInfo: {
+                    maxlength: 100
+                },
+                //物理结构是否变化
+                PhysicalHasChanged: {
+                    maxlength: 100
+                },
+                //建成年代
+                BuiltYear: {
+                    isDigits: true,
+                    min: 1000,
+                    max: d.getFullYear()
+                },
+                //使用现状
+                StatusQuo: {
+                    maxlength: 50
+                },
+                //所在楼层
+                Floor: {
+                    isDigits: true,
+                    max: 1000
+                },
+                //总楼层
+                MaxFloor: {
+                    isDigits: true,
+                    max: 1000,
+                    larger: true
+                },
+                //楼层
+                FloorJoin: {
+                    maxlength: 50
+                },
+                //户型
+                HouseType: {
+                    maxlength: 50
+                },
+                //房屋所有权号
+                HouserOwnerNo: {
+                    maxlength: 200
+                },
+                //房屋所有权人
+                HouserOwner: {
+                    maxlength: 50
+                },
+                //面积
+                ArchitectureArea: {
+                    maxlength: 50,
+                    posintdec: true,
+                },
+                //产别
+                Yield: {
+                    maxlength: 50
+                },
+                //装修程度
+                Decoration: {
+                    maxlength: 50
+                },
+                //产权性质
+                PropertyNature: {
+                    maxlength: 50
+                },
+                //最高使用年限
+                MaxUseYear: {
+                    digits: true
+                },
+                //剩余经济寿命
+                SpareEconomicsYear: {
+                    digits: true
+                },
+                //土地使用人
+                LandUsePeople: {
+                    maxlength: 50
+                },
+                //土地使用用途
+                LandUse: {
+                    maxlength: 50,
+                },
+                //土地使用类型
+                LandUseType: {
+                    maxlength: 50,
+                },
+                //土地使用面积
+                LandUseArea: {
+                    maxlength: 50,
+                    posintdec: true
+                },
+                //图号
+                DrawingNo: {
+                    maxlength: 50,
+                },
+                //土地号
+                LandNo: {
+                    maxlength: 50,
+                },
+                //剩余土地年限
+                LandSpareYear: {
+                    maxlength: 50,
+                    posintdec: true
+                },
+                //国有土地使用号
+                LandUserNo: {
+                    maxlength: 100,
+                },
+                //土地坐落
+                LandAddress: {
+                    maxlength: 50,
+                },
+                //借款人
+                BorrowerName: {
+                    maxlength: 20,
+                },
+                //借款人身份证
+                BorrowerId: {
+                    cardid: true
+                }
+
+            },
+            messages: {
+                //所属公司
+                Company: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //所属部门
+                Department: {
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                //报告年份
+                ReportYear: {
+                    min: "请输入正确格式年(例：2016)",
+                    max: "请输入正确格式年(例：2016)"
+                },
+                //报告月份
+                ReportMonth: {
+                    min: "请输入正确格式月(例：6)",
+                    max: "请输入正确格式月(例：6)"
+                },
+                //报告编号
+                ReportNo: {
+                    required: "请输入报告编号",
+                    isDigits: "必须输入数字",
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                //项目名称
+                ProjectName: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //估价目的
+                EvalGoal: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //目的描述
+                GoalDescription: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //小区地址
+                ResidentialAddress: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //余下地址
+                OtherAddress: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //项目推广名
+                ProjectPopularizeName: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //估价委托人
+                EvalEntrust: {
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                //报告使用方
+                ReportUse: {
+                    maxlength: jQuery.validator.format("字符不能超过50个"),
+                    isDigits: "请输入数字",
+                },
+                //支行
+                Subbranch: {
+                    maxlength: jQuery.validator.format("字符不能超过100个")
+                },
+                //报告有效期
+                ReportValidityTerm: {
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                //现场勘察员
+                SurveyPeople: {
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                //报告撰写员
+                ReportWriting: {
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                //估价师1
+                QuantitySurveyor1: {
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                //估价师2
+                QuantitySurveyor2: {
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                //估价方法1
+                EvalMethod1: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //估价方法2
+                EvalMethod12: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //评估总价(万元)
+                EvaluateTotal: {
+                    posintdec: "必须数字(最多输入两位小数)",
+                    maxlength: jQuery.validator.format("字符不能超过20个")
+                },
+                //评估单价
+                EvaluatePrice: {
+                    posintdec: "必须数字(最多输入两位小数)",
+                    maxlength: jQuery.validator.format("字符不能超过20个")
+                },
+                //成交总价
+                DealTotal: {
+                    posintdec: "必须数字(最多输入两位小数)",
+                    maxlength: jQuery.validator.format("字符不能超过20个")
+                },
+                //成交单价
+                DealPrice: {
+                    posintdec: "必须数字(最多输入两位小数)",
+                    maxlength: jQuery.validator.format("字符不能超过20个")
+                },
+                //处置扣税额
+                HandleTaxQuota: {
+                    posintdec: "必须数字(最多输入两位小数)",
+                    maxlength: jQuery.validator.format("字符不能超过20个")
+                },
+                //其他影响因素
+                OtherInfluenceFactor: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                ///综合地价款
+                PayLeasing: {
+                    posintdec: "必须数字(最多输入两位小数)",
+                    maxlength: jQuery.validator.format("字符不能超过20个")
+                },
+                //物理结构是否变化
+                PhysicalHasChanged: {
+                    maxlength: jQuery.validator.format("字符不能超过20个")
+                },
+                //建成年代
+                BuiltYear: {
+                    isDigits: "输入正确的年(例：1990)",
+                    min: "输入正确的年(最早不能早于1800)",
+                    max: "输入正确的年(最晚不能晚于当前年)"
+                },
+                //使用现状
+                StatusQuo: {
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                //所在楼层
+                Floor: {
+                    isDigits: "请输入数字",
+                    max: "最大不要超过1000",
+                },
+                //总楼层
+                MaxFloor: {
+                    isDigits: "请输入数字",
+                    max: "最大不要超过1000",
+                    larger: "总楼层不能低于所在楼层!"
+                },
+                //楼层
+                FloorJoin: {
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                //户型
+                HouseType: {
+                    maxlength: jQuery.validator.format("字符不能超过100个")
+                },
+                //房屋所有权号
+                HouserOwnerNo: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //房屋所有权人
+                HouserOwner: {
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                ArchitectureArea: {
+                    maxlength: jQuery.validator.format("字符不能超过50个"),
+                    posintdec: "必须数字(最多输入两位小数)"
+                },
+                //产别
+                Yield: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //装修程度
+                Decoration: {
+                    maxlength: jQuery.validator.format("字符不能超过100个")
+                },
+                //产权性质
+                PropertyNature: {
+                    maxlength: jQuery.validator.format("字符不能超过100个")
+                },
+                //最高使用年限
+                MaxUseYear: {
+                    maxlength: jQuery.validator.format("字符不能超过20个")
+                },
+                //剩余经济寿命
+                SpareEconomicsYear: {
+                    maxlength: jQuery.validator.format("字符不能超过20个"),
+                    isDigits: "必须数字"
+                },
+                //土地使用人
+                LandUsePeople: {
+                    maxlength: jQuery.validator.format("字符不能超过50个")
+                },
+                //土地使用用途
+                LandUse: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //土地使用类型
+                LandUseType: {
+                    maxlength: jQuery.validator.format("字符不能超过100个")
+                },
+                //土地使用面积
+                LandUseArea: {
+                    maxlength: jQuery.validator.format("字符不能超过50个"),
+                    posintdec: "必须数字(最多输入两位小数)"
+                },
+                //图号
+                DrawingNo: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //土地号
+                LandNo: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //剩余土地年限
+                LandSpareYear: {
+                    maxlength: jQuery.validator.format("字符不能超过50个"),
+                    posintdec: "必须数字(最多输入两位小数)"
+                },
+                //国有土地使用号
+                LandUserNo: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //土地坐落
+                LandAddress: {
+                    maxlength: jQuery.validator.format("字符不能超过200个")
+                },
+                //借款人
+                BorrowerName: {
+                    maxlength: jQuery.validator.format("字符不能超过100个")
+                },
+                //借款人身份证
+                BorrowerId: {
+                    cardid: "请输入正确的18位身份证号"
+                }
+            },
+            success: function(label) {
+                layer.close(dialog);
+                $("#" + label[0].htmlFor).removeClass("error-border");
+            },
+            errorPlacement: function(error, element) {
+                $("#" + element[0].id).addClass("error-border");
+                dialog = layer.tips(error[0].innerHTML, "#" + element[0].id, {
+                    tips: [2, '#F99228']
+                });
+            }
+        });
+
+        //房屋类型控制
+        debugger;
+        if ('@Model.DataType' == '') {
+            controlDataType("现房(成套住宅)");
+        } else {
+            controlDataType('@Model.DataType');
+        }
+        
+        var dataTypeArray = ['dtHouse', 'dtCommercialOffice'];
+        $.each(dataTypeArray, function(i, item) {
+            $("#" + item).bind("click", function() {
+                $("#DataType").val($(this).text());
+                controlDataType($(this).text());
+            });
+        });
+        //省份、城市、县区
+        var province = $("#ProjectProvince");
+        var city = $("#ProjectCity");
+        var district = $("#ProjectDistrict");
+      
+        //城市、县区联动
+        city.bind("change", function() {
+            $.ajax({
+                type: "get",
+                url: "/Common/GetRegionByParentName?parentname=" + encodeURIComponent(city.val()),
+                data: null,
+                success: function(data) {
+                    district.html("<option></option>");
+                    for (var i = 0; i < data.length; i++) {
+                        district.append("<option value=" + data[i].Name + ">" + data[i].Name + "</option>");
+                    }
+                    district.find("option[value='@Model.ProjectDistrict']").attr("selected", true);
+                    changeProjectAddress();
+                }
+            });
+        });
+
+        //省份、城市联动
+        province.bind("change", function() {
+            $.ajax({
+                type: "get",
+                url: "/Common/GetCityByParentName?parentname=" + encodeURIComponent(province.val()),
+                data: null,
+                success: function(data) {
+                    city.html("<option></option>");
+                    for (var i = 0; i < data.length; i++) {
+                        city.append("<option value=" + data[i].Name + ">" + data[i].Name + "</option>");
+                    }
+
+                    city.find("option[value='@Model.ProjectCity']").attr("selected", true);
+                    changeProjectAddress();
+                    city.change();
+                }
+            });
+        });
+
+        $.ajax({
+            type: "post",
+            url: "/Common/GetProvince",
+            data: null,
+            success: function(data) {
+                province.html("<option></option>");
+                for (var i = 0; i < data.length; i++) {
+                    province.append("<option value=" + data[i].Name + ">" + data[i].Name + "</option>");
+                }
+                province.find("option[value='@Model.ProjectProvince']").attr("selected", true);
+                changeProjectAddress();
+                province.change();
+            }
+        });
+
+        //保存事件
+        $("#save").bind("click", function() {
+            if (!$("#forminfo").valid()) return;
+            var params = $('#forminfo').serialize();
+            $("#forminfo").ajaxSubmit({
+                type: "POST", //提交类型
+                dataType: "json", //返回结果格式
+                url: "/ProjectReview/SaveAggregatedData",
+                data: params,
+                success: function(result) {
+                    if (result.success) {
+                        layer.alert('操作成功!', { icon: 1 }, function() {
+                            layer.closeAll();
+                            self.location.href = "/ProjectReview/Index";
+                        });
+                    } else {
+                        layer.alert(result.message, { icon: 2 });
+                    }
+                }
+            });
+            return false;
+        });
+
+        //项目区县,小区地址联动项目完整地址
+        var allAddressArray = ['ProjectDistrict', 'ResidentialAddress', 'BuildingNo', 'BuildingUnitNo', 'HouseNo'];
+        $.each(allAddressArray, function(i, item) {
+            $("#" + item).bind("change", changeProjectAddress);
+        });
+
+        //每个form的估价师，估价方法的联动
+        var quantitySurveyorArray = ['QuantitySurveyor1', 'QuantitySurveyor2'];
+        var evalMethodArray = ['EvalMethod1', 'EvalMethod2'];
+        $.each(quantitySurveyorArray, function(i, item) {
+            $("#" + item).bind("change", function() {
+                var temp = "";
+                $.each(quantitySurveyorArray, function(j, value) {
+                    if (j > 0) temp += ',';
+                    temp += $("#" + value).val();
+                });
+                $("#QuantitySurveyorJoin").val(temp);
+            });
+        });
+
+        $.each(evalMethodArray, function(i, item) {
+            $("#" + item).bind("change", function() {
+                var temp = "";
+                $.each(evalMethodArray, function(j, value) {
+                    if (j > 0) temp += ',';
+                    temp += $("#" + value).val();
+                });
+                $("#EvalMethodJoin").val(temp);
+            });
+        });
+    });
+
+    //房屋类型控制
+    function controlDataType(dataType) {
+        var controlIds = ["ProjectHead", "UnitPriceType"];
+        switch(dataType){
+        case $("#dtHouse").text():
+            $("#dtHouse").parent().addClass("active");
+            $("#dtCommercialOffice").parent().removeClass("active");
+            $.each(controlIds, function (i,item) {
+                $("#" + item).hide().val("");
+                $("#" + item).parent().prev().hide();
+            });
+            break;
+        case $("#dtCommercialOffice").text():
+            $("#dtCommercialOffice").parent().addClass("active");
+            $("#dtHouse").parent().removeClass("active");
+            $.each(controlIds, function (i, item) {
+                $("#" + item).hide().show("");
+                $("#" + item).parent().prev().show();
+            });
+            break;
+        default:
+            break;
+        }
+    }
+
+    //项目完整地址更改
+    function changeProjectAddress() {
+        var allAddress = ['ProjectProvince', 'ProjectCity', 'ProjectDistrict', 'ResidentialAddress', 'BuildingNo', 'BuildingUnitNo', 'HouseNo'];
+        $.each(allAddress, function (i, item) {
+            var temp = "";
+            $.each(allAddress, function (j, value) { temp += $("#" + value).val(); });
+            $("#ProjectAddress").val(temp);
+        });
+    }
+
+</script>
